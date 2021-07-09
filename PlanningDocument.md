@@ -9,7 +9,7 @@
 ## 作業手順
 1. add関数を使ったadd計算で小さなコンパイラを作成してみる
     ```
-        func add(a: number, b: number) {
+        fn add(a: number, b: number) {
             return a + b;
         }
 
