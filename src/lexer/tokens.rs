@@ -1,31 +1,44 @@
-enum SpecialToken {
-    ILLEGAL,
-    EOF,
+use std::fmt::Debug;
+
+#[derive(Debug, PartialEq, Clone)]
+pub struct DebugInfo {
+    filename: String,
+    row_num: i32,
 }
 
-enum TypeToken {
-    NUMBER(i32)
+impl DebugInfo {
+    pub fn new(filename: &str, row_num: i32) -> Self {
+        Self {
+            filename: String::from(filename),
+            row_num
+        }
+    }
 }
 
+#[derive(Debug, PartialEq)]
 pub enum Token {
     // Special Token
-    ILLEGAL,
-    EOF,
+    ILLEGAL(DebugInfo),
+    EOF(DebugInfo),
     // Type Token
-    NUMBER(i32),
+    NUMBER(DebugInfo,i32),
+    // Type Name Token
+    NUMBER_TYPE(DebugInfo),
     // Identifier Token
-    IDENT,
+    IDENT(DebugInfo, String),
     // Operator Token
-    PLUG,
-    ASSIGN,
+    PLUS(DebugInfo), // +
+    ASSIGN(DebugInfo), // =
     // Delimiter Token
-    COMMA, // ,
-    SEMICOLON, // ;
-    LPAREN, // (
-    RPAREN, // )
-    LBRACE, // {
-    RBRACE, // }
+    COMMA(DebugInfo), // ,
+    SEMICOLON(DebugInfo), // ;
+    COLON(DebugInfo), // :
+    LPAREN(DebugInfo), // (
+    RPAREN(DebugInfo), // )
+    LBRACE(DebugInfo), // {
+    RBRACE(DebugInfo), // }
     // Keyword Token
-    FUNC,
-    CONST,
+    FUNC(DebugInfo),
+    CONST(DebugInfo),
+    RETURN(DebugInfo),
 }
