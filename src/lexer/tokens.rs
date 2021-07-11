@@ -3,14 +3,14 @@ use std::fmt::Debug;
 #[derive(Debug, PartialEq, Clone)]
 pub struct DebugInfo {
     filename: String,
-    row_num: i32,
+    line_num: i32,
 }
 
 impl DebugInfo {
-    pub fn new(filename: &str, row_num: i32) -> Self {
+    pub fn new(filename: &str, line_num: i32) -> Self {
         Self {
             filename: String::from(filename),
-            row_num
+            line_num
         }
     }
 }
@@ -38,7 +38,7 @@ pub enum Token {
     LBRACE(DebugInfo), // {
     RBRACE(DebugInfo), // }
     // Keyword Token
-    FUNC(DebugInfo),
-    CONST(DebugInfo),
-    RETURN(DebugInfo),
+    FUNC(DebugInfo), // fn
+    CONST(DebugInfo), // const
+    RETURN(DebugInfo), // return
 }
