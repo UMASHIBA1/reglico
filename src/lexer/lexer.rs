@@ -1,16 +1,74 @@
 use super::tokens::Token;
-pub fn lexer(code: &str) -> Vec<Token> {
-    vec![]
+use crate::lexer::tokens::DebugInfo;
+use crate::lexer::tokens::Token::{ASSIGN, PLUS, COMMA, SEMICOLON, COLON, LPAREN, RPAREN, LBRACE, RBRACE, ILLEGAL};
+
+pub struct Lexer<'a> {
+    input: &'a str,
+    now_position: usize,
+    next_position: usize, // for confirm next char
+    ch: char
+}
+
+impl Lexer<'_> {
+    fn new(input: &str) -> Lexer {
+        let ch = input.chars().nth(0).unwrap_or('0');
+        Lexer {
+            input,
+            now_position: 0,
+            next_position: 1,
+            ch,
+        }
+    }
+
+    pub fn lexing(code: &str) -> Vec<Token> {
+        let mut lexer = Lexer::new(code);
+        let len = lexer.input.len();
+        let mut tokens = Vec::new();
+        for i in 0..len {
+            let token = lexer.next_token();
+            tokens.push(token);
+        }
+        tokens
+    }
+
+    fn read_char(&mut self) {
+        if self.next_position >= self.input.len() {
+            self.ch = '0';
+        } else {
+            self.ch = self.input.chars().nth(self.next_position).unwrap_or('0');
+        }
+        self.now_position = self.next_position;
+        self.next_position += 1;
+    }
+
+    pub fn next_token(&mut self) -> Token {
+        // TODO: filenameとrow_numをカウントしてDebugInfoを作成する
+        let now_debug_info = DebugInfo::new("tmp", 1);
+        let token = match self.ch {
+            '+' => PLUS(now_debug_info),
+            '=' => ASSIGN(now_debug_info),
+            ',' => COMMA(now_debug_info),
+            ';' => SEMICOLON(now_debug_info),
+            ':' => COLON(now_debug_info),
+            '(' => LPAREN(now_debug_info),
+            ')' => RPAREN(now_debug_info),
+            '{' => LBRACE(now_debug_info),
+            '}' => RBRACE(now_debug_info),
+            _ => ILLEGAL(now_debug_info)
+        };
+        self.read_char();
+        token
+    }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::lexer;
+    use super::Lexer;
     use super::super::tokens::DebugInfo;
-    use crate::lexer::tokens::Token::{COMMA, SEMICOLON, LPAREN, RPAREN, LBRACE, RBRACE, PLUS, ASSIGN, NUMBER, CONST, FUNC, IDENT, NUMBER_TYPE, COLON, RETURN};
+    use super::super::tokens::Token::{COMMA, SEMICOLON, LPAREN, RPAREN, LBRACE, RBRACE, PLUS, ASSIGN, NUMBER, CONST, FUNC, IDENT, NUMBER_TYPE, COLON, RETURN};
 
     fn create_sample_debug_info() -> DebugInfo {
-        DebugInfo::new("for_test.reg", 1)
+        DebugInfo::new("tmp", 1)
     }
 
     #[test]
@@ -27,7 +85,7 @@ mod tests {
             RBRACE(sample_debug_info),
         ];
 
-        let output = lexer(input);
+        let output = Lexer::lexing(input);
         assert_eq!(output, expected);
     }
 
@@ -41,7 +99,7 @@ mod tests {
             ASSIGN(sample_debug_info)
         ];
 
-        let output = lexer(input);
+        let output = Lexer::lexing(input);
         assert_eq!(output, expected);
     }
 
@@ -54,7 +112,7 @@ mod tests {
             NUMBER(sample_debug_info.clone(), 10),
         ];
 
-        let output = lexer(input);
+        let output = Lexer::lexing(input);
 
         assert_eq!(output, expected);
     }
@@ -68,7 +126,7 @@ mod tests {
             NUMBER_TYPE(sample_debug_info.clone()),
         ];
 
-        let output = lexer(input);
+        let output = Lexer::lexing(input);
 
         assert_eq!(output, expected);
     }
@@ -82,7 +140,7 @@ mod tests {
             IDENT(sample_debug_info, "identifier".to_string())
         ];
 
-        let output = lexer(input);
+        let output = Lexer::lexing(input);
 
         assert_eq!(output, expected);
     }
@@ -97,7 +155,7 @@ mod tests {
             FUNC(sample_debug_info.clone()),
         ];
 
-        let output = lexer(input);
+        let output = Lexer::lexing(input);
 
         assert_eq!(output, expected);
     }
@@ -149,7 +207,7 @@ mod tests {
             COLON(sample_debug_info.clone()),
         ];
 
-        let output = lexer(input);
+        let output = Lexer::lexing(input);
         assert_eq!(output, expected);
 
 
