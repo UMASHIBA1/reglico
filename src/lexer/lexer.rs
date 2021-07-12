@@ -75,9 +75,29 @@ impl Lexer<'_> {
         }
     }
 
+
+
+    fn consume_whitespace(&mut self) {
+        loop {
+            if self.ch != ' ' && self.ch != '\t' && self.ch != '\r' && self.ch != '\n' {
+                break;
+            }
+
+            if self.ch == '\n' {
+                // TODO: debuginfoのためにline_countを作ってここでインクリメントする
+            }
+
+            self.read_char();
+
+        }
+    }
+
+
+
     pub fn next_token(&mut self) -> Token {
         // TODO: filenameとrow_numをカウントしてDebugInfoを作成する
         let now_debug_info = Lexer::create_sample_debug_info();
+        self.consume_whitespace();
         let token = match self.ch {
             '+' => PLUS(now_debug_info),
             '=' => ASSIGN(now_debug_info),
@@ -91,7 +111,7 @@ impl Lexer<'_> {
             _ => {
                 if Lexer::is_letter(self.ch) {
                     let identifier = self.read_identifier();
-                    Lexer::lookup_keyword(identifier, now_debug_info)
+                    return Lexer::lookup_keyword(identifier, now_debug_info);
                 } else {
                     ILLEGAL(now_debug_info)
                 }
