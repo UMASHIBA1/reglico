@@ -1,6 +1,6 @@
 use super::tokens::Token;
-use crate::lexer::tokens::DebugInfo;
-use crate::lexer::tokens::Token::{ASSIGN, PLUS, COMMA, SEMICOLON, COLON, LPAREN, RPAREN, LBRACE, RBRACE, ILLEGAL};
+use crate::lexer::tokens::{DebugInfo, KEYWORDS};
+use crate::lexer::tokens::Token::{ASSIGN, PLUS, COMMA, SEMICOLON, COLON, LPAREN, RPAREN, LBRACE, RBRACE, ILLEGAL, IDENT};
 
 pub struct Lexer<'a> {
     input: &'a str,
@@ -20,11 +20,18 @@ impl Lexer<'_> {
         }
     }
 
+    fn create_sample_debug_info() -> DebugInfo {
+        DebugInfo::new(Some("tmp"), Some(1))
+    }
+
     pub fn lexing(code: &str) -> Vec<Token> {
         let mut lexer = Lexer::new(code);
         let len = lexer.input.len();
         let mut tokens = Vec::new();
-        for i in 0..len {
+        loop {
+            if lexer.next_position > lexer.input.len() {
+                break;
+            }
             let token = lexer.next_token();
             tokens.push(token);
         }
@@ -41,9 +48,36 @@ impl Lexer<'_> {
         self.next_position += 1;
     }
 
+    fn is_letter(ch: char) -> bool {
+        'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z' || ch == '_'
+    }
+
+    fn read_identifier(&mut self) -> &str {
+        let start = self.now_position;
+        loop {
+            if !Lexer::is_letter(self.ch) {
+                break;
+            }
+            self.read_char();
+        }
+        &self.input[start..self.now_position]
+    }
+
+    fn lookup_keyword(ident: &str, debug_info: DebugInfo) -> Token {
+        let keyword_factory = KEYWORDS.get(ident).cloned();
+
+        match keyword_factory {
+            Some(keyword_factory) => {
+                let keyword = keyword_factory(debug_info);
+                keyword
+            },
+            None => IDENT(debug_info, String::from(ident)),
+        }
+    }
+
     pub fn next_token(&mut self) -> Token {
         // TODO: filenameとrow_numをカウントしてDebugInfoを作成する
-        let now_debug_info = DebugInfo::new("tmp", 1);
+        let now_debug_info = Lexer::create_sample_debug_info();
         let token = match self.ch {
             '+' => PLUS(now_debug_info),
             '=' => ASSIGN(now_debug_info),
@@ -54,7 +88,14 @@ impl Lexer<'_> {
             ')' => RPAREN(now_debug_info),
             '{' => LBRACE(now_debug_info),
             '}' => RBRACE(now_debug_info),
-            _ => ILLEGAL(now_debug_info)
+            _ => {
+                if Lexer::is_letter(self.ch) {
+                    let identifier = self.read_identifier();
+                    Lexer::lookup_keyword(identifier, now_debug_info)
+                } else {
+                    ILLEGAL(now_debug_info)
+                }
+            }
         };
         self.read_char();
         token
@@ -68,7 +109,7 @@ mod tests {
     use super::super::tokens::Token::{COMMA, SEMICOLON, LPAREN, RPAREN, LBRACE, RBRACE, PLUS, ASSIGN, NUMBER, CONST, FUNC, IDENT, NUMBER_TYPE, COLON, RETURN};
 
     fn create_sample_debug_info() -> DebugInfo {
-        DebugInfo::new("tmp", 1)
+        DebugInfo::new(Some("tmp"), Some(1))
     }
 
     #[test]
@@ -149,7 +190,7 @@ mod tests {
     fn tokenize_keyword() {
         let sample_debug_info = create_sample_debug_info();
 
-        let input = "const func";
+        let input = "const fn";
         let expected = vec![
             CONST(sample_debug_info.clone()),
             FUNC(sample_debug_info.clone()),
