@@ -25,7 +25,7 @@ impl DebugInfo {
 #[derive(Debug, PartialEq)]
 pub enum Token {
     // Special Token
-    ILLEGAL(DebugInfo),
+    ILLEGAL(DebugInfo, String),
     EOF(DebugInfo),
     // Type Token
     NUMBER(DebugInfo,i32),

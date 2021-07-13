@@ -1,6 +1,7 @@
 use super::tokens::Token;
 use crate::lexer::tokens::{DebugInfo, KEYWORDS};
-use crate::lexer::tokens::Token::{ASSIGN, PLUS, COMMA, SEMICOLON, COLON, LPAREN, RPAREN, LBRACE, RBRACE, ILLEGAL, IDENT};
+use crate::lexer::tokens::Token::{ASSIGN, PLUS, COMMA, SEMICOLON, COLON, LPAREN, RPAREN, LBRACE, RBRACE, ILLEGAL, IDENT, NUMBER, EOF};
+use std::num::ParseIntError;
 
 pub struct Lexer<'a> {
     input: &'a str,
@@ -11,7 +12,7 @@ pub struct Lexer<'a> {
 
 impl Lexer<'_> {
     fn new(input: &str) -> Lexer {
-        let ch = input.chars().nth(0).unwrap_or('0');
+        let ch = input.chars().nth(0).unwrap_or('\0');
         Lexer {
             input,
             now_position: 0,
@@ -40,9 +41,9 @@ impl Lexer<'_> {
 
     fn read_char(&mut self) {
         if self.next_position >= self.input.len() {
-            self.ch = '0';
+            self.ch = '\0';
         } else {
-            self.ch = self.input.chars().nth(self.next_position).unwrap_or('0');
+            self.ch = self.input.chars().nth(self.next_position).unwrap_or('\0');
         }
         self.now_position = self.next_position;
         self.next_position += 1;
@@ -92,7 +93,22 @@ impl Lexer<'_> {
         }
     }
 
+    fn is_number(ch: char) -> bool {
+        '0' <= ch && ch <= '9'
+    }
 
+    fn read_number(&mut self) -> Result<i32, String>  {
+        let start_position = self.now_position;
+        while Lexer::is_number(self.ch) {
+            self.read_char();
+        }
+
+        let str_number = &self.input[start_position..self.now_position];
+        match str_number.parse::<i32>() {
+            Ok(num) => Ok(num),
+            Err(_) => Err(str_number.to_string())
+        }
+    }
 
     pub fn next_token(&mut self) -> Token {
         // TODO: filenameとrow_numをカウントしてDebugInfoを作成する
@@ -108,12 +124,19 @@ impl Lexer<'_> {
             ')' => RPAREN(now_debug_info),
             '{' => LBRACE(now_debug_info),
             '}' => RBRACE(now_debug_info),
+            '\0' => EOF(now_debug_info),
             _ => {
                 if Lexer::is_letter(self.ch) {
                     let identifier = self.read_identifier();
                     return Lexer::lookup_keyword(identifier, now_debug_info);
-                } else {
-                    ILLEGAL(now_debug_info)
+                }else if Lexer::is_number(self.ch) {
+                    return match self.read_number() {
+                        Ok(num) => NUMBER(now_debug_info, num),
+                        Err(str_num) => ILLEGAL(now_debug_info, str_num)
+                    };
+                }
+                else {
+                    ILLEGAL(now_debug_info, self.ch.to_string())
                 }
             }
         };
@@ -127,6 +150,7 @@ mod tests {
     use super::Lexer;
     use super::super::tokens::DebugInfo;
     use super::super::tokens::Token::{COMMA, SEMICOLON, LPAREN, RPAREN, LBRACE, RBRACE, PLUS, ASSIGN, NUMBER, CONST, FUNC, IDENT, NUMBER_TYPE, COLON, RETURN};
+    use crate::lexer::tokens::Token::EOF;
 
     fn create_sample_debug_info() -> DebugInfo {
         DebugInfo::new(Some("tmp"), Some(1))
@@ -165,9 +189,8 @@ mod tests {
     }
 
     #[test]
-    fn tokenize_types() {
+    fn tokenize_number() {
         let sample_debug_info = create_sample_debug_info();
-
         let input = "10";
         let expected = vec![
             NUMBER(sample_debug_info.clone(), 10),
@@ -231,7 +254,9 @@ mod tests {
             }
 
             const total = add(1,2);
-        ";
+
+
+            ";
 
         let expected = vec![
             // fn add(a: number, b: number) {
@@ -265,7 +290,8 @@ mod tests {
             COMMA(sample_debug_info.clone()),
             NUMBER(sample_debug_info.clone(), 2),
             RPAREN(sample_debug_info.clone()),
-            COLON(sample_debug_info.clone()),
+            SEMICOLON(sample_debug_info.clone()),
+            EOF(sample_debug_info.clone()),
         ];
 
         let output = Lexer::lexing(input);
