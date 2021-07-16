@@ -1,16 +1,15 @@
 use std::fmt::Debug;
-use std::collections::HashMap;
 use ::phf::{phf_map, Map};
 
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct DebugInfo {
     filename: Option<String>,
-    line_num: Option<i32>,
+    line_num: Option<usize>,
 }
 
 impl DebugInfo {
-    pub fn new(filename: Option<&str>, line_num: Option<i32>) -> Self {
+    pub fn new(filename: Option<&str>, line_num: Option<usize>) -> Self {
         let filename = match filename {
             Some(name) => Some(String::from(name)),
             _ => None
