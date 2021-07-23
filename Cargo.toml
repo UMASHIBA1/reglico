@@ -7,3 +7,5 @@ auther = ["Yuma Suzuki<umashiba1@gmail.com>"]
 
 [dependencies]
 phf = { version = "0.9", default-features = false, features = ["macros"] }
+pest = "2.0"
+pest_derive = "2.0"

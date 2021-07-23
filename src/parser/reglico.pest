@@ -1,0 +1,15 @@
+number = {
+    ASCII_DIGIT+
+}
+
+ident = {
+    (ASCII_ALPHA | "_") ~ (ASCII_ALPHA | ASCII_DIGIT | "_")*
+}
+
+verb = {
+    "+" | "="
+}
+
+const_assignment_expr = {
+    "const" ~ ident ~ "=" ~ number
+}
