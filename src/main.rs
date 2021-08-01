@@ -1,13 +1,8 @@
-extern crate pest;
-#[macro_use]
-extern crate pest_derive;
-extern crate once_cell;
-#[macro_use]
-extern crate lazy_static;
 
 mod lexer;
-mod parser;
+mod parser2;
 
 fn main() {
     println!("Hello, world!");
 }
+
