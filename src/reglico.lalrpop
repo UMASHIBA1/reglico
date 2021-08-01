@@ -1,0 +1,29 @@
+grammar;
+use super::ast::{Types, Expr, VariableDeclaration};
+
+pub ConstAssignment: Box<VariableDeclaration> = {
+    "const" <ident: IdentExpr> "=" <value: Expr> => Box::new(VariableDeclaration {name: ident, typeName: None, value: Some(value)}),
+    "const" <ident: IdentExpr> ":" <typeName: Types> "=" <value: Expr> =>  Box::new(VariableDeclaration {name: ident, typeName: Some(typeName), value: Some(value)}),
+}
+
+IdentExpr: String = {
+    r"[a-zA-Z_][a-zA-Z0-9_]*" => <>.to_string()
+}
+
+Types: Types = {
+    "number" => Types::NumberType,
+}
+
+Expr = {
+    Term
+}
+
+Term: Expr = {
+    Num => Expr::Number(<>),
+    "(" <Expr> ")"
+}
+
+Num: i32 = {
+   r"[1-9][0-9]+" => <>.parse().unwrap(),
+   r"0" => 0
+};
