@@ -43,6 +43,7 @@ mod test {
             const tmp2 = 1;
             2;
         }
+        const tmp2 = tmp1;
         return 1 + 2;
         }").unwrap();
 

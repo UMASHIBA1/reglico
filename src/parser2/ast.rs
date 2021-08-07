@@ -1,6 +1,11 @@
 #[derive(Debug)]
-pub struct VariableDeclaration {
+pub struct Ident {
     pub name: String,
+}
+
+#[derive(Debug)]
+pub struct VariableDeclaration {
+    pub name: Ident,
     pub typeName: Option<Types>,
     pub value: Option<Expr>
 }
@@ -12,13 +17,13 @@ pub enum Types {
 
 #[derive(Debug)]
 pub struct FuncArg {
-    pub name: String,
+    pub name: Ident,
     pub argType: Types,
 }
 
 #[derive(Debug)]
 pub struct Func {
-    pub name: String,
+    pub name: Ident,
     pub args: Vec<FuncArg>,
     pub stmts: Vec<Stmt>,
     pub returnStmt: Option<ReturnStmt>,
@@ -28,6 +33,7 @@ pub struct Func {
 pub enum Expr {
     Number(i32),
     Op(Box<Expr>, Opcode, Box<Expr>),
+    Ident(Ident),
 }
 
 #[derive(Debug)]

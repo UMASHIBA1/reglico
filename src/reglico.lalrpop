@@ -1,5 +1,5 @@
 grammar;
-use super::ast::{Opcode, Types, Expr, ExprStmt, VariableDeclaration, FuncArg, Func, ReturnStmt, Stmt};
+use super::ast::{Ident, Opcode, Types, Expr, ExprStmt, VariableDeclaration, FuncArg, Func, ReturnStmt, Stmt};
 
 pub Program = {
     Stmt*
@@ -20,8 +20,8 @@ ConstAssignment: VariableDeclaration = {
     "const" <ident: IdentExpr> ":" <typeName: Types> "=" <value: Expr> ";" =>  VariableDeclaration {name: ident, typeName: Some(typeName), value: Some(value)},
 }
 
-IdentExpr: String = {
-    r"[a-zA-Z_][a-zA-Z0-9_]*" => <>.to_string()
+IdentExpr: Ident = {
+    r"[a-zA-Z_][a-zA-Z0-9_]*" => Ident{ name: <>.to_string() }
 }
 
 Types: Types = {
@@ -31,6 +31,7 @@ Types: Types = {
 Expr: Expr = {
     OpExpr,
     Term,
+    IdentExpr => Expr::Ident(<>),
 }
 
 OpExpr: Expr = {
