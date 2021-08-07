@@ -1,5 +1,5 @@
 grammar;
-use super::ast::{Opcode, Types, Expr, ExprStmt, VariableDeclaration, FuncArg, Func, Stmt};
+use super::ast::{Opcode, Types, Expr, ExprStmt, VariableDeclaration, FuncArg, Func, ReturnStmt, Stmt};
 
 pub Program = {
     Stmt*
@@ -55,8 +55,12 @@ FuncArg: FuncArg = {
     <ident: IdentExpr> ":" <argType: Types> => FuncArg {name: ident, argType: argType},
 }
 
+ReturnStmt: ReturnStmt = {
+    "return" <expr: Expr> ";" => ReturnStmt {expr: expr},
+}
+
 Func: Func = {
-    "fn" <name: IdentExpr> "(" <args: CommaSeparate<FuncArg>> ")" "{" <stmts: Stmt*> "}" => Func { name: name, args: args, stmts: stmts }
+    "fn" <name: IdentExpr> "(" <args: CommaSeparate<FuncArg>> ")" "{" <mut stmts: Stmt*> <returnStmt: ReturnStmt?> "}" => Func { name: name, args: args, stmts: stmts, returnStmt: returnStmt}
 }
 
 CommaSeparate<T>: Vec<T> = { // (1)

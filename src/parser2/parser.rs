@@ -43,7 +43,7 @@ mod test {
             const tmp2 = 1;
             2;
         }
-
+        return 1 + 2;
         }").unwrap();
 
         assert_eq!(&format!("{:?}", expr), "tmp");

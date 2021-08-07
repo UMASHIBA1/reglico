@@ -21,6 +21,7 @@ pub struct Func {
     pub name: String,
     pub args: Vec<FuncArg>,
     pub stmts: Vec<Stmt>,
+    pub returnStmt: Option<ReturnStmt>,
 }
 
 #[derive(Debug)]
@@ -36,6 +37,11 @@ pub enum Opcode {
 
 #[derive(Debug)]
 pub struct ExprStmt {
+    pub expr: Expr,
+}
+
+#[derive(Debug)]
+pub struct ReturnStmt {
     pub expr: Expr,
 }
 
