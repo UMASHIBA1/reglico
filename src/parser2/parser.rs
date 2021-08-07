@@ -45,7 +45,24 @@ mod test {
         }
         const tmp2 = tmp1;
         return 1 + 2;
-        }").unwrap();
+        }
+        add(1,2);
+        ").unwrap();
+
+        assert_eq!(&format!("{:?}", expr), "tmp");
+    }
+
+
+    #[test]
+    fn test_add_func() {
+        lalrpop_mod!(pub reglico);
+
+        let expr = reglico::ProgramParser::new().parse("
+            fn add(a: number, b: number) {
+                return a + b;
+            }
+            const total = add(1, 2);
+        ").unwrap();
 
         assert_eq!(&format!("{:?}", expr), "tmp");
     }

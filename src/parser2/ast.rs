@@ -22,6 +22,12 @@ pub struct FuncArg {
 }
 
 #[derive(Debug)]
+pub struct CallExpr {
+    pub ident: Ident,
+    pub args: Vec<Expr>,
+}
+
+#[derive(Debug)]
 pub struct Func {
     pub name: Ident,
     pub args: Vec<FuncArg>,
@@ -34,6 +40,7 @@ pub enum Expr {
     Number(i32),
     Op(Box<Expr>, Opcode, Box<Expr>),
     Ident(Ident),
+    CallExpr(CallExpr),
 }
 
 #[derive(Debug)]

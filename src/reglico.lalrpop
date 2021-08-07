@@ -1,5 +1,5 @@
 grammar;
-use super::ast::{Ident, Opcode, Types, Expr, ExprStmt, VariableDeclaration, FuncArg, Func, ReturnStmt, Stmt};
+use super::ast::{Ident, Opcode, Types, Expr, ExprStmt, VariableDeclaration, FuncArg, CallExpr, Func, ReturnStmt, Stmt};
 
 pub Program = {
     Stmt*
@@ -29,13 +29,8 @@ Types: Types = {
 }
 
 Expr: Expr = {
-    OpExpr,
+    <left: Term> <op: Opcode> <right: Term> => Expr::Op(Box::new(left), op, Box::new(right)),
     Term,
-    IdentExpr => Expr::Ident(<>),
-}
-
-OpExpr: Expr = {
-    <left: Expr> <op: Opcode> <right: Term> => Expr::Op(Box::new(left), op, Box::new(right))
 }
 
 Opcode: Opcode = {
@@ -44,12 +39,22 @@ Opcode: Opcode = {
 
 Term: Expr = {
     Num => Expr::Number(<>),
-    "(" <Expr> ")"
+    IdentExpr => Expr::Ident(<>),
+    CallExpr => Expr::CallExpr(<>),
+    "(" <Expr> ")",
 }
 
 Num: i32 = {
    r"[1-9][0-9]*" => <>.parse().unwrap(),
    r"0" => 0
+}
+
+CallExpr: CallExpr = {
+    <ident: IdentExpr> "(" <args: CommaSeparate<Expr>> ")" => CallExpr { ident: ident, args: args }
+}
+
+Func: Func = {
+    "fn" <name: IdentExpr> "(" <args: CommaSeparate<FuncArg>> ")" "{" <mut stmts: Stmt*> <returnStmt: ReturnStmt?> "}" => Func { name: name, args: args, stmts: stmts, returnStmt: returnStmt}
 }
 
 FuncArg: FuncArg = {
@@ -58,10 +63,6 @@ FuncArg: FuncArg = {
 
 ReturnStmt: ReturnStmt = {
     "return" <expr: Expr> ";" => ReturnStmt {expr: expr},
-}
-
-Func: Func = {
-    "fn" <name: IdentExpr> "(" <args: CommaSeparate<FuncArg>> ")" "{" <mut stmts: Stmt*> <returnStmt: ReturnStmt?> "}" => Func { name: name, args: args, stmts: stmts, returnStmt: returnStmt}
 }
 
 CommaSeparate<T>: Vec<T> = { // (1)
