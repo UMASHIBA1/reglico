@@ -1,5 +1,5 @@
 grammar;
-use super::ast::{Types, Expr, ExprStmt, VariableDeclaration, FuncArg, Func, Stmt};
+use super::ast::{Opcode, Types, Expr, ExprStmt, VariableDeclaration, FuncArg, Func, Stmt};
 
 pub Program = {
     Stmt*
@@ -29,7 +29,16 @@ Types: Types = {
 }
 
 Expr: Expr = {
+    OpExpr,
     Term,
+}
+
+OpExpr: Expr = {
+    <left: Expr> <op: Opcode> <right: Term> => Expr::Op(Box::new(left), op, Box::new(right))
+}
+
+Opcode: Opcode = {
+    "+" => Opcode::Add,
 }
 
 Term: Expr = {

@@ -23,11 +23,21 @@ mod test {
     }
 
     #[test]
+    fn test_add() {
+        lalrpop_mod!(pub reglico);
+
+        let expr = reglico::ProgramParser::new().parse("1 + 2;").unwrap();
+
+        assert_eq!(&format!("{:?}", expr), "tmp");
+    }
+
+    #[test]
     fn test_function() {
         lalrpop_mod!(pub reglico);
 
         let expr = reglico::ProgramParser::new().parse("fn add(a: number, b: number) {
         const tmp1 = 32;
+        1 + 2;
         3;
         fn func1(){
             const tmp2 = 1;
