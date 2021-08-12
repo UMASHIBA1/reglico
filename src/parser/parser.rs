@@ -1,73 +1,70 @@
-use super::ast;
-use crate::parser::ast::AstNode;
-use std::fmt::Error;
-use once_cell::sync::Lazy;
-use lazy_static::lazy_static;
+mod test {
+    use lalrpop_util::lalrpop_mod;
+    use super::super::ast;
 
-use pest::Parser;
-use pest::iterators::{Pairs, Pair};
-use pest::prec_climber::*;
-
-#[derive(Parser)]
-#[grammar = "parser/reglico.pest"]
-struct ReglicoParser;
-
-lazy_static! {
-    static ref PREC_CLIMBER: PrecClimber<Rule> = {
-    use Rule::*;
-    use Assoc::*;
-    PrecClimber::new(vec![
-            Operator::new(Rule::),
-        Operator::new(Rule::verb, Left)
-    ])
-};
-}
-
-pub fn eval(program: Pairs<Rule>) -> () {
-    PREC_CLIMBER.climb(program,
-                       |pair: Pair<Rule>| match pair.as_rule() {
-                           _ => pair
-                       },
-                       |lhs: f64, op: Pair<Rule>, rhs: f64| match op.as_rule() {
-                           _ => unreachable!(),
-                       },
-    );
-}
-
-pub fn parse(source: &str) -> () {
-
-    let parse_result = ReglicoParser::parse(Rule::program, source);
-    match parse_result {
-        Ok(program) => eval(program),
-        Err(_) => println!("Syntax Error!")
-    }
-
-}
-
-
-#[cfg(test)]
-mod tests {
-    use crate::parser::parser::parse;
-    use pest::iterators::Pairs;
 
     #[test]
-    fn const_assign_test() {
+    fn test_const_assignment_with_type() {
+        lalrpop_mod!(pub reglico);
 
-        assert_eq!(parse("
-    fn add(a: number, b: number) {
-        return
-        a + b;
-    }
+        let expr = reglico::StmtParser::new().parse("const tmp1: number = 10;").unwrap();
 
-    const total = add(1,2);
-    "), parse("
-        fn mul(a: number, b: number) {
-        return
-        a + b;
-    }
-
-    const total = add(3,2);
-    "))
+        assert_eq!(&format!("{:?}", expr), "const tmp1: number = 10;");
 
     }
+
+    #[test]
+    fn test_const_assignment_no_type() {
+        lalrpop_mod!(pub reglico);
+
+        let expr = reglico::StmtParser::new().parse("const tmp1 = 10;").unwrap();
+
+        assert_eq!(&format!("{:?}", expr), "const tmp1 = 10;");
+    }
+
+    #[test]
+    fn test_add() {
+        lalrpop_mod!(pub reglico);
+
+        let expr = reglico::ProgramParser::new().parse("1 + 2;").unwrap();
+
+        assert_eq!(&format!("{:?}", expr), "tmp");
+    }
+
+    #[test]
+    fn test_function() {
+        lalrpop_mod!(pub reglico);
+
+        let expr = reglico::ProgramParser::new().parse("fn add(a: number, b: number) {
+        const tmp1 = 32;
+        1 + 2;
+        3;
+        fn func1(){
+            const tmp2 = 1;
+            2;
+        }
+        const tmp2 = tmp1;
+        return 1 + 2;
+        }
+        add(1,2);
+        ").unwrap();
+
+        assert_eq!(&format!("{:?}", expr), "tmp");
+    }
+
+
+    #[test]
+    fn test_add_func() {
+        lalrpop_mod!(pub reglico);
+
+        let expr = reglico::ProgramParser::new().parse("
+            fn add(a: number, b: number) {
+                return a + b;
+            }
+            const total = add(1, 2);
+        ").unwrap();
+
+        assert_eq!(&format!("{:?}", expr), "tmp");
+    }
+
 }

@@ -1,6 +1,6 @@
 
 mod lexer;
-mod parser2;
+mod parser;
 
 fn main() {
     println!("Hello, world!");
