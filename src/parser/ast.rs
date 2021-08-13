@@ -14,15 +14,15 @@ impl Ident {
 #[derive(Debug, Eq, PartialEq)]
 pub struct VariableDeclaration {
     name: Ident,
-    typeName: Option<Types>,
+    type_name: Option<Types>,
     value: Option<Expr>
 }
 
 impl VariableDeclaration {
-    pub fn new(name: Ident, typeName: Option<Types>, value: Option<Expr>) -> VariableDeclaration {
+    pub fn new(name: Ident, type_name: Option<Types>, value: Option<Expr>) -> VariableDeclaration {
         VariableDeclaration {
             name,
-            typeName,
+            type_name,
             value,
         }
     }
@@ -36,14 +36,14 @@ pub enum Types {
 #[derive(Debug, Eq, PartialEq)]
 pub struct FuncArg {
     name: Ident,
-    argType: Types,
+    arg_type: Types,
 }
 
 impl FuncArg {
-    pub fn new(name: Ident, argType: Types) -> FuncArg {
+    pub fn new(name: Ident, arg_type: Types) -> FuncArg {
         FuncArg {
             name,
-            argType,
+            arg_type,
         }
     }
 }
@@ -66,16 +66,16 @@ pub struct Func {
     name: Ident,
     args: Vec<FuncArg>,
     stmts: Vec<Stmt>,
-    returnStmt: Option<ReturnStmt>,
+    return_stmt: Option<ReturnStmt>,
 }
 
 impl Func {
-    pub fn new(name: Ident, args: Vec<FuncArg>, stmts: Vec<Stmt>, returnStmt: Option<ReturnStmt>) -> Func {
+    pub fn new(name: Ident, args: Vec<FuncArg>, stmts: Vec<Stmt>, return_stmt: Option<ReturnStmt>) -> Func {
         Func {
             name,
             args,
             stmts,
-            returnStmt,
+            return_stmt,
         }
     }
 }
@@ -196,9 +196,9 @@ pub enum Stmt {
 
 impl Stmt {
 
-    pub fn var_new(name: Ident, typeName: Option<Types>, value: Option<Expr>) -> Stmt {
+    pub fn var_new(name: Ident, type_name: Option<Types>, value: Option<Expr>) -> Stmt {
         Stmt::VariableDeclaration(
-            VariableDeclaration::new(name, typeName, value)
+            VariableDeclaration::new(name, type_name, value)
         )
     }
 
@@ -208,12 +208,12 @@ impl Stmt {
         )
     }
 
-    pub fn func_new(name: Ident, args: Vec<FuncArg>, stmts: Vec<Stmt>, returnStmt: Option<ReturnStmt>) -> Stmt {
+    pub fn func_new(name: Ident, args: Vec<FuncArg>, stmts: Vec<Stmt>, return_stmt: Option<ReturnStmt>) -> Stmt {
         Stmt::Func(Func::new(
             name,
             args,
             stmts,
-            returnStmt
+            return_stmt
         ))
     }
 
