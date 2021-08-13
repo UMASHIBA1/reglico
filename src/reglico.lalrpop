@@ -54,15 +54,15 @@ CallExpr: CallExpr = {
 }
 
 Func: Func = {
-    "fn" <name: IdentExpr> "(" <args: CommaSeparate<FuncArg>> ")" "{" <mut stmts: Stmt*> <returnStmt: ReturnStmt?> "}" => Func { name: name, args: args, stmts: stmts, returnStmt: returnStmt}
+    "fn" <name: IdentExpr> "(" <args: CommaSeparate<FuncArg>> ")" "{" <mut stmts: Stmt*> <returnStmt: ReturnStmt?> "}" => Func::new(name, args, stmts, returnStmt)
 }
 
 FuncArg: FuncArg = {
-    <ident: IdentExpr> ":" <argType: Types> => FuncArg {name: ident, argType: argType},
+    <ident: IdentExpr> ":" <argType: Types> => FuncArg::new(ident, argType),
 }
 
 ReturnStmt: ReturnStmt = {
-    "return" <expr: Expr> ";" => ReturnStmt {expr: expr},
+    "return" <expr: Expr> ";" => ReturnStmt::new(expr),
 }
 
 CommaSeparate<T>: Vec<T> = { // (1)

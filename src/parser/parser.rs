@@ -1,7 +1,7 @@
 mod test {
     use lalrpop_util::lalrpop_mod;
     use super::super::ast;
-    use crate::parser::ast::{Stmt, VariableDeclaration, Ident, Types, Expr, ExprStmt, Opcode};
+    use crate::parser::ast::{Stmt, VariableDeclaration, Ident, Types, Expr, ExprStmt, Opcode, FuncArg, ReturnStmt};
 
 
     #[test]
@@ -91,7 +91,35 @@ mod test {
             const total = add(1, 2);
         ").unwrap();
 
-        assert_eq!(&format!("{:?}", expr), "tmp");
+        let will_expr = vec![
+            Stmt::func_new(
+                Ident::new("add".to_string()),
+                vec![
+                    FuncArg::new(Ident::new("a".to_string()), Types::NumberType),
+                    FuncArg::new(Ident::new("b".to_string()), Types::NumberType),
+                ],
+                vec![],
+                Some(
+                    ReturnStmt::new(
+                        Expr::op_new(
+                            Expr::ident_new(Ident::new("a".to_string())),
+                            Opcode::Add,
+                            Expr::ident_new(Ident::new("b".to_string())),
+                        )
+                    )
+                )
+            ),
+            Stmt::var_new(
+                Ident::new("total".to_string()),
+                None,
+                Some(Expr::call_new(
+                    Ident::new("add".to_string()),
+                    vec![Expr::num_new(1), Expr::num_new(2)],
+                ))
+            ),
+        ];
+
+        assert_eq!(expr, will_expr);
     }
 
 }

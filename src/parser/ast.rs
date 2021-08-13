@@ -35,16 +35,49 @@ pub enum Types {
 
 #[derive(Debug, Eq, PartialEq)]
 pub struct FuncArg {
-    pub name: Ident,
-    pub argType: Types,
+    name: Ident,
+    argType: Types,
+}
+
+impl FuncArg {
+    pub fn new(name: Ident, argType: Types) -> FuncArg {
+        FuncArg {
+            name,
+            argType,
+        }
+    }
+}
+
+#[derive(Debug, Eq, PartialEq)]
+pub struct ReturnStmt {
+    expr: Expr,
+}
+
+impl ReturnStmt {
+    pub fn new(expr: Expr) -> ReturnStmt {
+        ReturnStmt {
+            expr
+        }
+    }
 }
 
 #[derive(Debug, Eq, PartialEq)]
 pub struct Func {
-    pub name: Ident,
-    pub args: Vec<FuncArg>,
-    pub stmts: Vec<Stmt>,
-    pub returnStmt: Option<ReturnStmt>,
+    name: Ident,
+    args: Vec<FuncArg>,
+    stmts: Vec<Stmt>,
+    returnStmt: Option<ReturnStmt>,
+}
+
+impl Func {
+    pub fn new(name: Ident, args: Vec<FuncArg>, stmts: Vec<Stmt>, returnStmt: Option<ReturnStmt>) -> Func {
+        Func {
+            name,
+            args,
+            stmts,
+            returnStmt,
+        }
+    }
 }
 
 #[derive(Debug, Eq, PartialEq)]
@@ -153,10 +186,6 @@ impl ExprStmt {
     }
 }
 
-#[derive(Debug, Eq, PartialEq)]
-pub struct ReturnStmt {
-    pub expr: Expr,
-}
 
 #[derive(Debug, Eq, PartialEq)]
 pub enum Stmt {
@@ -166,6 +195,9 @@ pub enum Stmt {
 }
 
 impl Stmt {
+    // NOTE: {???}_new is shortcut method for creating Stmt.
+    //
+
     pub fn var_new(name: Ident, typeName: Option<Types>, value: Option<Expr>) -> Stmt {
         Stmt::VariableDeclaration(
             VariableDeclaration::new(name, typeName, value)
@@ -176,6 +208,15 @@ impl Stmt {
         Stmt::ExprStmt(
             ExprStmt::new(expr)
         )
+    }
+
+    pub fn func_new(name: Ident, args: Vec<FuncArg>, stmts: Vec<Stmt>, returnStmt: Option<ReturnStmt>) -> Stmt {
+        Stmt::Func(Func::new(
+            name,
+            args,
+            stmts,
+            returnStmt
+        ))
     }
 
 }
