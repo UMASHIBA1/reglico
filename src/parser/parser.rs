@@ -46,14 +46,12 @@ mod test {
         let expr = reglico::ProgramParser::new().parse("1 + 2;").unwrap();
 
         let will_expr = vec![
-            Stmt::ExprStmt(
-                ExprStmt {
-                    expr: Expr::op_new(
+            Stmt::expr_new(
+                    Expr::op_new(
                         Expr::num_new(1),
                         Opcode::Add,
                         Expr::num_new(2),
                     )
-                }
             )
         ];
 

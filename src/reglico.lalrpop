@@ -12,7 +12,7 @@ pub Stmt: Stmt = {
 }
 
 ExprStmt: ExprStmt = {
-    <expr: Expr> ";" => ExprStmt { expr: expr },
+    <expr: Expr> ";" => ExprStmt::new(expr),
 }
 
 ConstAssignment: VariableDeclaration = {

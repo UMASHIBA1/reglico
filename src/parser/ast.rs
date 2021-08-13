@@ -142,7 +142,15 @@ pub enum Opcode {
 
 #[derive(Debug, Eq, PartialEq)]
 pub struct ExprStmt {
-    pub expr: Expr,
+    expr: Expr,
+}
+
+impl ExprStmt {
+    pub fn new(expr: Expr) -> ExprStmt {
+        ExprStmt {
+            expr
+        }
+    }
 }
 
 #[derive(Debug, Eq, PartialEq)]
@@ -163,4 +171,11 @@ impl Stmt {
             VariableDeclaration::new(name, typeName, value)
         )
     }
+
+    pub fn expr_new(expr: Expr) -> Stmt {
+        Stmt::ExprStmt(
+            ExprStmt::new(expr)
+        )
+    }
+
 }
