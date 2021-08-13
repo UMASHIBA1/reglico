@@ -78,6 +78,42 @@ mod test {
     }
 
     #[test]
+    fn test_ident_with_no_semicolon() {
+        lalrpop_mod!(pub reglico);
+
+        let result = reglico::ProgramParser::new().parse("tmp1").is_err();
+
+        assert_eq!(result, true);
+    }
+
+    #[test]
+    fn test_call_with_no_semicolon() {
+        lalrpop_mod!(pub reglico);
+
+        let result = reglico::ProgramParser::new().parse("add(1,2)").is_err();
+
+        assert_eq!(result, true);
+    }
+
+    #[test]
+    fn test_op_with_no_semicolon() {
+        lalrpop_mod!(pub reglico);
+
+        let result = reglico::ProgramParser::new().parse("1 + 2").is_err();
+
+        assert_eq!(result, true);
+    }
+
+    #[test]
+    fn test_num_with_no_semicolon() {
+        lalrpop_mod!(pub reglico);
+
+        let result = reglico::ProgramParser::new().parse("1").is_err();
+
+        assert_eq!(result, true);
+    }
+
+    #[test]
     fn test_const_assignment_with_type() {
         lalrpop_mod!(pub reglico);
 
@@ -112,7 +148,7 @@ mod test {
     }
 
     #[test]
-    fn test_return_stmt() {
+    fn test_return_stmt_as_stmt() {
         lalrpop_mod!(pub reglico);
         let result = reglico::ProgramParser::new().parse("return 1;").is_err();
 
@@ -241,4 +277,19 @@ mod test {
         assert_eq!(expr, expected_expr);
     }
 
+    #[test]
+    fn test_add_func_with_semicolon() {
+        lalrpop_mod!(pub reglico);
+
+        let result= reglico::ProgramParser::new().parse("
+            fn add(a: number, b: number) {
+                return a + b;
+            };
+        ").is_err();
+
+        assert_eq!(result, true);
+    }
+
 }
+
+
