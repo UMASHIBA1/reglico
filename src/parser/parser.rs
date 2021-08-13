@@ -1,8 +1,81 @@
 mod test {
-    use lalrpop_util::lalrpop_mod;
+    use lalrpop_util::{lalrpop_mod};
     use super::super::ast;
-    use crate::parser::ast::{Stmt, VariableDeclaration, Ident, Types, Expr, ExprStmt, Opcode, FuncArg, ReturnStmt};
+    use crate::parser::ast::{Stmt, Ident, Types, Expr, Opcode, FuncArg, ReturnStmt};
 
+    #[test]
+    fn test_ident() {
+        lalrpop_mod!(pub reglico);
+
+        let expr = reglico::ProgramParser::new().parse("tmp1;").unwrap();
+
+        let expected_expr = vec![
+            Stmt::expr_new(Expr::ident_new(Ident::new("tmp1".to_string())))
+        ];
+
+        assert_eq!(expr, expected_expr);
+    }
+
+    #[test]
+    fn test_op_add() {
+        lalrpop_mod!(pub reglico);
+
+        let expr = reglico::ProgramParser::new().parse("1 + 2;").unwrap();
+
+        let expected_expr = vec![
+            Stmt::expr_new(
+                Expr::op_new(
+                    Expr::num_new(1),
+                    Opcode::Add,
+                    Expr::num_new(2),
+                )
+            )
+        ];
+
+        assert_eq!(expr, expected_expr);
+    }
+
+    #[test]
+    fn test_call() {
+        lalrpop_mod!(pub reglico);
+
+        let expr = reglico::ProgramParser::new().parse("add(1,2);").unwrap();
+
+        let expected_expr = vec![
+            Stmt::expr_new(
+                Expr::call_new(
+                    Ident::new("add".to_string()),
+                    vec![Expr::num_new(1), Expr::num_new(2)],
+                )
+            ),
+        ];
+
+        assert_eq!(expr, expected_expr);
+    }
+
+    #[test]
+    fn test_num() {
+        lalrpop_mod!(pub reglico);
+
+        let expr = reglico::ProgramParser::new().parse("1;").unwrap();
+
+        let expected_expr = vec![
+            Stmt::expr_new(
+                Expr::num_new(1)
+            )
+        ];
+
+        assert_eq!(expr, expected_expr);
+    }
+
+    #[test]
+    fn test_number_type_is_not_stmt() {
+        lalrpop_mod!(pub reglico);
+
+        let result = reglico::ProgramParser::new().parse("number;").is_err();
+
+        assert_eq!(result, true);
+    }
 
     #[test]
     fn test_const_assignment_with_type() {
@@ -10,7 +83,7 @@ mod test {
 
         let expr = reglico::ProgramParser::new().parse("const tmp1: number = 10;").unwrap();
 
-        let will_expr = vec![
+        let expected_expr = vec![
             Stmt::var_new(
                 Ident::new("tmp1".to_string()),
                 Some(Types::NumberType),
@@ -18,8 +91,7 @@ mod test {
             )
         ];
 
-        assert_eq!(expr, will_expr);
-
+        assert_eq!(expr, expected_expr);
     }
 
     #[test]
@@ -28,7 +100,7 @@ mod test {
 
         let expr = reglico::ProgramParser::new().parse("const tmp1 = 10;").unwrap();
 
-        let will_expr = vec![
+        let expected_expr = vec![
             Stmt::var_new(
                 Ident::new("tmp1".to_string()),
                 None,
@@ -36,49 +108,34 @@ mod test {
             )
         ];
 
-        assert_eq!(expr, will_expr);
+        assert_eq!(expr, expected_expr);
     }
 
     #[test]
-    fn test_add() {
+    fn test_return_stmt() {
+        lalrpop_mod!(pub reglico);
+        let result = reglico::ProgramParser::new().parse("return 1;").is_err();
+
+        assert_eq!(result, true);
+
+    }
+
+    #[test]
+    fn test_assign_ident_to_ident() {
         lalrpop_mod!(pub reglico);
 
-        let expr = reglico::ProgramParser::new().parse("1 + 2;").unwrap();
+        let expr = reglico::ProgramParser::new().parse("const tmp1 = tmp2;").unwrap();
 
-        let will_expr = vec![
-            Stmt::expr_new(
-                    Expr::op_new(
-                        Expr::num_new(1),
-                        Opcode::Add,
-                        Expr::num_new(2),
-                    )
+        let expected_expr = vec![
+            Stmt::var_new(
+                Ident::new("tmp1".to_string()),
+                None,
+                Some(Expr::ident_new(Ident::new("tmp2".to_string())))
             )
         ];
 
-        assert_eq!(expr, will_expr);
+        assert_eq!(expr, expected_expr);
     }
-
-    #[test]
-    fn test_function() {
-        lalrpop_mod!(pub reglico);
-
-        let expr = reglico::ProgramParser::new().parse("fn add(a: number, b: number) {
-        const tmp1 = 32;
-        1 + 2;
-        3;
-        fn func1(){
-            const tmp2 = 1;
-            2;
-        }
-        const tmp2 = tmp1;
-        return 1 + 2;
-        }
-        add(1,2);
-        ").unwrap();
-
-        assert_eq!(&format!("{:?}", expr), "tmp");
-    }
-
 
     #[test]
     fn test_add_func() {
@@ -91,7 +148,7 @@ mod test {
             const total = add(1, 2);
         ").unwrap();
 
-        let will_expr = vec![
+        let expected_expr = vec![
             Stmt::func_new(
                 Ident::new("add".to_string()),
                 vec![
@@ -119,7 +176,69 @@ mod test {
             ),
         ];
 
-        assert_eq!(expr, will_expr);
+        assert_eq!(expr, expected_expr);
+    }
+
+    #[test]
+    fn test_func_in_func() {
+        lalrpop_mod!(pub reglico);
+
+        let expr = reglico::ProgramParser::new().parse("
+            fn add(a: number, b: number) {
+                fn add2(a: number, b: number) {
+                    return a + b;
+                }
+                return add2(a, b);
+            }
+            const total = add(1, 2);
+        ").unwrap();
+
+        let expected_expr = vec![
+            Stmt::func_new(
+                Ident::new("add".to_string()),
+                vec![
+                    FuncArg::new(Ident::new("a".to_string()), Types::NumberType),
+                    FuncArg::new(Ident::new("b".to_string()), Types::NumberType),
+                ],
+                vec![
+                    Stmt::func_new(
+                        Ident::new("add2".to_string()),
+                        vec![
+                            FuncArg::new(Ident::new("a".to_string()), Types::NumberType),
+                            FuncArg::new(Ident::new("b".to_string()), Types::NumberType),
+                        ],
+                        vec![],
+                        Some(
+                            ReturnStmt::new(
+                                Expr::op_new(
+                                    Expr::ident_new(Ident::new("a".to_string())),
+                                    Opcode::Add,
+                                    Expr::ident_new(Ident::new("b".to_string())),
+                                )
+                            )
+                        )
+                    ),
+                ],
+                Some(
+                    ReturnStmt::new(
+                        Expr::call_new(Ident::new("add2".to_string()), vec![
+                            Expr::ident_new(Ident::new("a".to_string())),
+                            Expr::ident_new(Ident::new("b".to_string())),
+                        ])
+                    )
+                )
+            ),
+            Stmt::var_new(
+                Ident::new("total".to_string()),
+                None,
+                Some(Expr::call_new(
+                    Ident::new("add".to_string()),
+                    vec![Expr::num_new(1), Expr::num_new(2)],
+                ))
+            ),
+        ];
+
+        assert_eq!(expr, expected_expr);
     }
 
 }

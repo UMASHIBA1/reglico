@@ -195,8 +195,6 @@ pub enum Stmt {
 }
 
 impl Stmt {
-    // NOTE: {???}_new is shortcut method for creating Stmt.
-    //
 
     pub fn var_new(name: Ident, typeName: Option<Types>, value: Option<Expr>) -> Stmt {
         Stmt::VariableDeclaration(
