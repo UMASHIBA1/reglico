@@ -3,11 +3,29 @@ pub struct Ident {
     name: String,
 }
 
+impl Ident {
+    pub fn new(ident_name: String) -> Ident {
+        Ident {
+            name: ident_name
+        }
+    }
+}
+
 #[derive(Debug, Eq, PartialEq)]
 pub struct VariableDeclaration {
-    pub name: Ident,
-    pub typeName: Option<Types>,
-    pub value: Option<Expr>
+    name: Ident,
+    typeName: Option<Types>,
+    value: Option<Expr>
+}
+
+impl VariableDeclaration {
+    pub fn new(name: Ident, typeName: Option<Types>, value: Option<Expr>) -> VariableDeclaration {
+        VariableDeclaration {
+            name,
+            typeName,
+            value,
+        }
+    }
 }
 
 #[derive(Debug, Eq, PartialEq)]
@@ -35,46 +53,18 @@ pub struct CallExpr {
     args: Vec<Expr>,
 }
 
+impl CallExpr {
+    pub fn new(func_name: Ident, args: Vec<Expr>) -> CallExpr {
+        CallExpr {
+            func_name,
+            args
+        }
+    }
+}
+
 #[derive(Debug, Eq, PartialEq)]
 pub struct Number {
     num: i32
-}
-
-#[derive(Debug, Eq, PartialEq)]
-pub struct Operation {
-    opcode: Opcode,
-    l_expr: Box<Expr>,
-    r_expr: Box<Expr>,
-}
-
-#[derive(Debug, Eq, PartialEq)]
-pub enum Expr {
-    Num(Number),
-    Op(Operation),
-    Ident(Ident),
-    Call(CallExpr),
-}
-
-#[derive(Debug, Eq, PartialEq)]
-pub enum Opcode {
-    Add,
-}
-
-#[derive(Debug, Eq, PartialEq)]
-pub struct ExprStmt {
-    pub expr: Expr,
-}
-
-#[derive(Debug, Eq, PartialEq)]
-pub struct ReturnStmt {
-    pub expr: Expr,
-}
-
-#[derive(Debug, Eq, PartialEq)]
-pub enum Stmt {
-    VariableDeclaration(VariableDeclaration),
-    ExprStmt(ExprStmt),
-    Func(Func),
 }
 
 impl Number {
@@ -83,6 +73,13 @@ impl Number {
             num
         }
     }
+}
+
+#[derive(Debug, Eq, PartialEq)]
+pub struct Operation {
+    opcode: Opcode,
+    l_expr: Box<Expr>,
+    r_expr: Box<Expr>,
 }
 
 impl Operation {
@@ -95,21 +92,12 @@ impl Operation {
     }
 }
 
-impl Ident {
-    pub fn new(ident_name: String) -> Ident {
-        Ident {
-            name: ident_name
-        }
-    }
-}
-
-impl CallExpr {
-    pub fn new(func_name: Ident, args: Vec<Expr>) -> CallExpr {
-        CallExpr {
-            func_name,
-            args
-        }
-    }
+#[derive(Debug, Eq, PartialEq)]
+pub enum Expr {
+    Num(Number),
+    Op(Operation),
+    Ident(Ident),
+    Call(CallExpr),
 }
 
 impl Expr {
@@ -117,6 +105,7 @@ impl Expr {
     // Expr::Op(Operation::new(Expr::Num(Number::new(10)), Opcode::Add, Expr::Num(Number::new(20))))
     // ↓
     // Expr::op_new(Expr::num_new(10), Opcode::Add, Expr::num_new(20))
+
     pub fn op_new(l_expr: Expr, op: Opcode, r_expr: Expr) -> Expr {
         Expr::Op(
             Operation::new(l_expr, op, r_expr)
@@ -144,5 +133,37 @@ impl Expr {
         )
     }
 
-
 }
+
+#[derive(Debug, Eq, PartialEq)]
+pub enum Opcode {
+    Add,
+}
+
+#[derive(Debug, Eq, PartialEq)]
+pub struct ExprStmt {
+    pub expr: Expr,
+}
+
+#[derive(Debug, Eq, PartialEq)]
+pub struct ReturnStmt {
+    pub expr: Expr,
+}
+
+#[derive(Debug, Eq, PartialEq)]
+pub enum Stmt {
+    VariableDeclaration(VariableDeclaration),
+    ExprStmt(ExprStmt),
+    Func(Func),
+}
+
+
+
+
+
+
+
+
+
+
+

@@ -16,8 +16,8 @@ ExprStmt: ExprStmt = {
 }
 
 ConstAssignment: VariableDeclaration = {
-    "const" <ident: IdentExpr> "=" <value: Expr> ";" => VariableDeclaration {name: ident, typeName: None, value: Some(value)},
-    "const" <ident: IdentExpr> ":" <typeName: Types> "=" <value: Expr> ";" =>  VariableDeclaration {name: ident, typeName: Some(typeName), value: Some(value)},
+    "const" <ident: IdentExpr> "=" <value: Expr> ";" => VariableDeclaration::new(ident, None, Some(value)),
+    "const" <ident: IdentExpr> ":" <typeName: Types> "=" <value: Expr> ";" =>  VariableDeclaration::new(ident, Some(typeName), Some(value)),
 }
 
 IdentExpr: Ident = {

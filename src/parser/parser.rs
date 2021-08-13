@@ -12,11 +12,11 @@ mod test {
 
         let will_expr = vec![
             Stmt::VariableDeclaration(
-                VariableDeclaration {
-                    name: Ident::new("tmp1".to_string()),
-                    typeName: Some(Types::NumberType),
-                    value: Some(Expr::num_new(10))
-                }
+                VariableDeclaration::new(
+                    Ident::new("tmp1".to_string()),
+                    Some(Types::NumberType),
+                    Some(Expr::num_new(10))
+                )
             )
         ];
 
@@ -32,11 +32,11 @@ mod test {
 
         let will_expr = vec![
             Stmt::VariableDeclaration(
-                VariableDeclaration {
-                    name: Ident::new("tmp1".to_string()),
-                    typeName: None,
-                    value: Some(Expr::num_new(10))
-                }
+                VariableDeclaration::new(
+                    Ident::new("tmp1".to_string()),
+                    None,
+                    Some(Expr::num_new(10))
+                )
             )
         ];
 
