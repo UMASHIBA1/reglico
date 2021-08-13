@@ -157,13 +157,10 @@ pub enum Stmt {
     Func(Func),
 }
 
-
-
-
-
-
-
-
-
-
-
+impl Stmt {
+    pub fn var_new(name: Ident, typeName: Option<Types>, value: Option<Expr>) -> Stmt {
+        Stmt::VariableDeclaration(
+            VariableDeclaration::new(name, typeName, value)
+        )
+    }
+}

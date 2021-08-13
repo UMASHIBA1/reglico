@@ -11,12 +11,10 @@ mod test {
         let expr = reglico::ProgramParser::new().parse("const tmp1: number = 10;").unwrap();
 
         let will_expr = vec![
-            Stmt::VariableDeclaration(
-                VariableDeclaration::new(
-                    Ident::new("tmp1".to_string()),
-                    Some(Types::NumberType),
-                    Some(Expr::num_new(10))
-                )
+            Stmt::var_new(
+                Ident::new("tmp1".to_string()),
+                Some(Types::NumberType),
+                Some(Expr::num_new(10))
             )
         ];
 
@@ -31,12 +29,10 @@ mod test {
         let expr = reglico::ProgramParser::new().parse("const tmp1 = 10;").unwrap();
 
         let will_expr = vec![
-            Stmt::VariableDeclaration(
-                VariableDeclaration::new(
-                    Ident::new("tmp1".to_string()),
-                    None,
-                    Some(Expr::num_new(10))
-                )
+            Stmt::var_new(
+                Ident::new("tmp1".to_string()),
+                None,
+                Some(Expr::num_new(10))
             )
         ];
 
