@@ -1,5 +1,5 @@
 grammar;
-use super::ast::{Ident, Opcode, Types, Expr, ExprStmt, VariableDeclaration, FuncArg, CallExpr, Func, ReturnStmt, Stmt};
+use super::ast::{Ident, Opcode, Types, Expr, ExprStmt, CallExpr, Operation, VariableDeclaration, FuncArg,  Func, ReturnStmt, Stmt};
 
 pub Program = {
     Stmt*
@@ -21,7 +21,7 @@ ConstAssignment: VariableDeclaration = {
 }
 
 IdentExpr: Ident = {
-    r"[a-zA-Z_][a-zA-Z0-9_]*" => Ident{ name: <>.to_string() }
+    r"[a-zA-Z_][a-zA-Z0-9_]*" => Ident::new(<>.to_string())
 }
 
 Types: Types = {
@@ -29,7 +29,7 @@ Types: Types = {
 }
 
 Expr: Expr = {
-    <left: Term> <op: Opcode> <right: Term> => Expr::op_new(left, op, right),
+    <left: Term> <op: Opcode> <right: Term> => Expr::Op(Operation::new(left, op, right)),
     Term,
 }
 
@@ -38,9 +38,9 @@ Opcode: Opcode = {
 }
 
 Term: Expr = {
-    Num => Expr::Number(<>),
-    IdentExpr => Expr::Ident(<>),
-    CallExpr => Expr::CallExpr(<>),
+    Num => Expr::num_new(<>),
+    IdentExpr => Expr::ident_new(<>),
+    CallExpr => Expr::Call(<>),
     "(" <Expr> ")",
 }
 
@@ -50,7 +50,7 @@ Num: i32 = {
 }
 
 CallExpr: CallExpr = {
-    <ident: IdentExpr> "(" <args: CommaSeparate<Expr>> ")" => CallExpr { ident: ident, args: args }
+    <ident: IdentExpr> "(" <args: CommaSeparate<Expr>> ")" => CallExpr::new(ident, args)
 }
 
 Func: Func = {

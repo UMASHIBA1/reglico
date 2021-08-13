@@ -13,9 +13,9 @@ mod test {
         let will_expr = vec![
             Stmt::VariableDeclaration(
                 VariableDeclaration {
-                    name: Ident {name: "tmp1".to_string()},
+                    name: Ident::new("tmp1".to_string()),
                     typeName: Some(Types::NumberType),
-                    value: Some(Expr::Number(10))
+                    value: Some(Expr::num_new(10))
                 }
             )
         ];
@@ -33,9 +33,9 @@ mod test {
         let will_expr = vec![
             Stmt::VariableDeclaration(
                 VariableDeclaration {
-                    name: Ident {name: "tmp1".to_string()},
+                    name: Ident::new("tmp1".to_string()),
                     typeName: None,
-                    value: Some(Expr::Number(10))
+                    value: Some(Expr::num_new(10))
                 }
             )
         ];
@@ -53,9 +53,9 @@ mod test {
             Stmt::ExprStmt(
                 ExprStmt {
                     expr: Expr::op_new(
-                        Expr::Number(1),
+                        Expr::num_new(1),
                         Opcode::Add,
-                        Expr::Number(2),
+                        Expr::num_new(2),
                     )
                 }
             )
