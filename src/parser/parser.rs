@@ -1,15 +1,26 @@
 mod test {
     use lalrpop_util::lalrpop_mod;
     use super::super::ast;
+    use crate::parser::ast::{Stmt, VariableDeclaration, Ident, Types, Expr, ExprStmt, Opcode};
 
 
     #[test]
     fn test_const_assignment_with_type() {
         lalrpop_mod!(pub reglico);
 
-        let expr = reglico::StmtParser::new().parse("const tmp1: number = 10;").unwrap();
+        let expr = reglico::ProgramParser::new().parse("const tmp1: number = 10;").unwrap();
 
-        assert_eq!(&format!("{:?}", expr), "const tmp1: number = 10;");
+        let will_expr = vec![
+            Stmt::VariableDeclaration(
+                VariableDeclaration {
+                    name: Ident {name: "tmp1".to_string()},
+                    typeName: Some(Types::NumberType),
+                    value: Some(Expr::Number(10))
+                }
+            )
+        ];
+
+        assert_eq!(expr, will_expr);
 
     }
 
@@ -17,9 +28,19 @@ mod test {
     fn test_const_assignment_no_type() {
         lalrpop_mod!(pub reglico);
 
-        let expr = reglico::StmtParser::new().parse("const tmp1 = 10;").unwrap();
+        let expr = reglico::ProgramParser::new().parse("const tmp1 = 10;").unwrap();
 
-        assert_eq!(&format!("{:?}", expr), "const tmp1 = 10;");
+        let will_expr = vec![
+            Stmt::VariableDeclaration(
+                VariableDeclaration {
+                    name: Ident {name: "tmp1".to_string()},
+                    typeName: None,
+                    value: Some(Expr::Number(10))
+                }
+            )
+        ];
+
+        assert_eq!(expr, will_expr);
     }
 
     #[test]
@@ -28,7 +49,19 @@ mod test {
 
         let expr = reglico::ProgramParser::new().parse("1 + 2;").unwrap();
 
-        assert_eq!(&format!("{:?}", expr), "tmp");
+        let will_expr = vec![
+            Stmt::ExprStmt(
+                ExprStmt {
+                    expr: Expr::op_new(
+                        Expr::Number(1),
+                        Opcode::Add,
+                        Expr::Number(2),
+                    )
+                }
+            )
+        ];
+
+        assert_eq!(expr, will_expr);
     }
 
     #[test]

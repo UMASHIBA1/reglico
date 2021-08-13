@@ -29,7 +29,7 @@ Types: Types = {
 }
 
 Expr: Expr = {
-    <left: Term> <op: Opcode> <right: Term> => Expr::Op(Box::new(left), op, Box::new(right)),
+    <left: Term> <op: Opcode> <right: Term> => Expr::op_new(left, op, right),
     Term,
 }
 
