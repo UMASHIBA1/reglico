@@ -1,5 +1,5 @@
 grammar;
-use crate::ast::ast::{Ident, Opcode, Types, Expr, ExprStmt, CallExpr, Operation, VariableDeclaration, FuncArg,  Func, ReturnStmt, Stmt};
+use super::ast::{Ident, Opcode, Types, Expr, ExprStmt, CallExpr, Operation, VariableDeclaration, FuncArg,  Func, ReturnStmt, Stmt};
 
 pub Program = {
     Stmt*
