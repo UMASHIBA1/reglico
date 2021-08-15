@@ -1,4 +1,4 @@
-use crate::parser::ast::Stmt;
+use crate::ast::ast::Stmt;
 
 pub fn inference(stmts: Vec<Stmt>) -> Vec<Stmt> {
     stmts

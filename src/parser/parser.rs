@@ -1,7 +1,6 @@
 mod test {
     use lalrpop_util::{lalrpop_mod};
-    use super::super::ast;
-    use crate::parser::ast::{Stmt, Ident, Types, Expr, Opcode, FuncArg, ReturnStmt};
+    use crate::ast::ast::{Stmt, Ident, Types, Expr, Opcode, FuncArg, ReturnStmt};
 
     #[test]
     fn test_ident() {
