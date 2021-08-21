@@ -12,7 +12,7 @@ impl TypedIdent {
 }
 
 #[derive(Debug, Eq, PartialEq)]
-enum TypeFlag {
+pub enum TypeFlag {
     NumberType, // x: number
 }
 
@@ -37,7 +37,7 @@ impl TypedNumber {
 }
 
 #[derive(Debug, Eq, PartialEq)]
-struct TypedCallExpr {
+pub struct TypedCallExpr {
     func_name: TypedIdent,
     args: Vec<TypedExpr>
 }
@@ -106,7 +106,7 @@ impl TypedReturnStmt {
 }
 
 #[derive(Debug, Eq, PartialEq)]
-struct TypedFunc {
+pub struct TypedFunc {
     name: TypedIdent,
     args: Vec<TypedFuncArg>,
     stmts: Vec<TypedStmt>,
