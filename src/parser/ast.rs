@@ -1,4 +1,4 @@
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub struct Ident {
     name: String,
 }
@@ -9,6 +9,11 @@ impl Ident {
             name: ident_name
         }
     }
+
+    pub fn get_name(&self) -> String {
+        self.name.clone()
+    }
+
 }
 
 #[derive(Debug, Eq, PartialEq)]
@@ -26,9 +31,22 @@ impl VariableDeclaration {
             value,
         }
     }
+
+    pub fn get_var_name(&self) -> Ident {
+        self.name.clone()
+    }
+
+    pub fn get_type_name(&self) -> Option<Types> {
+        self.type_name.clone()
+    }
+
+    pub fn get_value(&self) -> Option<Expr> {
+        self.value.clone()
+    }
+
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub enum Types {
     NumberType,
 }
@@ -80,7 +98,7 @@ impl Func {
     }
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub struct CallExpr {
     func_name: Ident,
     args: Vec<Expr>,
@@ -95,7 +113,7 @@ impl CallExpr {
     }
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub struct Number {
     num: i32
 }
@@ -106,9 +124,14 @@ impl Number {
             num
         }
     }
+
+    pub fn get_num(&self) -> i32 {
+        self.num
+    }
+
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub struct Operation {
     opcode: Opcode,
     l_expr: Box<Expr>,
@@ -125,7 +148,7 @@ impl Operation {
     }
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub enum Expr {
     Num(Number),
     Op(Operation),
@@ -168,7 +191,7 @@ impl Expr {
 
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub enum Opcode {
     Add,
 }
@@ -217,4 +240,18 @@ impl Stmt {
         ))
     }
 
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::parser::ast::Ident;
+
+    #[test]
+    fn test_ident_get_name_can_multi_call(){
+        let ident = Ident::new("tmp".to_string());
+        let ident_name = ident.get_name();
+        assert_eq!(ident_name, "tmp".to_string());
+        let ident_name2 = ident.get_name();
+        assert_eq!(ident_name2, "tmp".to_string());
+    }
 }
