@@ -53,8 +53,8 @@ impl TypeInference {
 
     fn inference_expr(&self, expr: Expr) -> TypedExpr {
         match expr {
-            Expr::Num(num) => TypedExpr::NumExpr(TypedNumber::new(num.get_num())),
-            _ => TypedExpr::NumExpr(TypedNumber::new(0)) // TODO: 一旦コンパイル通すためこうしてる、ちゃんと作る
+            Expr::Num(num) => TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(num.get_num())),
+            _ => TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(0)) // TODO: 一旦コンパイル通すためこうしてる、ちゃんと作る
         }
     }
 
@@ -68,4 +68,13 @@ impl TypeInference {
         }
     }
 
+}
+
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn test_inference_var_declaration(){
+        
+    }
 }
