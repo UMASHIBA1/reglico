@@ -20,7 +20,7 @@ pub enum TypeFlag {
 #[derive(Debug, Eq, PartialEq)]
 pub enum TypedAstType {
     Number,
-    Func(Vec<TypedAstType>, Box<TypedAstType>), // Vec<TypedAstType> -> func args, second TypedAstType -> return type
+    Func(Vec<TypedAstType>, Box<TypedAstType>), // Vec<TypedAstType> -> func args, Box<TypedAstType> -> return type
 }
 
 #[derive(Debug, Eq, PartialEq)]
@@ -53,10 +53,10 @@ impl TypedCallExpr {
 
 #[derive(Debug, Eq, PartialEq)]
 pub enum TypedExpr {
-    CallExpr(TypedAstType, TypedCallExpr), // add(1, 1 + 1)
-    NumExpr(TypedAstType, TypedNumber), // 1
-    NumIdentExpr(TypedAstType, TypedIdent), // x
-    NumAddExpr(TypedAstType, TypedNumber, TypedNumber), // 1 + 2
+    CallExpr(Option<TypedAstType>, TypedCallExpr), // add(1, 1 + 1)
+    NumExpr(Option<TypedAstType>, TypedNumber), // 1
+    NumIdentExpr(Option<TypedAstType>, TypedIdent), // x
+    NumAddExpr(Option<TypedAstType>, TypedNumber, TypedNumber), // 1 + 2
 }
 
 
