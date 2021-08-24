@@ -69,7 +69,22 @@ impl TypeInference {
                     Box::new(self.inference_expr(r))
                 ),
             },
+            Expr::Ident(ident) => self.inference_ident(ident),
             _ => TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(0)) // TODO: 一旦コンパイル通すためこうしてる、ちゃんと作る
+        }
+    }
+
+    fn inference_ident(&self, ident: Ident) -> TypedExpr {
+        let typed_ident  = self.convert_ident_to_typed_ident(ident);
+        let typed_ast_type = self.type_env.get(&typed_ident);
+        match typed_ast_type {
+            Some(typed_ast_type) => {
+                // TODO: 今後Num意外にもたくさんIdentに格納されるものが増えるはずなので増えた際はここで判定処理をする
+                TypedExpr::NumIdentExpr(typed_ast_type.clone(), typed_ident)
+            },
+            None => {
+                panic!("parsing ident is not defined value${:?}", typed_ident);
+            }
         }
     }
 
@@ -141,4 +156,37 @@ mod tests {
 
         assert_eq!(typed_stmts, expected_typed_stmts)
     }
+
+    #[test]
+    fn test_inference_num_ident_expr_stmt(){
+        let stmts = vec![
+            Stmt::var_new(
+                Ident::new("tmp1".to_string()),
+                Some(Types::NumberType),
+                Some(Expr::num_new(10))
+            ),
+            Stmt::expr_new(Expr::ident_new(Ident::new("tmp1".to_string())))
+        ];
+
+        let typed_stmts = inference(stmts);
+
+        let expected_typed_stmts = vec![
+            TypedStmt::VariableDeclaration(
+                TypedVariableDeclaration::new(
+                    TypedIdent::new("tmp1".to_string()),
+                    Some(TypeFlag::NumberType),
+                    Some(TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(10)))
+                )
+            ),
+            TypedStmt::ExprStmt(
+                TypedExpr::NumIdentExpr(
+                    TypedAstType::Number,
+                    TypedIdent::new("tmp1".to_string()),
+                )
+            )
+        ];
+
+        assert_eq!(typed_stmts, expected_typed_stmts)
+    }
+
 }
