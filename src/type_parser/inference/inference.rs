@@ -73,8 +73,31 @@ impl TypeInference {
 
 #[cfg(test)]
 mod tests {
+    use crate::parser::ast::{Stmt, Ident, Types, Expr};
+    use crate::type_parser::inference::inference::inference;
+    use crate::type_parser::typed_ast::{TypedStmt, TypedVariableDeclaration, TypedIdent, TypeFlag, TypedExpr, TypedAstType, TypedNumber};
+
     #[test]
     fn test_inference_var_declaration(){
-        
+        let stmts = vec![Stmt::var_new(
+            Ident::new("tmp1".to_string()),
+            Some(Types::NumberType),
+            Some(Expr::num_new(10))
+        )];
+
+        let typed_stmts = inference(stmts);
+
+        let expected_typed_stmts = vec![
+            TypedStmt::VariableDeclaration(
+                TypedVariableDeclaration::new(
+                    TypedIdent::new("tmp1".to_string()),
+                    Some(TypeFlag::NumberType),
+                    Some(TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(10)))
+                )
+            )
+        ];
+
+        assert_eq!(typed_stmts, expected_typed_stmts)
+
     }
 }
