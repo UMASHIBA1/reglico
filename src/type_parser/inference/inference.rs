@@ -1,4 +1,4 @@
-use crate::parser::ast::{Stmt, Expr, VariableDeclaration, Ident, Types};
+use crate::parser::ast::{Stmt, Expr, VariableDeclaration, Ident, Types, Opcode};
 use crate::type_parser::typed_ast::{TypedStmt, TypedIdent, TypedVariableDeclaration, TypedExpr, TypeFlag, TypedNumber, TypedAstType};
 use std::collections::HashMap;
 
@@ -30,6 +30,7 @@ impl TypeInference {
     fn inference_a_stmt(&self, stmt: Stmt) -> TypedStmt {
         match stmt {
             Stmt::VariableDeclaration(var_decl) => TypedStmt::VariableDeclaration(self.inference_var_declaration(var_decl)),
+            Stmt::ExprStmt(expr_stmt) => TypedStmt::ExprStmt(self.inference_expr(expr_stmt.get_expr())),
             _ => TypedStmt::VariableDeclaration(TypedVariableDeclaration::new(TypedIdent::new("tmp".to_string()), None, None)) // TODO: コンパイル通すため一時的にこうしてる、直す
         }
     }
@@ -51,9 +52,18 @@ impl TypeInference {
         )
     }
 
+
     fn inference_expr(&self, expr: Expr) -> TypedExpr {
         match expr {
             Expr::Num(num) => TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(num.get_num())),
+            Expr::Op(operation) => match operation.get_operation() {
+                // TODO: 後々String等の+演算等も出てくると思うのでここをStrAddExprとかFloatAddExprとか追加する
+                (l, Opcode::Add, r) => TypedExpr::NumAddExpr(
+                    TypedAstType::Number,
+                    Box::new(self.inference_expr(l)),
+                    Box::new(self.inference_expr(r))
+                ),
+            },
             _ => TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(0)) // TODO: 一旦コンパイル通すためこうしてる、ちゃんと作る
         }
     }
@@ -73,7 +83,7 @@ impl TypeInference {
 
 #[cfg(test)]
 mod tests {
-    use crate::parser::ast::{Stmt, Ident, Types, Expr};
+    use crate::parser::ast::{Stmt, Ident, Types, Expr, Opcode};
     use crate::type_parser::inference::inference::inference;
     use crate::type_parser::typed_ast::{TypedStmt, TypedVariableDeclaration, TypedIdent, TypeFlag, TypedExpr, TypedAstType, TypedNumber};
 
@@ -98,6 +108,32 @@ mod tests {
         ];
 
         assert_eq!(typed_stmts, expected_typed_stmts)
+    }
 
+    #[test]
+    fn test_inference_num_add_expr_stmt(){
+        let stmts = vec![
+            Stmt::expr_new(
+                Expr::op_new(
+                    Expr::num_new(1),
+                    Opcode::Add,
+                    Expr::num_new(2),
+                )
+            )
+        ];
+
+        let typed_stmts = inference(stmts);
+
+        let expected_typed_stmts = vec![
+            TypedStmt::ExprStmt(
+                TypedExpr::NumAddExpr(
+                    TypedAstType::Number,
+                    Box::new(TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(1))),
+                    Box::new(TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(2))),
+                )
+            )
+        ];
+
+        assert_eq!(typed_stmts, expected_typed_stmts)
     }
 }

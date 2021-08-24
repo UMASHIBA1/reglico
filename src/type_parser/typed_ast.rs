@@ -56,7 +56,7 @@ pub enum TypedExpr {
     CallExpr(TypedAstType, TypedCallExpr), // add(1, 1 + 1)
     NumExpr(TypedAstType, TypedNumber), // 1
     NumIdentExpr(TypedAstType, TypedIdent), // x
-    NumAddExpr(TypedAstType, TypedNumber, TypedNumber), // 1 + 2
+    NumAddExpr(TypedAstType, Box<TypedExpr>, Box<TypedExpr>), // 1 + 2
 }
 
 

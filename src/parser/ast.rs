@@ -146,6 +146,11 @@ impl Operation {
             r_expr: Box::new(r_expr)
         }
     }
+
+    pub fn get_operation(&self) -> (Expr, Opcode, Expr) {
+        (*self.l_expr.clone(), self.opcode.clone(), *self.r_expr.clone())
+    }
+
 }
 
 #[derive(Debug, Eq, PartialEq, Clone)]
@@ -206,6 +211,10 @@ impl ExprStmt {
         ExprStmt {
             expr
         }
+    }
+
+    pub fn get_expr(&self) -> Expr {
+        self.expr.clone()
     }
 }
 
