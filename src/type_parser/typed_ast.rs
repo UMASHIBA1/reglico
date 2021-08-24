@@ -1,4 +1,6 @@
-#[derive(Debug, Eq, PartialEq)]
+use std::hash::Hash;
+
+#[derive(Debug, Hash, Eq, PartialEq, Clone)]
 pub struct TypedIdent {
     name: String,
 }
@@ -11,13 +13,14 @@ impl TypedIdent {
     }
 }
 
+
 #[derive(Debug, Eq, PartialEq)]
 pub enum TypeFlag {
     NumberType, // x: number
 }
 
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub enum TypedAstType {
     Number,
     Func(Vec<TypedAstType>, Box<TypedAstType>), // Vec<TypedAstType> -> func args, second TypedAstType -> return type
@@ -57,6 +60,25 @@ pub enum TypedExpr {
     NumExpr(TypedAstType, TypedNumber), // 1
     NumIdentExpr(TypedAstType, TypedIdent), // x
     NumAddExpr(TypedAstType, Box<TypedExpr>, Box<TypedExpr>), // 1 + 2
+}
+
+impl TypedExpr {
+    pub fn get_typed_ast_type(&self) -> TypedAstType {
+        match self {
+            TypedExpr::CallExpr(typed_ast_type,_) => {
+                typed_ast_type.clone()
+            },
+            TypedExpr::NumExpr(typed_ast_type,_) => {
+                typed_ast_type.clone()
+            },
+            TypedExpr::NumIdentExpr(typed_ast_type, _) => {
+                typed_ast_type.clone()
+            },
+            TypedExpr::NumAddExpr(typed_ast_type, _, _) => {
+                typed_ast_type.clone()
+            }
+        }
+    }
 }
 
 

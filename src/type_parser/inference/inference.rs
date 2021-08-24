@@ -7,13 +7,13 @@ pub fn inference(stmts: Vec<Stmt>) -> Vec<TypedStmt> {
     TypeInference::inference(stmts)
 }
 
-struct TypeInference {
+struct TypeInference{
     type_env: HashMap<TypedIdent, TypedAstType>
 }
 
 impl TypeInference {
     pub fn inference(stmts: Vec<Stmt>) -> Vec<TypedStmt>{
-        let type_inference = TypeInference::new();
+        let mut type_inference = TypeInference::new();
         let mut typed_stmts = vec![];
         for stmt in stmts {
             typed_stmts.push(type_inference.inference_a_stmt(stmt));
@@ -27,7 +27,7 @@ impl TypeInference {
         }
     }
 
-    fn inference_a_stmt(&self, stmt: Stmt) -> TypedStmt {
+    fn inference_a_stmt(&mut self, stmt: Stmt) -> TypedStmt {
         match stmt {
             Stmt::VariableDeclaration(var_decl) => TypedStmt::VariableDeclaration(self.inference_var_declaration(var_decl)),
             Stmt::ExprStmt(expr_stmt) => TypedStmt::ExprStmt(self.inference_expr(expr_stmt.get_expr())),
@@ -35,16 +35,21 @@ impl TypeInference {
         }
     }
 
-    fn inference_var_declaration(&self, var_decl: VariableDeclaration) -> TypedVariableDeclaration {
+    fn inference_var_declaration(&mut self, var_decl: VariableDeclaration) -> TypedVariableDeclaration {
         let name = self.convert_ident_to_typed_ident(var_decl.get_var_name());
         let type_name = match var_decl.get_type_name() {
             Some(type_flag) => Some(self.convert_type_to_typed_type(type_flag)),
             None => None
         };
         let value = match var_decl.get_value() {
-            Some(expr) => Some(self.inference_expr(expr)),
+            Some(expr) => {
+                let expr_value = self.inference_expr(expr);
+                &self.type_env.insert(name.clone(), expr_value.get_typed_ast_type());
+                Some(expr_value)
+            },
             None => None
         };
+
         TypedVariableDeclaration::new(
             name,
             type_name,
