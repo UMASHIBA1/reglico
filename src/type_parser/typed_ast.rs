@@ -23,7 +23,8 @@ pub enum TypeFlag {
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub enum TypedAstType {
     Number,
-    Func(Vec<TypedAstType>, Option<Box<TypedAstType>>), // Vec<TypedAstType> -> func args, second TypedAstType -> return type
+    Func(Vec<TypedAstType>, Option<Box<TypedAstType>>), // Vec<TypedAstType> -> func args, second TypedAstType -> return type,
+    Void,
 }
 
 #[derive(Debug, Eq, PartialEq, Clone)]

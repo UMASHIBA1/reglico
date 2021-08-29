@@ -144,6 +144,14 @@ impl CallExpr {
             args
         }
     }
+
+    pub fn get_func_name(&self) -> Ident {
+        self.func_name.clone()
+    }
+
+    pub fn get_args(&self) -> Vec<Expr> {
+        self.args.to_vec()
+    }
 }
 
 #[derive(Debug, Eq, PartialEq, Clone)]

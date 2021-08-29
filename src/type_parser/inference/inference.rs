@@ -1,5 +1,5 @@
-use crate::parser::ast::{Stmt, Expr, VariableDeclaration, Ident, Types, Opcode, Func, ReturnStmt};
-use crate::type_parser::typed_ast::{TypedStmt, TypedIdent, TypedVariableDeclaration, TypedExpr, TypeFlag, TypedNumber, TypedAstType, TypedFunc, TypedFuncArg, TypedReturnStmt};
+use crate::parser::ast::{Stmt, Expr, VariableDeclaration, Ident, Types, Opcode, Func, ReturnStmt, CallExpr};
+use crate::type_parser::typed_ast::{TypedStmt, TypedIdent, TypedVariableDeclaration, TypedExpr, TypeFlag, TypedNumber, TypedAstType, TypedFunc, TypedFuncArg, TypedReturnStmt, TypedCallExpr};
 use std::collections::HashMap;
 
 // inference したいところ ->
@@ -73,9 +73,48 @@ impl TypeInference {
                     Box::new(self.inference_expr(r))
                 ),
             },
+            Expr::Call(call_expr) => self.inference_call(call_expr),
             Expr::Ident(ident) => self.inference_ident(ident),
             _ => TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(0)) // TODO: 一旦コンパイル通すためこうしてる、ちゃんと作る
         }
+    }
+
+    fn inference_call(&self, call_expr: CallExpr) -> TypedExpr {
+        let func_name = call_expr.get_func_name();
+        let args = call_expr.get_args();
+
+        let typed_func_name = self.convert_ident_to_typed_ident(func_name);
+
+        let typed_ast_type = self.type_env.get(&typed_func_name);
+
+        let mut typed_args = vec![];
+        for arg in args {
+            typed_args.push(self.inference_expr(arg));
+        }
+
+
+
+        let func_return_ast_type = match typed_ast_type {
+            Some(typed_ast_type) => {
+                match typed_ast_type {
+                    TypedAstType::Func(_, return_type) => {
+                        match return_type {
+                            Some(return_type) => return_type,
+                            None => panic!("in type_parsing call, the calling func is not valid"),
+                        }
+                    },
+                    _ => panic!("parsing call is not call func: {:?}", typed_ast_type)
+                }
+            },
+            None => panic!("parsing call is not defined value{:?}", &typed_func_name)
+        };
+
+        let typed_call_expr = TypedCallExpr::new(
+            typed_func_name,
+            typed_args
+        );
+
+        TypedExpr::CallExpr(*func_return_ast_type.clone(), typed_call_expr)
     }
 
     fn inference_func(&mut self, func: Func) -> TypedFunc {
@@ -116,7 +155,7 @@ impl TypeInference {
                 Some(typed_return_stmt) => {
                     Some(Box::new(typed_return_stmt.get_expr().get_typed_ast_type()))
                 },
-                None => None
+                None => Some(Box::new(TypedAstType::Void)),
             }
         };
 
@@ -188,7 +227,7 @@ impl TypeInference {
 mod tests {
     use crate::parser::ast::{Stmt, Ident, Types, Expr, Opcode, FuncArg, ReturnStmt};
     use crate::type_parser::inference::inference::inference;
-    use crate::type_parser::typed_ast::{TypedStmt, TypedVariableDeclaration, TypedIdent, TypeFlag, TypedExpr, TypedAstType, TypedNumber, TypedFunc, TypedFuncArg, TypedReturnStmt};
+    use crate::type_parser::typed_ast::{TypedStmt, TypedVariableDeclaration, TypedIdent, TypeFlag, TypedExpr, TypedAstType, TypedNumber, TypedFunc, TypedFuncArg, TypedReturnStmt, TypedCallExpr};
 
     #[test]
     fn test_inference_var_declaration(){
@@ -321,5 +360,74 @@ mod tests {
 
         assert_eq!(typed_stmts, expected_typed_stmts)
     }
+
+    #[test]
+    fn test_inference_call(){
+        let stmts = vec![
+            Stmt::func_new(
+                Ident::new("add".to_string()),
+                vec![
+                    FuncArg::new(Ident::new("a".to_string()), Types::NumberType),
+                    FuncArg::new(Ident::new("b".to_string()), Types::NumberType),
+                ],
+                vec![],
+                Some(
+                    ReturnStmt::new(
+                        Expr::op_new(
+                            Expr::ident_new(Ident::new("a".to_string())),
+                            Opcode::Add,
+                            Expr::ident_new(Ident::new("b".to_string())),
+                        )
+                    )
+                )
+            ),
+            Stmt::expr_new(
+                Expr::call_new(
+                    Ident::new("add".to_string()),
+                    vec![Expr::num_new(1), Expr::num_new(2)]
+                )
+            )
+        ];
+
+        let typed_stmts = inference(stmts);
+
+        let expected_typed_stmts = vec![
+            TypedStmt::Func(
+                TypedFunc::new(
+                    TypedIdent::new("add".to_string()),
+
+                    vec![
+                        TypedFuncArg::new(TypedIdent::new("a".to_string()), TypeFlag::NumberType),
+                        TypedFuncArg::new(TypedIdent::new("b".to_string()), TypeFlag::NumberType),
+                    ],
+                    vec![],
+                    Some(
+                        TypedReturnStmt::new(
+                            TypedExpr::NumAddExpr(
+                                TypedAstType::Number,
+                                Box::new(TypedExpr::NumIdentExpr(TypedAstType::Number, TypedIdent::new("a".to_string()))),
+                                Box::new(TypedExpr::NumIdentExpr(TypedAstType::Number, TypedIdent::new("b".to_string()))),
+                            )
+                        )
+                    )
+                )
+            ),
+            TypedStmt::ExprStmt(
+                TypedExpr::CallExpr(
+                    TypedAstType::Number,
+                    TypedCallExpr::new(
+                        TypedIdent::new("add".to_string()),
+                        vec![
+                            TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(1)),
+                            TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(2)),
+                        ]
+                    )
+                )
+            )
+        ];
+
+        assert_eq!(typed_stmts, expected_typed_stmts)
+    }
+
 
 }
