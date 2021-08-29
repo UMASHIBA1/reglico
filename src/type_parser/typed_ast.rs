@@ -14,7 +14,7 @@ impl TypedIdent {
 }
 
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub enum TypeFlag {
     NumberType, // x: number
 }
@@ -112,6 +112,15 @@ impl TypedFuncArg {
             arg_type,
         }
     }
+
+    pub fn get_name(&self) -> TypedIdent {
+        self.name.clone()
+    }
+
+    pub fn get_arg_type(&self) -> TypeFlag {
+        self.arg_type.clone()
+    }
+
 }
 
 #[derive(Debug, Eq, PartialEq)]

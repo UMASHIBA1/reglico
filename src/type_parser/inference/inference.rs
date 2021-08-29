@@ -84,17 +84,8 @@ impl TypeInference {
         let stmts =  func.get_stmts();
         let return_stmt = func.get_return_stmt();
         let mut arg_typed_ast_type = vec![];
-        let typed_return_stmt =  self.convert_return_stmt_to_typed_return_stmt(return_stmt);
 
-        let return_typed_ast_type = {
-            match &typed_return_stmt {
-                Some(typed_return_stmt) => {
-                    Some(Box::new(typed_return_stmt.get_expr().get_typed_ast_type()))
-                },
-                None => None
-            }
-        };
-
+        // NOTE: inference args type
         let mut typed_args = vec![];
         for arg in args {
             let arg_type = arg.get_arg_type();
@@ -112,12 +103,36 @@ impl TypeInference {
             );
         };
 
+        // NOTE: add arg type to type_env
+        for (i, typed_arg) in typed_args.iter().enumerate() {
+            self.type_env.insert(typed_arg.get_name(), arg_typed_ast_type.get(i).unwrap().clone());
+        };
+        println!("{:?}", self.type_env);
+
+        // inference return type
+        let typed_return_stmt =  self.convert_return_stmt_to_typed_return_stmt(return_stmt);
+        let return_typed_ast_type = {
+            match &typed_return_stmt {
+                Some(typed_return_stmt) => {
+                    Some(Box::new(typed_return_stmt.get_expr().get_typed_ast_type()))
+                },
+                None => None
+            }
+        };
+
         self.type_env.insert(name.clone(), TypedAstType::Func(arg_typed_ast_type, return_typed_ast_type));
+
+        let func_stmts = TypeInference::inference(stmts, Some(&self.type_env));
+
+        // NOTE: remove arg env from type_env
+        for typed_arg in &typed_args {
+            self.type_env.remove(&typed_arg.get_name());
+        };
 
         TypedFunc::new(
             name,
             typed_args,
-            TypeInference::inference(stmts, Some(&self.type_env)),
+            func_stmts,
             typed_return_stmt
         )
 
@@ -260,16 +275,6 @@ mod tests {
     #[test]
     fn test_inference_func(){
         let stmts = vec![
-            Stmt::var_new(
-                Ident::new("a".to_string()),
-                Some(Types::NumberType),
-                Some(Expr::num_new(10))
-            ),
-            Stmt::var_new(
-                Ident::new("b".to_string()),
-                Some(Types::NumberType),
-                Some(Expr::num_new(10))
-            ),
             Stmt::func_new(
                 Ident::new("add".to_string()),
                 vec![
@@ -292,20 +297,6 @@ mod tests {
         let typed_stmts = inference(stmts);
 
         let expected_typed_stmts = vec![
-            TypedStmt::VariableDeclaration(
-                TypedVariableDeclaration::new(
-                    TypedIdent::new("a".to_string()),
-                    Some(TypeFlag::NumberType),
-                    Some(TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(10)))
-                )
-            ),
-            TypedStmt::VariableDeclaration(
-                TypedVariableDeclaration::new(
-                    TypedIdent::new("b".to_string()),
-                    Some(TypeFlag::NumberType),
-                    Some(TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(10)))
-                )
-            ),
             TypedStmt::Func(
                 TypedFunc::new(
                     TypedIdent::new("add".to_string()),
