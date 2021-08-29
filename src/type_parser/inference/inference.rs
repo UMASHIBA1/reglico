@@ -75,7 +75,6 @@ impl TypeInference {
             },
             Expr::Call(call_expr) => self.inference_call(call_expr),
             Expr::Ident(ident) => self.inference_ident(ident),
-            _ => TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(0)) // TODO: 一旦コンパイル通すためこうしてる、ちゃんと作る
         }
     }
 
