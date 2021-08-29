@@ -16,7 +16,7 @@ impl Ident {
 
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub struct VariableDeclaration {
     name: Ident,
     type_name: Option<Types>,
@@ -51,7 +51,7 @@ pub enum Types {
     NumberType,
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub struct FuncArg {
     name: Ident,
     arg_type: Types,
@@ -64,9 +64,17 @@ impl FuncArg {
             arg_type,
         }
     }
+
+    pub fn get_name(&self) -> Ident {
+        self.name.clone()
+    }
+
+    pub fn get_arg_type(&self) -> Types {
+        self.arg_type.clone()
+    }
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub struct ReturnStmt {
     expr: Expr,
 }
@@ -77,9 +85,14 @@ impl ReturnStmt {
             expr
         }
     }
+
+    pub fn get_expr(&self) -> Expr {
+        self.expr.clone()
+    }
+
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub struct Func {
     name: Ident,
     args: Vec<FuncArg>,
@@ -96,6 +109,26 @@ impl Func {
             return_stmt,
         }
     }
+
+    pub fn get_name(&self) -> Ident {
+        self.name.clone()
+    }
+
+    pub fn get_func_args(&self) -> Vec<FuncArg> {
+        self.args.to_vec()
+    }
+
+    pub fn get_stmts(&self) -> Vec<Stmt> {
+        self.stmts.to_vec()
+    }
+
+    pub fn get_return_stmt(&self) -> Option<ReturnStmt> {
+        match &self.return_stmt {
+            Some(return_stmt) => Some(return_stmt.clone()),
+            None => None,
+        }
+    }
+
 }
 
 #[derive(Debug, Eq, PartialEq, Clone)]
@@ -201,7 +234,7 @@ pub enum Opcode {
     Add,
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub struct ExprStmt {
     expr: Expr,
 }
@@ -219,7 +252,7 @@ impl ExprStmt {
 }
 
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub enum Stmt {
     VariableDeclaration(VariableDeclaration),
     ExprStmt(ExprStmt),

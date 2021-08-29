@@ -23,10 +23,10 @@ pub enum TypeFlag {
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub enum TypedAstType {
     Number,
-    Func(Vec<TypedAstType>, Box<TypedAstType>), // Vec<TypedAstType> -> func args, second TypedAstType -> return type
+    Func(Vec<TypedAstType>, Option<Box<TypedAstType>>), // Vec<TypedAstType> -> func args, second TypedAstType -> return type
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub struct TypedNumber {
     num: i32
 }
@@ -39,7 +39,7 @@ impl TypedNumber {
     }
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub struct TypedCallExpr {
     func_name: TypedIdent,
     args: Vec<TypedExpr>
@@ -54,7 +54,7 @@ impl TypedCallExpr {
     }
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub enum TypedExpr {
     CallExpr(TypedAstType, TypedCallExpr), // add(1, 1 + 1)
     NumExpr(TypedAstType, TypedNumber), // 1
@@ -125,6 +125,11 @@ impl TypedReturnStmt {
             expr
         }
     }
+
+    pub fn get_expr(&self) -> TypedExpr {
+        self.expr.clone()
+    }
+
 }
 
 #[derive(Debug, Eq, PartialEq)]
@@ -133,6 +138,17 @@ pub struct TypedFunc {
     args: Vec<TypedFuncArg>,
     stmts: Vec<TypedStmt>,
     return_stmt: Option<TypedReturnStmt>,
+}
+
+impl TypedFunc {
+    pub fn new(name: TypedIdent, args: Vec<TypedFuncArg>, stmts: Vec<TypedStmt>, return_stmt: Option<TypedReturnStmt>) -> TypedFunc {
+        TypedFunc {
+            name,
+            args,
+            stmts,
+            return_stmt
+        }
+    }
 }
 
 #[derive(Debug, Eq, PartialEq)]
