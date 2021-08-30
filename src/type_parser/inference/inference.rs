@@ -16,7 +16,7 @@ impl TypeInference {
         let mut type_inference = TypeInference::new(type_env);
         let mut typed_stmts = vec![];
         for stmt in stmts {
-            typed_stmts.push(type_inference.inference_a_stmt(stmt)); //
+            typed_stmts.push(type_inference.inference_a_stmt(stmt));
         };
         typed_stmts
     }
@@ -35,7 +35,6 @@ impl TypeInference {
             Stmt::VariableDeclaration(var_decl) => TypedStmt::VariableDeclaration(self.inference_var_declaration(var_decl)),
             Stmt::ExprStmt(expr_stmt) => TypedStmt::ExprStmt(self.inference_expr(expr_stmt.get_expr())),
             Stmt::Func(func) => TypedStmt::Func(self.inference_func(func)),
-            _ => TypedStmt::VariableDeclaration(TypedVariableDeclaration::new(TypedIdent::new("tmp".to_string()), None, None)) // TODO: コンパイル通すため一時的にこうしてる、直す
         }
     }
 
