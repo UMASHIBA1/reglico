@@ -41,6 +41,7 @@
    binary
    result
    option
+   void
    
    // array
    aaa = [1,2,3];
