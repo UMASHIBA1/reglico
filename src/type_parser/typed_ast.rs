@@ -42,6 +42,11 @@ impl TypedNumber {
             num
         }
     }
+
+    pub fn get_num(&self) -> i32 {
+        self.num.clone()
+    }
+
 }
 
 #[derive(Debug, Eq, PartialEq, Clone)]
