@@ -2,27 +2,27 @@ use crate::parser::ast::{Stmt, Expr, VariableDeclaration, Ident, Types, Opcode, 
 use crate::type_parser::typed_ast::{TypedStmt, TypedIdent, TypedVariableDeclaration, TypedExpr, TypeFlag, TypedNumber, TypedAstType, TypedFunc, TypedFuncArg, TypedReturnStmt, TypedCallExpr};
 use std::collections::HashMap;
 
-// inference したいところ ->
-pub fn inference(stmts: Vec<Stmt>) -> Vec<TypedStmt> {
-    TypeInference::inference(stmts, None)
+// check_and_inference したいところ ->
+pub fn check_and_inference(stmts: Vec<Stmt>) -> Vec<TypedStmt> {
+    TypeCheckAndInference::check_and_inference(stmts, None)
 }
 
-struct TypeInference{
+struct TypeCheckAndInference {
     type_env: HashMap<TypedIdent, TypedAstType>
 }
 
-impl TypeInference {
-    pub fn inference(stmts: Vec<Stmt>, type_env: Option<&HashMap<TypedIdent, TypedAstType>>) -> Vec<TypedStmt>{
-        let mut type_inference = TypeInference::new(type_env);
+impl TypeCheckAndInference {
+    pub fn check_and_inference(stmts: Vec<Stmt>, type_env: Option<&HashMap<TypedIdent, TypedAstType>>) -> Vec<TypedStmt>{
+        let mut type_inference = TypeCheckAndInference::new(type_env);
         let mut typed_stmts = vec![];
         for stmt in stmts {
-            typed_stmts.push(type_inference.inference_a_stmt(stmt));
+            typed_stmts.push(type_inference.check_and_inference_a_stmt(stmt));
         };
         typed_stmts
     }
 
-    fn new(type_env: Option<&HashMap<TypedIdent, TypedAstType>>) -> TypeInference {
-        TypeInference {
+    fn new(type_env: Option<&HashMap<TypedIdent, TypedAstType>>) -> TypeCheckAndInference {
+        TypeCheckAndInference {
             type_env: match type_env {
                 Some(env) => env.clone(),
                 None => HashMap::new(),
@@ -30,15 +30,15 @@ impl TypeInference {
         }
     }
 
-    fn inference_a_stmt(&mut self, stmt: Stmt) -> TypedStmt {
+    fn check_and_inference_a_stmt(&mut self, stmt: Stmt) -> TypedStmt {
         match stmt {
-            Stmt::VariableDeclaration(var_decl) => TypedStmt::VariableDeclaration(self.inference_var_declaration(var_decl)),
-            Stmt::ExprStmt(expr_stmt) => TypedStmt::ExprStmt(self.inference_expr(expr_stmt.get_expr())),
-            Stmt::Func(func) => TypedStmt::Func(self.inference_func(func)),
+            Stmt::VariableDeclaration(var_decl) => TypedStmt::VariableDeclaration(self.check_and_inference_var_declaration(var_decl)),
+            Stmt::ExprStmt(expr_stmt) => TypedStmt::ExprStmt(self.check_and_inference_expr(expr_stmt.get_expr())),
+            Stmt::Func(func) => TypedStmt::Func(self.check_and_inference_func(func)),
         }
     }
 
-    fn inference_var_declaration(&mut self, var_decl: VariableDeclaration) -> TypedVariableDeclaration {
+    fn check_and_inference_var_declaration(&mut self, var_decl: VariableDeclaration) -> TypedVariableDeclaration {
         let name = self.convert_ident_to_typed_ident(var_decl.get_var_name());
         let type_name = match var_decl.get_type_name() {
             Some(type_flag) => Some(self.convert_type_to_typed_type(type_flag)),
@@ -46,7 +46,7 @@ impl TypeInference {
         };
         let value = match var_decl.get_value() {
             Some(expr) => {
-                let expr_value = self.inference_expr(expr);
+                let expr_value = self.check_and_inference_expr(expr);
                 &self.type_env.insert(name.clone(), expr_value.get_typed_ast_type());
                 Some(expr_value)
             },
@@ -61,23 +61,23 @@ impl TypeInference {
     }
 
 
-    fn inference_expr(&self, expr: Expr) -> TypedExpr {
+    fn check_and_inference_expr(&self, expr: Expr) -> TypedExpr {
         match expr {
             Expr::Num(num) => TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(num.get_num())),
             Expr::Op(operation) => match operation.get_operation() {
                 // TODO: 後々String等の+演算等も出てくると思うのでここをStrAddExprとかFloatAddExprとか追加する
                 (l, Opcode::Add, r) => TypedExpr::NumAddExpr(
                     TypedAstType::Number,
-                    Box::new(self.inference_expr(l)),
-                    Box::new(self.inference_expr(r))
+                    Box::new(self.check_and_inference_expr(l)),
+                    Box::new(self.check_and_inference_expr(r))
                 ),
             },
-            Expr::Call(call_expr) => self.inference_call(call_expr),
-            Expr::Ident(ident) => self.inference_ident(ident),
+            Expr::Call(call_expr) => self.check_and_inference_call(call_expr),
+            Expr::Ident(ident) => self.check_and_inference_ident(ident),
         }
     }
 
-    fn inference_call(&self, call_expr: CallExpr) -> TypedExpr {
+    fn check_and_inference_call(&self, call_expr: CallExpr) -> TypedExpr {
         let func_name = call_expr.get_func_name();
         let args = call_expr.get_args();
 
@@ -87,7 +87,7 @@ impl TypeInference {
 
         let mut typed_args = vec![];
         for arg in args {
-            typed_args.push(self.inference_expr(arg));
+            typed_args.push(self.check_and_inference_expr(arg));
         }
 
 
@@ -115,14 +115,14 @@ impl TypeInference {
         TypedExpr::CallExpr(*func_return_ast_type.clone(), typed_call_expr)
     }
 
-    fn inference_func(&mut self, func: Func) -> TypedFunc {
+    fn check_and_inference_func(&mut self, func: Func) -> TypedFunc {
         let name = self.convert_ident_to_typed_ident(func.get_name());
         let args = func.get_func_args();
         let stmts =  func.get_stmts();
         let return_stmt = func.get_return_stmt();
         let mut arg_typed_ast_type = vec![];
 
-        // NOTE: inference args type
+        // NOTE: check_and_inference args type
         let mut typed_args = vec![];
         for arg in args {
             let arg_type = arg.get_arg_type();
@@ -146,7 +146,7 @@ impl TypeInference {
         };
         println!("{:?}", self.type_env);
 
-        // inference return type
+        // check_and_inference return type
         let typed_return_stmt =  self.convert_return_stmt_to_typed_return_stmt(return_stmt);
         let return_typed_ast_type = {
             match &typed_return_stmt {
@@ -159,7 +159,7 @@ impl TypeInference {
 
         self.type_env.insert(name.clone(), TypedAstType::Func(arg_typed_ast_type, return_typed_ast_type));
 
-        let func_stmts = TypeInference::inference(stmts, Some(&self.type_env));
+        let func_stmts = TypeCheckAndInference::check_and_inference(stmts, Some(&self.type_env));
 
         // NOTE: remove arg env from type_env
         for typed_arg in &typed_args {
@@ -175,7 +175,7 @@ impl TypeInference {
 
     }
 
-    fn inference_ident(&self, ident: Ident) -> TypedExpr {
+    fn check_and_inference_ident(&self, ident: Ident) -> TypedExpr {
         let typed_ident  = self.convert_ident_to_typed_ident(ident);
         let typed_ast_type = self.type_env.get(&typed_ident);
         match typed_ast_type {
@@ -193,7 +193,7 @@ impl TypeInference {
         match return_stmt {
             Some(return_stmt) => {
                   Some(TypedReturnStmt::new(
-                      self.inference_expr(return_stmt.get_expr()),
+                      self.check_and_inference_expr(return_stmt.get_expr()),
                   ))
             },
             None => None
@@ -224,7 +224,7 @@ impl TypeInference {
 #[cfg(test)]
 mod tests {
     use crate::parser::ast::{Stmt, Ident, Types, Expr, Opcode, FuncArg, ReturnStmt};
-    use crate::type_parser::inference::inference::inference;
+    use crate::type_parser::check_and_inference::check_and_inference::check_and_inference;
     use crate::type_parser::typed_ast::{TypedStmt, TypedVariableDeclaration, TypedIdent, TypeFlag, TypedExpr, TypedAstType, TypedNumber, TypedFunc, TypedFuncArg, TypedReturnStmt, TypedCallExpr};
 
     #[test]
@@ -235,7 +235,7 @@ mod tests {
             Some(Expr::num_new(10))
         )];
 
-        let typed_stmts = inference(stmts);
+        let typed_stmts = check_and_inference(stmts);
 
         let expected_typed_stmts = vec![
             TypedStmt::VariableDeclaration(
@@ -262,7 +262,7 @@ mod tests {
             )
         ];
 
-        let typed_stmts = inference(stmts);
+        let typed_stmts = check_and_inference(stmts);
 
         let expected_typed_stmts = vec![
             TypedStmt::ExprStmt(
@@ -288,7 +288,7 @@ mod tests {
             Stmt::expr_new(Expr::ident_new(Ident::new("tmp1".to_string())))
         ];
 
-        let typed_stmts = inference(stmts);
+        let typed_stmts = check_and_inference(stmts);
 
         let expected_typed_stmts = vec![
             TypedStmt::VariableDeclaration(
@@ -331,7 +331,7 @@ mod tests {
             ),
         ];
 
-        let typed_stmts = inference(stmts);
+        let typed_stmts = check_and_inference(stmts);
 
         let expected_typed_stmts = vec![
             TypedStmt::Func(
@@ -387,7 +387,7 @@ mod tests {
             )
         ];
 
-        let typed_stmts = inference(stmts);
+        let typed_stmts = check_and_inference(stmts);
 
         let expected_typed_stmts = vec![
             TypedStmt::Func(
