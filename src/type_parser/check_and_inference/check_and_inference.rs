@@ -2,7 +2,6 @@ use crate::parser::ast::{Stmt, Expr, VariableDeclaration, Ident, Types, Opcode, 
 use crate::type_parser::typed_ast::{TypedStmt, TypedIdent, TypedVariableDeclaration, TypedExpr, TypeFlag, TypedNumber, TypedAstType, TypedFunc, TypedFuncArg, TypedReturnStmt, TypedCallExpr};
 use std::collections::HashMap;
 
-// check_and_inference したいところ ->
 pub fn check_and_inference(stmts: Vec<Stmt>) -> Vec<TypedStmt> {
     TypeCheckAndInference::check_and_inference(stmts, None)
 }
