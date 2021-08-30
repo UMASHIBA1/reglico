@@ -11,6 +11,10 @@ impl TypedIdent {
             name: ident_name
         }
     }
+
+    pub fn get_name(&self) -> String {
+        self.name.clone()
+    }
 }
 
 
@@ -97,6 +101,18 @@ impl TypedVariableDeclaration {
             type_name,
             value,
         }
+    }
+
+    pub fn get_name(&self) -> TypedIdent {
+        self.name.clone()
+    }
+
+    pub fn get_type_name(&self) -> Option<TypeFlag> {
+        self.type_name.clone()
+    }
+
+    pub fn get_value(&self) -> Option<TypedExpr> {
+        self.value.clone()
     }
 }
 
