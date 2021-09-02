@@ -11,7 +11,7 @@ use std::collections::HashMap;
 //  ```
 //  ↓
 //  ```rust
-//  fn add(a: number, b: number) {
+//  fn add(a: i32, b: i32) {
 //      a + b
 //  }
 //  let total = add(1,2);
@@ -61,8 +61,8 @@ impl ToRust {
         match value {
             Some(typed_expr) => {
                 match type_name {
-                    Some(type_flag) => format!("let {}: {} = {};", name, self.type_flag_to_rust(type_flag), self.expr_to_rust(typed_expr)),
-                    None => format!("let {} = {};", name, self.expr_to_rust(typed_expr)),
+                    Some(type_flag) => format!("let {}:{}={};", name, self.type_flag_to_rust(type_flag), self.expr_to_rust(typed_expr)),
+                    None => format!("let {}={};", name, self.expr_to_rust(typed_expr)),
                 }
             },
             None => format!("let mut {};", name),
@@ -80,7 +80,7 @@ impl ToRust {
                     panic!("specified ident `{}` does not defined or initialized.", ident.get_name());
                 }
             },
-            TypedExpr::NumAddExpr(_, l, r) => format!("{} + {}", self.expr_to_rust(*l), self.expr_to_rust(*r)),
+            TypedExpr::NumAddExpr(_, l, r) => format!("{}+{}", self.expr_to_rust(*l), self.expr_to_rust(*r)),
             TypedExpr::CallExpr(_, call) => self.call_expr_to_rust(call)
         }
     }
@@ -100,12 +100,13 @@ impl ToRust {
                                         let mut str_args: String;
 
                                         let first_arg = args.get(0);
-                                        args.iter().next();
+                                        let mut args_iter = args.iter();
+                                        args_iter.next();
                                         match first_arg {
                                             Some(arg) => {
                                                 str_args = self.expr_to_rust(arg.clone());
-                                                for arg in args {
-                                                    str_args = format!("{}, {}", str_args, self.expr_to_rust(arg.clone()));
+                                                for arg in args_iter {
+                                                    str_args = format!("{},{}", str_args, self.expr_to_rust(arg.clone()));
                                                 }
                                                 str_args
                                             },
@@ -157,14 +158,15 @@ impl ToRust {
             let first_arg = &args.get(0);
             match first_arg {
                 Some(first_arg) => {
-                    args_str = format!("{}: {}", first_arg.get_name().get_name(), self.type_flag_to_rust(first_arg.get_arg_type()));
-                    args.iter().next();
+                    args_str = format!("{}:{}", first_arg.get_name().get_name(), self.type_flag_to_rust(first_arg.get_arg_type()));
+                    let mut args_iter = args.iter();
+                    args_iter.next();
 
-                    for typed_func_arg in &args {
-                        let arg = format!("{}: {}",
+                    for typed_func_arg in args_iter {
+                        let arg = format!("{}:{}",
                                           typed_func_arg.get_name().get_name(),
                                           self.type_flag_to_rust(typed_func_arg.get_arg_type()));
-                        args_str = format!("{}, {}", args_str, arg);
+                        args_str = format!("{},{}", args_str, arg);
                     }
                 },
                 None => {
@@ -177,17 +179,18 @@ impl ToRust {
         let stmts_str = {
             let mut stmts_str = "".to_string();
             for stmt in stmts {
-                stmts_str = format!("{}\n{}", stmts_str, self.to_rust(stmt));
+                stmts_str = format!("{}{}", stmts_str, self.to_rust(stmt));
             }
             stmts_str
         };
 
-        let return_stmt_str = {
+        let (return_type, return_stmt_str) = {
             match &return_stmt {
                 Some(typed_return_stmt) => {
-                    Some(self.return_stmt_to_rust(typed_return_stmt))
+                    let (return_type, return_stmt_str) = self.return_stmt_to_rust(typed_return_stmt);
+                    (return_type, Some(return_stmt_str))
                 },
-                None => None
+                None => ("()".to_string(), None)
             }
         };
 
@@ -196,32 +199,34 @@ impl ToRust {
         }
         match return_stmt_str {
             Some(return_stmt_str) => {
-                format!("
-                fn {} ({}){{
-                    {}
-                }}
-                {}
-                ", name.get_name(), args_str, stmts_str, return_stmt_str
+                format!("fn {}({})->{}{{{}{}}}", name.get_name(), args_str, return_type, stmts_str, return_stmt_str
                 )
             },
             None => {
-                format!("
-                fn {} ({}){{
-                    {}
-                }}
-                ", name.get_name(), args_str, stmts_str
-                )
+                format!("fn {}({})->(){{{}}}", name.get_name(), args_str, stmts_str)
             },
         }
     }
 
-    fn return_stmt_to_rust(&self, return_stmt: &TypedReturnStmt) -> String {
-        self.expr_to_rust(return_stmt.get_expr())
+    fn return_stmt_to_rust(&self, return_stmt: &TypedReturnStmt) -> (String, String) {
+        let expr = return_stmt.get_expr();
+        (
+            self.typed_ast_type_to_rust(expr.get_typed_ast_type()),
+            self.expr_to_rust(expr)
+        )
     }
 
     fn type_flag_to_rust(&self, type_flag: TypeFlag) -> String {
         match type_flag {
             TypeFlag::NumberType => "i32".to_string()
+        }
+    }
+
+    fn typed_ast_type_to_rust(&self, typed_ast_type: TypedAstType) -> String {
+        match typed_ast_type {
+            TypedAstType::Number => "i32".to_string(),
+            TypedAstType::Void => "()".to_string(),
+            _ => "()".to_string() // TODO: Funcの型生成するの面倒くさいので後回しにしてます、あとでやりましょう！
         }
     }
 
@@ -293,16 +298,11 @@ mod tests {
 
         let mut to_rust = ToRust::new();
         for stmt in typed_stmts {
-            rust_code = format!("{}\n{}", rust_code, to_rust.to_rust(stmt));
+            rust_code = format!("{}{}", rust_code, to_rust.to_rust(stmt));
         }
 
 
-        let expected_rust_code = "
-        fn add(a: number, b: number) {
-            a + b
-        }
-        let total = add(1,2);
-        ";
+        let expected_rust_code = "fn add(a:i32,b:i32)->i32{a+b}let total=add(1,2);";
 
         assert_eq!(rust_code, expected_rust_code)
 
