@@ -1,4 +1,4 @@
-use crate::type_parser::typed_ast::{TypedStmt, TypedVariableDeclaration, TypedExpr, TypeFlag, TypedIdent, TypedFunc, TypedReturnStmt, TypedCallExpr};
+use crate::type_parser::typed_ast::{TypedStmt, TypedVariableDeclaration, TypedExpr, TypeFlag, TypedIdent, TypedFunc, TypedReturnStmt, TypedCallExpr, TypedAstType, TypedNumber};
 use std::collections::HashMap;
 
 // NOTE: add関数をRustに変換すると
@@ -15,6 +15,7 @@ use std::collections::HashMap;
 //      a + b
 //  }
 //  let total = add(1,2);
+//  ```
 
 #[derive(Debug)]
 enum CanAssignObj {
@@ -27,6 +28,12 @@ struct ToRust {
 }
 
 impl ToRust {
+
+    pub fn new() -> ToRust {
+        ToRust {
+            var_env: HashMap::new(),
+        }
+    }
 
     pub fn to_rust(&mut self, typed_stmt: TypedStmt) -> String {
         match typed_stmt {
@@ -76,7 +83,6 @@ impl ToRust {
             TypedExpr::NumAddExpr(_, l, r) => format!("{} + {}", self.expr_to_rust(*l), self.expr_to_rust(*r)),
             TypedExpr::CallExpr(_, call) => self.call_expr_to_rust(call)
         }
-        "10".to_string()
     }
 
     fn call_expr_to_rust(&self, typed_call_expr: TypedCallExpr) -> String {
@@ -88,7 +94,7 @@ impl ToRust {
                     match can_assign_obj {
                         Some(can_assign_obj) => {
                             match can_assign_obj {
-                                CanAssignObj::TypedFunc(typed_func) => {
+                                CanAssignObj::TypedFunc(_) => {
                                     let args = {
                                         let args = typed_call_expr.get_args();
                                         let mut str_args: String;
@@ -130,19 +136,31 @@ impl ToRust {
         let stmts = typed_func.get_stmts();
         let return_stmt = typed_func.get_return_stmt();
         self.var_env.insert(
-            name,
+            name.clone(),
             Some(CanAssignObj::TypedFunc(typed_func))
         );
 
+        for arg in &args {
+            self.var_env.insert(
+                arg.get_name(),
+                Some(
+                    CanAssignObj::TypedExpr(
+                        // NOTE: expr_to_rust関数の変数参照を騙すために0を入れてます
+                        TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(0))
+                    )
+                )
+            );
+        }
+
         let args_str = {
             let mut args_str: String;
-            let first_arg = args.get(0);
+            let first_arg = &args.get(0);
             match first_arg {
                 Some(first_arg) => {
                     args_str = format!("{}: {}", first_arg.get_name().get_name(), self.type_flag_to_rust(first_arg.get_arg_type()));
                     args.iter().next();
 
-                    for typed_func_arg in args {
+                    for typed_func_arg in &args {
                         let arg = format!("{}: {}",
                                           typed_func_arg.get_name().get_name(),
                                           self.type_flag_to_rust(typed_func_arg.get_arg_type()));
@@ -164,14 +182,26 @@ impl ToRust {
             stmts_str
         };
 
-        match &return_stmt {
-            Some(typed_return_stmt) => {
+        let return_stmt_str = {
+            match &return_stmt {
+                Some(typed_return_stmt) => {
+                    Some(self.return_stmt_to_rust(typed_return_stmt))
+                },
+                None => None
+            }
+        };
+
+        for arg in &args {
+            self.var_env.remove(&arg.get_name());
+        }
+        match return_stmt_str {
+            Some(return_stmt_str) => {
                 format!("
                 fn {} ({}){{
                     {}
                 }}
                 {}
-                ", name.get_name(), args_str, stmts_str, self.return_stmt_to_rust(typed_return_stmt)
+                ", name.get_name(), args_str, stmts_str, return_stmt_str
                 )
             },
             None => {
@@ -210,3 +240,73 @@ impl ToRust {
 
 }
 
+
+
+#[cfg(test)]
+mod tests {
+    use crate::type_parser::typed_ast::{TypedStmt, TypedIdent, TypedFunc, TypedFuncArg, TypeFlag, TypedReturnStmt, TypedAstType, TypedCallExpr, TypedNumber, TypedExpr, TypedVariableDeclaration};
+    use crate::to_js_rust::to_rust::to_rust::ToRust;
+
+    #[test]
+    fn test_add_func() {
+        let typed_stmts = vec![
+            TypedStmt::Func(
+                TypedFunc::new(
+                    TypedIdent::new("add".to_string()),
+                    vec![
+                        TypedFuncArg::new(TypedIdent::new("a".to_string()), TypeFlag::NumberType),
+                        TypedFuncArg::new(TypedIdent::new("b".to_string()), TypeFlag::NumberType),
+                    ],
+                    vec![],
+                    Some(
+                        TypedReturnStmt::new(
+                            TypedExpr::NumAddExpr(
+                                TypedAstType::Number,
+                                Box::new(TypedExpr::NumIdentExpr(TypedAstType::Number, TypedIdent::new("a".to_string()))),
+                                Box::new(TypedExpr::NumIdentExpr(TypedAstType::Number, TypedIdent::new("b".to_string()))),
+                            )
+                        )
+                    )
+                )
+            ),
+            TypedStmt::VariableDeclaration(
+                TypedVariableDeclaration::new(
+                    TypedIdent::new(
+                        "total".to_string()),
+                    None,
+                    Some(TypedExpr::CallExpr(
+                        TypedAstType::Number,
+                        TypedCallExpr::new(
+                            TypedIdent::new("add".to_string()),
+                            vec![
+                                TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(1)),
+                                TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(2)),
+                            ]
+                        )
+                    ))
+                )
+            )
+        ];
+
+
+        let mut rust_code = "".to_string();
+
+        let mut to_rust = ToRust::new();
+        for stmt in typed_stmts {
+            rust_code = format!("{}\n{}", rust_code, to_rust.to_rust(stmt));
+        }
+
+
+        let expected_rust_code = "
+        fn add(a: number, b: number) {
+            a + b
+        }
+        let total = add(1,2);
+        ";
+
+        assert_eq!(rust_code, expected_rust_code)
+
+
+    }
+
+}

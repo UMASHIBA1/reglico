@@ -101,7 +101,7 @@ impl TypedExpr {
 }
 
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub struct TypedVariableDeclaration {
     name: TypedIdent,
     type_name: Option<TypeFlag>,
@@ -130,7 +130,7 @@ impl TypedVariableDeclaration {
     }
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub struct TypedFuncArg {
     name: TypedIdent,
     arg_type: TypeFlag,
@@ -172,7 +172,7 @@ impl TypedReturnStmt {
 
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub struct TypedFunc {
     name: TypedIdent,
     args: Vec<TypedFuncArg>,
@@ -209,7 +209,7 @@ impl TypedFunc {
 
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub enum TypedStmt {
     VariableDeclaration(TypedVariableDeclaration),
     ExprStmt(TypedExpr),
