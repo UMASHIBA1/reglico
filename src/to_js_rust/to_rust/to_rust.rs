@@ -1,4 +1,4 @@
-use crate::type_parser::typed_ast::{TypedStmt, TypedVariableDeclaration, TypedExpr, TypeFlag, TypedIdent, TypedFunc, TypedReturnStmt};
+use crate::type_parser::typed_ast::{TypedStmt, TypedVariableDeclaration, TypedExpr, TypeFlag, TypedIdent, TypedFunc, TypedReturnStmt, TypedCallExpr};
 use std::collections::HashMap;
 
 // NOTE: add関数をRustに変換すると
@@ -16,6 +16,7 @@ use std::collections::HashMap;
 //  }
 //  let total = add(1,2);
 
+#[derive(Debug)]
 enum CanAssignObj {
     TypedFunc(TypedFunc),
     TypedExpr(TypedExpr),
@@ -62,7 +63,6 @@ impl ToRust {
     }
 
 
-    // TODO: 後でちゃんとしたもの作る
     fn expr_to_rust(&self, typed_expr: TypedExpr) -> String {
         match typed_expr {
             TypedExpr::NumExpr(_, num) =>  format!("{}", num.get_num()),
@@ -70,13 +70,57 @@ impl ToRust {
                 if self.is_exist_ident(&ident) {
                     ident.get_name()
                 } else {
-                    panic!("specified ident `{}` is not defined or initialized.", ident.get_name())
+                    panic!("specified ident `{}` does not defined or initialized.", ident.get_name());
                 }
             },
             TypedExpr::NumAddExpr(_, l, r) => format!("{} + {}", self.expr_to_rust(*l), self.expr_to_rust(*r)),
-            _ => "".to_string() // TODO: call 作る
+            TypedExpr::CallExpr(_, call) => self.call_expr_to_rust(call)
         }
         "10".to_string()
+    }
+
+    fn call_expr_to_rust(&self, typed_call_expr: TypedCallExpr) -> String {
+        let func_name = typed_call_expr.get_func_name();
+        if self.is_exist_ident(&func_name) {
+            let ident_value = self.var_env.get(&func_name);
+            match ident_value {
+                Some(can_assign_obj) => {
+                    match can_assign_obj {
+                        Some(can_assign_obj) => {
+                            match can_assign_obj {
+                                CanAssignObj::TypedFunc(typed_func) => {
+                                    let args = {
+                                        let args = typed_call_expr.get_args();
+                                        let mut str_args: String;
+
+                                        let first_arg = args.get(0);
+                                        args.iter().next();
+                                        match first_arg {
+                                            Some(arg) => {
+                                                str_args = self.expr_to_rust(arg.clone());
+                                                for arg in args {
+                                                    str_args = format!("{}, {}", str_args, self.expr_to_rust(arg.clone()));
+                                                }
+                                                str_args
+                                            },
+                                            None => "".to_string()
+                                        }
+
+                                    };
+
+                                    format!("{}({})", func_name.get_name(), args)
+                                },
+                                _ => panic!("specified variable `{}` does not func. this is {:?}", func_name.get_name(), can_assign_obj)
+                            }
+                        },
+                        None => panic!("specified func `{}` does not defined or initialized", func_name.get_name())
+                    }
+                },
+                None => panic!("specified func `{}` does not defined or initialized", func_name.get_name())
+            }
+        } else {
+            panic!("specified func `{}` does not defined or initialized", func_name.get_name());
+        }
     }
 
 

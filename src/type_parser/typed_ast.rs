@@ -62,6 +62,15 @@ impl TypedCallExpr {
             args
         }
     }
+
+    pub fn get_func_name(&self) -> TypedIdent {
+        self.func_name.clone()
+    }
+
+    pub fn get_args(&self) -> Vec<TypedExpr> {
+        self.args.to_vec()
+    }
+
 }
 
 #[derive(Debug, Eq, PartialEq, Clone)]
