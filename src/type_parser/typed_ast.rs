@@ -145,7 +145,7 @@ impl TypedFuncArg {
 
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub struct TypedReturnStmt {
     expr: TypedExpr,
 }
@@ -180,6 +180,24 @@ impl TypedFunc {
             return_stmt
         }
     }
+
+    pub fn get_name(&self) -> TypedIdent {
+        self.name.clone()
+    }
+
+    pub fn get_args(&self) -> Vec<TypedFuncArg> {
+        self.args.to_vec()
+    }
+
+    pub fn get_stmts(&self) -> Vec<TypedStmt> {
+        self.stmts.to_vec()
+    }
+
+    pub fn get_return_stmt(&self) -> Option<TypedReturnStmt> {
+        self.return_stmt.clone()
+    }
+
+
 }
 
 #[derive(Debug, Eq, PartialEq)]
