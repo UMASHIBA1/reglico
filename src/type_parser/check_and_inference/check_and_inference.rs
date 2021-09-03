@@ -118,7 +118,7 @@ impl TypeCheckAndInference {
         let name = self.convert_ident_to_typed_ident(func.get_name());
         let args = func.get_func_args();
         let stmts =  func.get_stmts();
-        let return_stmt = func.get_return_stmt();
+        let return_stmt = None; // TODO: astの変更に伴い、get_return_stmtメソッドが消えました。一旦Noneにしますが後でstmtsからReturnTypeを取れるようにします
         let mut arg_typed_ast_type = vec![];
 
         // NOTE: check_and_inference args type
@@ -317,16 +317,15 @@ mod tests {
                     FuncArg::new(Ident::new("a".to_string()), Types::NumberType),
                     FuncArg::new(Ident::new("b".to_string()), Types::NumberType),
                 ],
-                vec![],
-                Some(
+                vec![Stmt::ReturnStmt(
                     ReturnStmt::new(
-                        Expr::op_new(
-                            Expr::ident_new(Ident::new("a".to_string())),
-                            Opcode::Add,
-                            Expr::ident_new(Ident::new("b".to_string())),
-                        )
+                    Expr::op_new(
+                        Expr::ident_new(Ident::new("a".to_string())),
+                        Opcode::Add,
+                        Expr::ident_new(Ident::new("b".to_string())),
                     )
-                )
+                ))
+                ],
             ),
         ];
 
@@ -367,16 +366,16 @@ mod tests {
                     FuncArg::new(Ident::new("a".to_string()), Types::NumberType),
                     FuncArg::new(Ident::new("b".to_string()), Types::NumberType),
                 ],
-                vec![],
-                Some(
-                    ReturnStmt::new(
-                        Expr::op_new(
-                            Expr::ident_new(Ident::new("a".to_string())),
-                            Opcode::Add,
-                            Expr::ident_new(Ident::new("b".to_string())),
+                vec![Stmt::ReturnStmt(
+                        ReturnStmt::new(
+                            Expr::op_new(
+                                Expr::ident_new(Ident::new("a".to_string())),
+                                Opcode::Add,
+                                Expr::ident_new(Ident::new("b".to_string())),
+                            )
                         )
-                    )
-                )
+                )],
+
             ),
             Stmt::expr_new(
                 Expr::call_new(

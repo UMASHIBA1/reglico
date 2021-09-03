@@ -1,22 +1,6 @@
 use crate::type_parser::typed_ast::{TypedStmt, TypedVariableDeclaration, TypedExpr, TypeFlag, TypedIdent, TypedFunc, TypedReturnStmt, TypedCallExpr, TypedAstType, TypedNumber};
 use std::collections::HashMap;
 
-// NOTE: add関数をRustに変換すると
-// ```reglico
-//  fn add(a: number, b: number) {
-//      return a + b;
-//  }
-//
-//  const total = add(1,2);
-//  ```
-//  ↓
-//  ```rust
-//  fn add(a: i32, b: i32) {
-//      a + b
-//  }
-//  let total = add(1,2);
-//  ```
-
 #[derive(Debug)]
 enum CanAssignObj {
     TypedFunc(TypedFunc),

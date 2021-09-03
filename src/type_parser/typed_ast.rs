@@ -213,5 +213,6 @@ impl TypedFunc {
 pub enum TypedStmt {
     VariableDeclaration(TypedVariableDeclaration),
     ExprStmt(TypedExpr),
-    Func(TypedFunc)
+    Func(TypedFunc),
+    ReturnStmt(TypedReturnStmt),
 }

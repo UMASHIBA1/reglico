@@ -191,8 +191,7 @@ mod test {
                     FuncArg::new(Ident::new("a".to_string()), Types::NumberType),
                     FuncArg::new(Ident::new("b".to_string()), Types::NumberType),
                 ],
-                vec![],
-                Some(
+                vec![Stmt::ReturnStmt(
                     ReturnStmt::new(
                         Expr::op_new(
                             Expr::ident_new(Ident::new("a".to_string())),
@@ -200,7 +199,7 @@ mod test {
                             Expr::ident_new(Ident::new("b".to_string())),
                         )
                     )
-                )
+                )],
             ),
             Stmt::var_new(
                 Ident::new("total".to_string()),
@@ -243,8 +242,7 @@ mod test {
                             FuncArg::new(Ident::new("a".to_string()), Types::NumberType),
                             FuncArg::new(Ident::new("b".to_string()), Types::NumberType),
                         ],
-                        vec![],
-                        Some(
+                        vec![Stmt::ReturnStmt(
                             ReturnStmt::new(
                                 Expr::op_new(
                                     Expr::ident_new(Ident::new("a".to_string())),
@@ -252,17 +250,17 @@ mod test {
                                     Expr::ident_new(Ident::new("b".to_string())),
                                 )
                             )
-                        )
+                        )],
                     ),
-                ],
-                Some(
-                    ReturnStmt::new(
-                        Expr::call_new(Ident::new("add2".to_string()), vec![
-                            Expr::ident_new(Ident::new("a".to_string())),
-                            Expr::ident_new(Ident::new("b".to_string())),
-                        ])
+                    Stmt::ReturnStmt(
+                        ReturnStmt::new(
+                            Expr::call_new(Ident::new("add2".to_string()), vec![
+                                Expr::ident_new(Ident::new("a".to_string())),
+                                Expr::ident_new(Ident::new("b".to_string())),
+                            ])
+                        )
                     )
-                )
+                ],
             ),
             Stmt::var_new(
                 Ident::new("total".to_string()),
