@@ -168,8 +168,6 @@ impl TypeCheckAndInference {
             _ => {}
         }
 
-
-
         let return_typed_ast_type = {
             match &typed_return_stmt {
                 Some(typed_return_stmt) => {

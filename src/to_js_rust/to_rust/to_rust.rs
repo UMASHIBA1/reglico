@@ -24,6 +24,7 @@ impl ToRust {
             TypedStmt::VariableDeclaration(var_decl) => self.var_decl_to_rust(var_decl),
             TypedStmt::ExprStmt(typed_expr) => self.expr_to_rust(typed_expr),
             TypedStmt::Func(typed_func) =>  self.func_to_rust(typed_func),
+            TypedStmt::ReturnStmt(return_stmt) => self.return_stmt_to_rust(&return_stmt),
         }
     }
 
@@ -171,7 +172,8 @@ impl ToRust {
         let (return_type, return_stmt_str) = {
             match &return_stmt {
                 Some(typed_return_stmt) => {
-                    let (return_type, return_stmt_str) = self.return_stmt_to_rust(typed_return_stmt);
+                    let return_type = self.typed_ast_type_to_rust(typed_return_stmt.get_return_type());
+                    let return_stmt_str = self.return_stmt_to_rust(typed_return_stmt);
                     (return_type, Some(return_stmt_str))
                 },
                 None => ("()".to_string(), None)
@@ -192,12 +194,9 @@ impl ToRust {
         }
     }
 
-    fn return_stmt_to_rust(&self, return_stmt: &TypedReturnStmt) -> (String, String) {
+    fn return_stmt_to_rust(&self, return_stmt: &TypedReturnStmt) -> String {
         let expr = return_stmt.get_expr();
-        (
-            self.typed_ast_type_to_rust(expr.get_typed_ast_type()),
             self.expr_to_rust(expr)
-        )
     }
 
     fn type_flag_to_rust(&self, type_flag: TypeFlag) -> String {
@@ -213,7 +212,6 @@ impl ToRust {
             _ => "()".to_string() // TODO: Funcの型生成するの面倒くさいので後回しにしてます、あとでやりましょう！
         }
     }
-
 
     fn is_exist_ident(&self, ident: &TypedIdent) -> bool {
         match self.var_env.get(ident) {
