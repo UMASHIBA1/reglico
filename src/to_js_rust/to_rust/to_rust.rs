@@ -13,13 +13,23 @@ struct ToRust {
 
 impl ToRust {
 
-    pub fn new() -> ToRust {
+    pub fn to_rust(typed_stmts: Vec<TypedStmt>) -> String {
+        let mut rust_code = "".to_string();
+
+        let mut to_rust = ToRust::new();
+        for typed_stmt in typed_stmts {
+            rust_code = format!("{}{}", rust_code, to_rust.stmt_to_rust(typed_stmt));
+        };
+        rust_code
+    }
+
+    fn new() -> ToRust {
         ToRust {
             var_env: HashMap::new(),
         }
     }
 
-    pub fn to_rust(&mut self, typed_stmt: TypedStmt) -> String {
+    fn stmt_to_rust(&mut self, typed_stmt: TypedStmt) -> String {
         match typed_stmt {
             TypedStmt::VariableDeclaration(var_decl) => self.var_decl_to_rust(var_decl),
             TypedStmt::ExprStmt(typed_expr) => self.expr_to_rust(typed_expr),
@@ -164,7 +174,7 @@ impl ToRust {
         let stmts_str = {
             let mut stmts_str = "".to_string();
             for stmt in stmts {
-                stmts_str = format!("{}{}", stmts_str, self.to_rust(stmt));
+                stmts_str = format!("{}{}", stmts_str, self.stmt_to_rust(stmt));
             }
             stmts_str
         };
@@ -275,14 +285,7 @@ mod tests {
             )
         ];
 
-
-        let mut rust_code = "".to_string();
-
-        let mut to_rust = ToRust::new();
-        for stmt in typed_stmts {
-            rust_code = format!("{}{}", rust_code, to_rust.to_rust(stmt));
-        }
-
+        let rust_code = ToRust::to_rust(typed_stmts);
 
         let expected_rust_code = "fn add(a:i32,b:i32)->i32{a+b}let total=add(1,2);";
 

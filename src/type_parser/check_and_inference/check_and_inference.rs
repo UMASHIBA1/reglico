@@ -139,12 +139,13 @@ impl TypeCheckAndInference {
             );
         };
 
+        let mut func_type_env = self.type_env.clone();
         // NOTE: add arg type to type_env
         for (i, typed_arg) in typed_args.iter().enumerate() {
-            self.type_env.insert(typed_arg.get_name(), arg_typed_ast_type.get(i).unwrap().clone());
+            func_type_env.insert(typed_arg.get_name(), arg_typed_ast_type.get(i).unwrap().clone());
         };
 
-        let mut func_stmts = TypeCheckAndInference::check_and_inference(stmts, Some(&self.type_env));
+        let mut func_stmts = TypeCheckAndInference::check_and_inference(stmts, Some(&func_type_env));
         let mut typed_return_stmt: Option<TypedReturnStmt> = None;
         let mut return_stmt_index: Option<usize> = None;
             for (i, stmt) in func_stmts.iter().enumerate() {
@@ -178,12 +179,6 @@ impl TypeCheckAndInference {
         };
 
         self.type_env.insert(name.clone(), TypedAstType::Func(arg_typed_ast_type, return_typed_ast_type));
-
-
-        // NOTE: remove arg env from type_env
-        for typed_arg in &typed_args {
-            self.type_env.remove(&typed_arg.get_name());
-        };
 
         TypedFunc::new(
             name,
