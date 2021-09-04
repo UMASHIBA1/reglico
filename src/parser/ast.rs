@@ -97,16 +97,14 @@ pub struct Func {
     name: Ident,
     args: Vec<FuncArg>,
     stmts: Vec<Stmt>,
-    return_stmt: Option<ReturnStmt>,
 }
 
 impl Func {
-    pub fn new(name: Ident, args: Vec<FuncArg>, stmts: Vec<Stmt>, return_stmt: Option<ReturnStmt>) -> Func {
+    pub fn new(name: Ident, args: Vec<FuncArg>, stmts: Vec<Stmt>) -> Func {
         Func {
             name,
             args,
             stmts,
-            return_stmt,
         }
     }
 
@@ -120,13 +118,6 @@ impl Func {
 
     pub fn get_stmts(&self) -> Vec<Stmt> {
         self.stmts.to_vec()
-    }
-
-    pub fn get_return_stmt(&self) -> Option<ReturnStmt> {
-        match &self.return_stmt {
-            Some(return_stmt) => Some(return_stmt.clone()),
-            None => None,
-        }
     }
 
 }
@@ -265,6 +256,7 @@ pub enum Stmt {
     VariableDeclaration(VariableDeclaration),
     ExprStmt(ExprStmt),
     Func(Func),
+    ReturnStmt(ReturnStmt),
 }
 
 impl Stmt {
@@ -281,12 +273,11 @@ impl Stmt {
         )
     }
 
-    pub fn func_new(name: Ident, args: Vec<FuncArg>, stmts: Vec<Stmt>, return_stmt: Option<ReturnStmt>) -> Stmt {
+    pub fn func_new(name: Ident, args: Vec<FuncArg>, stmts: Vec<Stmt>) -> Stmt {
         Stmt::Func(Func::new(
             name,
             args,
             stmts,
-            return_stmt
         ))
     }
 

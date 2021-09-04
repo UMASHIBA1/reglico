@@ -148,11 +148,11 @@ mod test {
     }
 
     #[test]
-    fn test_return_stmt_as_stmt() {
+    fn test_return_stmt_is_stmt() {
         lalrpop_mod!(pub reglico);
         let result = reglico::ProgramParser::new().parse("return 1;").is_err();
 
-        assert_eq!(result, true);
+        assert_eq!(result, false);
 
     }
 
@@ -191,8 +191,7 @@ mod test {
                     FuncArg::new(Ident::new("a".to_string()), Types::NumberType),
                     FuncArg::new(Ident::new("b".to_string()), Types::NumberType),
                 ],
-                vec![],
-                Some(
+                vec![Stmt::ReturnStmt(
                     ReturnStmt::new(
                         Expr::op_new(
                             Expr::ident_new(Ident::new("a".to_string())),
@@ -200,7 +199,7 @@ mod test {
                             Expr::ident_new(Ident::new("b".to_string())),
                         )
                     )
-                )
+                )],
             ),
             Stmt::var_new(
                 Ident::new("total".to_string()),
@@ -243,8 +242,7 @@ mod test {
                             FuncArg::new(Ident::new("a".to_string()), Types::NumberType),
                             FuncArg::new(Ident::new("b".to_string()), Types::NumberType),
                         ],
-                        vec![],
-                        Some(
+                        vec![Stmt::ReturnStmt(
                             ReturnStmt::new(
                                 Expr::op_new(
                                     Expr::ident_new(Ident::new("a".to_string())),
@@ -252,17 +250,17 @@ mod test {
                                     Expr::ident_new(Ident::new("b".to_string())),
                                 )
                             )
-                        )
+                        )],
                     ),
-                ],
-                Some(
-                    ReturnStmt::new(
-                        Expr::call_new(Ident::new("add2".to_string()), vec![
-                            Expr::ident_new(Ident::new("a".to_string())),
-                            Expr::ident_new(Ident::new("b".to_string())),
-                        ])
+                    Stmt::ReturnStmt(
+                        ReturnStmt::new(
+                            Expr::call_new(Ident::new("add2".to_string()), vec![
+                                Expr::ident_new(Ident::new("a".to_string())),
+                                Expr::ident_new(Ident::new("b".to_string())),
+                            ])
+                        )
                     )
-                )
+                ],
             ),
             Stmt::var_new(
                 Ident::new("total".to_string()),

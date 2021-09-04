@@ -1,22 +1,6 @@
 use crate::type_parser::typed_ast::{TypedStmt, TypedVariableDeclaration, TypedExpr, TypeFlag, TypedIdent, TypedFunc, TypedReturnStmt, TypedCallExpr, TypedAstType, TypedNumber};
 use std::collections::HashMap;
 
-// NOTE: add関数をRustに変換すると
-// ```reglico
-//  fn add(a: number, b: number) {
-//      return a + b;
-//  }
-//
-//  const total = add(1,2);
-//  ```
-//  ↓
-//  ```rust
-//  fn add(a: i32, b: i32) {
-//      a + b
-//  }
-//  let total = add(1,2);
-//  ```
-
 #[derive(Debug)]
 enum CanAssignObj {
     TypedFunc(TypedFunc),
@@ -29,17 +13,28 @@ struct ToRust {
 
 impl ToRust {
 
-    pub fn new() -> ToRust {
+    pub fn to_rust(typed_stmts: Vec<TypedStmt>) -> String {
+        let mut rust_code = "".to_string();
+
+        let mut to_rust = ToRust::new();
+        for typed_stmt in typed_stmts {
+            rust_code = format!("{}{}", rust_code, to_rust.stmt_to_rust(typed_stmt));
+        };
+        rust_code
+    }
+
+    fn new() -> ToRust {
         ToRust {
             var_env: HashMap::new(),
         }
     }
 
-    pub fn to_rust(&mut self, typed_stmt: TypedStmt) -> String {
+    fn stmt_to_rust(&mut self, typed_stmt: TypedStmt) -> String {
         match typed_stmt {
             TypedStmt::VariableDeclaration(var_decl) => self.var_decl_to_rust(var_decl),
             TypedStmt::ExprStmt(typed_expr) => self.expr_to_rust(typed_expr),
             TypedStmt::Func(typed_func) =>  self.func_to_rust(typed_func),
+            TypedStmt::ReturnStmt(return_stmt) => self.return_stmt_to_rust(&return_stmt),
         }
     }
 
@@ -179,7 +174,7 @@ impl ToRust {
         let stmts_str = {
             let mut stmts_str = "".to_string();
             for stmt in stmts {
-                stmts_str = format!("{}{}", stmts_str, self.to_rust(stmt));
+                stmts_str = format!("{}{}", stmts_str, self.stmt_to_rust(stmt));
             }
             stmts_str
         };
@@ -187,7 +182,8 @@ impl ToRust {
         let (return_type, return_stmt_str) = {
             match &return_stmt {
                 Some(typed_return_stmt) => {
-                    let (return_type, return_stmt_str) = self.return_stmt_to_rust(typed_return_stmt);
+                    let return_type = self.typed_ast_type_to_rust(typed_return_stmt.get_return_type());
+                    let return_stmt_str = self.return_stmt_to_rust(typed_return_stmt);
                     (return_type, Some(return_stmt_str))
                 },
                 None => ("()".to_string(), None)
@@ -208,12 +204,9 @@ impl ToRust {
         }
     }
 
-    fn return_stmt_to_rust(&self, return_stmt: &TypedReturnStmt) -> (String, String) {
+    fn return_stmt_to_rust(&self, return_stmt: &TypedReturnStmt) -> String {
         let expr = return_stmt.get_expr();
-        (
-            self.typed_ast_type_to_rust(expr.get_typed_ast_type()),
             self.expr_to_rust(expr)
-        )
     }
 
     fn type_flag_to_rust(&self, type_flag: TypeFlag) -> String {
@@ -229,7 +222,6 @@ impl ToRust {
             _ => "()".to_string() // TODO: Funcの型生成するの面倒くさいので後回しにしてます、あとでやりましょう！
         }
     }
-
 
     fn is_exist_ident(&self, ident: &TypedIdent) -> bool {
         match self.var_env.get(ident) {
@@ -293,14 +285,7 @@ mod tests {
             )
         ];
 
-
-        let mut rust_code = "".to_string();
-
-        let mut to_rust = ToRust::new();
-        for stmt in typed_stmts {
-            rust_code = format!("{}{}", rust_code, to_rust.to_rust(stmt));
-        }
-
+        let rust_code = ToRust::to_rust(typed_stmts);
 
         let expected_rust_code = "fn add(a:i32,b:i32)->i32{a+b}let total=add(1,2);";
 
