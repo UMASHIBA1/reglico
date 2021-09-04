@@ -148,11 +148,11 @@ mod test {
     }
 
     #[test]
-    fn test_return_stmt_as_stmt() {
+    fn test_return_stmt_is_stmt() {
         lalrpop_mod!(pub reglico);
         let result = reglico::ProgramParser::new().parse("return 1;").is_err();
 
-        assert_eq!(result, true);
+        assert_eq!(result, false);
 
     }
 
