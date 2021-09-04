@@ -34,6 +34,7 @@ impl TypeCheckAndInference {
             Stmt::VariableDeclaration(var_decl) => TypedStmt::VariableDeclaration(self.check_and_inference_var_declaration(var_decl)),
             Stmt::ExprStmt(expr_stmt) => TypedStmt::ExprStmt(self.check_and_inference_expr(expr_stmt.get_expr())),
             Stmt::Func(func) => TypedStmt::Func(self.check_and_inference_func(func)),
+            Stmt::ReturnStmt(return_stmt) => TypedStmt::ReturnStmt(self.convert_return_stmt_to_typed_return_stmt(return_stmt)),
         }
     }
 
@@ -118,7 +119,6 @@ impl TypeCheckAndInference {
         let name = self.convert_ident_to_typed_ident(func.get_name());
         let args = func.get_func_args();
         let stmts =  func.get_stmts();
-        let return_stmt = None; // TODO: astの変更に伴い、get_return_stmtメソッドが消えました。一旦Noneにしますが後でstmtsからReturnTypeを取れるようにします
         let mut arg_typed_ast_type = vec![];
 
         // NOTE: check_and_inference args type
@@ -143,10 +143,33 @@ impl TypeCheckAndInference {
         for (i, typed_arg) in typed_args.iter().enumerate() {
             self.type_env.insert(typed_arg.get_name(), arg_typed_ast_type.get(i).unwrap().clone());
         };
-        println!("{:?}", self.type_env);
 
-        // check_and_inference return type
-        let typed_return_stmt =  self.convert_return_stmt_to_typed_return_stmt(return_stmt);
+        let mut func_stmts = TypeCheckAndInference::check_and_inference(stmts, Some(&self.type_env));
+        let mut typed_return_stmt: Option<TypedReturnStmt> = None;
+        let mut return_stmt_index: Option<usize> = None;
+            for (i, stmt) in func_stmts.iter().enumerate() {
+                match stmt {
+                    TypedStmt::ReturnStmt(_) => {
+                        return_stmt_index = Some(i);
+                    },
+                    _ => {}
+                }
+            }
+        match return_stmt_index {
+            Some(i) => {
+                let will_typed_return_stmt = func_stmts.remove(i);
+                match will_typed_return_stmt {
+                    TypedStmt::ReturnStmt(return_stmt) => {
+                        typed_return_stmt = Some(return_stmt);
+                    }
+                    _ => {},
+                };
+            },
+            _ => {}
+        }
+
+
+
         let return_typed_ast_type = {
             match &typed_return_stmt {
                 Some(typed_return_stmt) => {
@@ -158,7 +181,6 @@ impl TypeCheckAndInference {
 
         self.type_env.insert(name.clone(), TypedAstType::Func(arg_typed_ast_type, return_typed_ast_type));
 
-        let func_stmts = TypeCheckAndInference::check_and_inference(stmts, Some(&self.type_env));
 
         // NOTE: remove arg env from type_env
         for typed_arg in &typed_args {
@@ -188,17 +210,12 @@ impl TypeCheckAndInference {
         }
     }
 
-    fn convert_return_stmt_to_typed_return_stmt(&self, return_stmt: Option<ReturnStmt>) -> Option<TypedReturnStmt> {
-        match return_stmt {
-            Some(return_stmt) => {
-                  Some(TypedReturnStmt::new(
-                      self.check_and_inference_expr(return_stmt.get_expr()),
-                  ))
-            },
-            None => None
-        }
-
+    fn convert_return_stmt_to_typed_return_stmt(&self, return_stmt: ReturnStmt) -> TypedReturnStmt {
+        TypedReturnStmt::new(
+            self.check_and_inference_expr(return_stmt.get_expr()),
+        )
     }
+
 
     fn convert_ident_to_typed_ident(&self, ident: Ident) -> TypedIdent {
         TypedIdent::new(ident.get_name())

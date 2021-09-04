@@ -170,6 +170,8 @@ impl TypedReturnStmt {
         self.expr.clone()
     }
 
+    pub fn get_return_type(&self) -> TypedAstType {self.expr.get_typed_ast_type()}
+
 }
 
 #[derive(Debug, Eq, PartialEq, Clone)]
