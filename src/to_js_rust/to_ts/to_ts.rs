@@ -26,6 +26,7 @@ impl ToTs {
     fn stmt_to_ts(&mut self, typed_stmt: TypedStmt) -> String {
         match typed_stmt {
             TypedStmt::VariableDeclaration(var_decl) => self.var_decl_to_ts(var_decl),
+            TypedStmt::ExprStmt(typed_expr) => self.expr_to_ts(typed_expr),
             _ => "".to_string() // TODO: 後で他のstmtも作る
         }
     }
