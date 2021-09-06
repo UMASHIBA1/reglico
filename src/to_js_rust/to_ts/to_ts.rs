@@ -7,20 +7,30 @@ struct ToTs {
 }
 
 impl ToTs {
-    pub fn to_ts(typed_stmts: Vec<TypedStmt>, var_env: Option<&HashMap<TypedIdent, Option<CanAssignObj>>>) -> String {
+    pub fn to_ts(typed_stmts: Vec<TypedStmt>, var_env: Option<HashMap<TypedIdent, Option<CanAssignObj>>>) -> String {
         let mut js_code = "".to_string();
 
-        let mut to_js = ToTs::new();
+        let mut to_js = ToTs::new(var_env);
         for typed_stmt in typed_stmts {
             js_code = format!("{}{}", js_code, to_js.stmt_to_ts(typed_stmt));
         };
         js_code
     }
 
-    fn new() -> ToTs {
-        ToTs {
-            var_env: HashMap::new(),
+    fn new(var_env: Option<HashMap<TypedIdent, Option<CanAssignObj>>>) -> ToTs {
+        match var_env {
+            Some(var_env) => {
+                ToTs {
+                    var_env,
+                }
+            },
+            None => {
+                ToTs {
+                    var_env: HashMap::new(),
+                }
+            }
         }
+
     }
 
     fn stmt_to_ts(&mut self, typed_stmt: TypedStmt) -> String {
@@ -49,10 +59,10 @@ impl ToTs {
             Some(typed_expr) => {
                 match type_name {
                     Some(type_flag) => format!("const {}:{}={};", name, self.type_flag_to_ts(type_flag), self.expr_to_ts(typed_expr)),
-                    None => format!("let {}={};", name, self.expr_to_ts(typed_expr)),
+                    None => format!("const {}={};", name, self.expr_to_ts(typed_expr)),
                 }
             },
-            None => format!("let mut {};", name),
+            None => format!("let {};", name),
         }
     }
 
@@ -155,14 +165,14 @@ impl ToTs {
             args_str
         };
 
-        let stmts_str = ToTs::to_ts(stmts, Some(&func_var_env));
+        let stmts_str = ToTs::to_ts(stmts, Some(func_var_env.clone()));
 
 
         let (return_type, return_stmt_str) = {
             match &return_stmt {
                 Some(typed_return_stmt) => {
                     let return_type = self.typed_ast_type_to_ts(typed_return_stmt.get_return_type());
-                    let return_stmt_str = ToTs::to_ts(vec![TypedStmt::ReturnStmt(typed_return_stmt.clone())], Some(&func_var_env));
+                    let return_stmt_str = ToTs::to_ts(vec![TypedStmt::ReturnStmt(typed_return_stmt.clone())], Some(func_var_env));
                     (return_type, Some(return_stmt_str))
                 },
                 None => ("void".to_string(), None)
@@ -171,10 +181,10 @@ impl ToTs {
 
         match return_stmt_str {
             Some(return_stmt_str) => {
-                format!("const {}({}):{}{{{}{}}}", name.get_name(), args_str, return_type, stmts_str, return_stmt_str)
+                format!("const {}=({}):{}=>{{{}{}}}", name.get_name(), args_str, return_type, stmts_str, return_stmt_str)
             },
             None => {
-                format!("const {}({}):void{{{}}}", name.get_name(), args_str, stmts_str)
+                format!("const {}=({}):void=>{{{}}}", name.get_name(), args_str, stmts_str)
             }
         }
     }
@@ -261,7 +271,7 @@ mod tests {
 
         let ts_code = ToTs::to_ts(typed_stmts, None);
 
-        let expected_ts_code = "const add=(a:number,b:number):number{return a+b;}const total=add(1,2);";
+        let expected_ts_code = "const add=(a:number,b:number):number=>{return a+b;}const total=add(1,2);";
 
         assert_eq!(ts_code, expected_ts_code);
 
