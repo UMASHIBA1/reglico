@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use crate::type_parser::typed_ast::{TypedIdent, TypedStmt, TypedVariableDeclaration, TypeFlag, TypedExpr, TypedCallExpr, TypedFunc, TypedNumber, TypedAstType};
+use crate::type_parser::typed_ast::{TypedIdent, TypedStmt, TypedVariableDeclaration, TypeFlag, TypedExpr, TypedCallExpr, TypedFunc, TypedNumber, TypedAstType, TypedReturnStmt};
 use crate::to_js_rust::common_struct::CanAssignObj;
 
 struct ToTs {
@@ -28,7 +28,7 @@ impl ToTs {
             TypedStmt::VariableDeclaration(var_decl) => self.var_decl_to_ts(var_decl),
             TypedStmt::ExprStmt(typed_expr) => self.expr_to_ts(typed_expr),
             TypedStmt::Func(typed_func) => self.func_to_ts(typed_func),
-            _ => "".to_string() // TODO: 後で他のstmtも作る
+            TypedStmt::ReturnStmt(return_stmt) => self.return_stmt_to_ts(&return_stmt),
         }
     }
 
@@ -98,10 +98,10 @@ impl ToTs {
                             };
                             format!("{}({})", func_name.get_name(), args)
                         },
-                        _ => panic!("specified variable `{}` does not func. this is {:?}", func_name.get_name(), can_assign_obj);
+                        _ => panic!("specified variable `{}` does not func. this is {:?}", func_name.get_name(), can_assign_obj)
                     }
                 },
-                _ => panic!("specified func `{}` does not initialized");
+                _ => panic!("specified func `{}` does not initialized")
             }
         } else {
             panic!("specified func `{} does not defined", func_name.get_name());
@@ -120,7 +120,7 @@ impl ToTs {
         );
 
         let mut func_var_env = self.var_env.clone();
-        for arg in args {
+        for arg in &args {
             func_var_env.insert(
                 arg.get_name(),
                 Some(
@@ -128,7 +128,7 @@ impl ToTs {
                         TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(0))
                     )
                 )
-            )
+            );
         };
 
         let args_str = {
@@ -179,6 +179,11 @@ impl ToTs {
         }
     }
 
+    fn return_stmt_to_ts(&self, return_stmt: &TypedReturnStmt) -> String {
+        let expr_str = self.expr_to_ts(return_stmt.get_expr());
+        format!("return {};", expr_str)
+    }
+
 
     fn type_flag_to_ts(&self, type_flag: TypeFlag) -> String {
         match type_flag {
@@ -189,7 +194,7 @@ impl ToTs {
     fn typed_ast_type_to_ts(&self, typed_ast_type: TypedAstType) -> String {
         match typed_ast_type {
             TypedAstType::Number => "number".to_string(),
-            TypedAstType::Void => "void",
+            TypedAstType::Void => "void".to_string(),
             _ => "void".to_string() // TODO: Funcの型生成する
         }
     }
