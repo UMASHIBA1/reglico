@@ -212,3 +212,58 @@ impl ToTs {
     }
 
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::type_parser::typed_ast::{TypedStmt, TypedFunc, TypedIdent, TypedFuncArg, TypedReturnStmt, TypedExpr, TypedAstType, TypedVariableDeclaration, TypedCallExpr, TypedNumber, TypeFlag};
+    use crate::to_js_rust::to_ts::to_ts::ToTs;
+
+    #[test]
+    fn test_add_func() {
+        let typed_stmts = vec![
+            TypedStmt::Func(
+                TypedFunc::new(
+                    TypedIdent::new("add".to_string()),
+                    vec![
+                        TypedFuncArg::new(TypedIdent::new("a".to_string()), TypeFlag::NumberType),
+                        TypedFuncArg::new(TypedIdent::new("b".to_string()), TypeFlag::NumberType),
+                    ],
+                    vec![],
+                    Some(
+                        TypedReturnStmt::new(
+                            TypedExpr::NumAddExpr(
+                                TypedAstType::Number,
+                                Box::new(TypedExpr::NumIdentExpr(TypedAstType::Number, TypedIdent::new("a".to_string()))),
+                                Box::new(TypedExpr::NumIdentExpr(TypedAstType::Number, TypedIdent::new("b".to_string()))),
+                            )
+                        )
+                    )
+                )
+            ),
+            TypedStmt::VariableDeclaration(
+                TypedVariableDeclaration::new(
+                    TypedIdent::new(
+                        "total".to_string()),
+                    None,
+                    Some(TypedExpr::CallExpr(
+                        TypedAstType::Number,
+                        TypedCallExpr::new(
+                            TypedIdent::new("add".to_string()),
+                            vec![
+                                TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(1)),
+                                TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(2)),
+                            ]
+                        )
+                    ))
+                )
+            )
+        ];
+
+        let ts_code = ToTs::to_ts(typed_stmts, None);
+
+        let expected_ts_code = "const add=(a:number,b:number):number{return a+b;}const total=add(1,2);";
+
+        assert_eq!(ts_code, expected_ts_code);
+
+    }
+}
