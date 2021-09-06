@@ -67,8 +67,44 @@ impl ToTs {
                 }
             },
             TypedExpr::NumAddExpr(_, l, r) => format!("{}+{}", self.expr_to_ts(*l), self.expr_to_ts(*r)),
-            _ => "".to_string() // TODO: 後でCall作る
+            TypedExpr::CallExpr(_, call) =>self.call_expr_to_ts(call),
+        }
+    }
 
+    fn call_expr_to_ts(&self, typed_call_expr: TypedCallExpr) -> String {
+        let func_name = typed_call_expr.get_func_name();
+        if self.is_exist_ident(&func_name) {
+            let ident_value = self.var_env.get(&func_name);
+            match ident_value {
+                Some(Some(can_assign_obj)) => {
+                    match can_assign_obj {
+                        CanAssignObj::TypedFunc(typed_func) => {
+                            let args = {
+                                let args = typed_call_expr.get_args();
+                                let mut str_args: String;
+                                let first_arg = args.get(0);
+                                let mut args_iter = args.iter();
+                                args_iter.next();
+                                match first_arg {
+                                    Some(arg) => {
+                                        str_args = self.expr_to_ts(arg.clone());
+                                        for arg in args_iter {
+                                            str_args = format!("{},{}", str_args, self.expr_to_ts(arg.clone()));
+                                        }
+                                        str_args
+                                    },
+                                    None => "".to_string()
+                                }
+                            };
+                            format!("{}({})", func_name.get_name(), args)
+                        },
+                        _ => panic!("specified variable `{}` does not func. this is {:?}", func_name.get_name(), can_assign_obj);
+                    }
+                },
+                _ => panic!("specified func `{}` does not initialized");
+            }
+        } else {
+            panic!("specified func `{} does not defined", func_name.get_name());
         }
     }
 
