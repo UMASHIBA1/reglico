@@ -1,11 +1,6 @@
 use crate::type_parser::typed_ast::{TypedStmt, TypedVariableDeclaration, TypedExpr, TypeFlag, TypedIdent, TypedFunc, TypedReturnStmt, TypedCallExpr, TypedAstType, TypedNumber};
 use std::collections::HashMap;
-
-#[derive(Debug)]
-enum CanAssignObj {
-    TypedFunc(TypedFunc),
-    TypedExpr(TypedExpr),
-}
+use crate::to_js_rust::common_struct::CanAssignObj;
 
 struct ToRust {
     var_env: HashMap<TypedIdent, Option<CanAssignObj>>,
