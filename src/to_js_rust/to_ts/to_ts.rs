@@ -419,6 +419,22 @@ mod tests {
         assert_eq!(ts_code, expected_ts_code);
         }
 
+    #[test]
+    fn test_return_stmt() {
+        let typed_stmts = vec![
+            TypedStmt::ReturnStmt(
+                TypedReturnStmt::new(
+                    TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(0))
+                )
+            )
+        ];
+
+        let ts_code = ToTs::to_ts(typed_stmts, None);
+
+        let expected_ts_code = "return 0;";
+
+        assert_eq!(ts_code, expected_ts_code);
+    }
 
     #[test]
     fn test_add_func() {
