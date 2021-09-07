@@ -229,6 +229,49 @@ mod tests {
     use crate::to_js_rust::to_ts::to_ts::ToTs;
 
     #[test]
+    fn test_no_type_var_declaration() {
+        let typed_stmts = vec![
+            TypedStmt::VariableDeclaration(
+                TypedVariableDeclaration::new(
+                    TypedIdent::new(
+                        "tmp1".to_string()),
+                    None,
+                    Some(
+                        TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(0))
+                    ))
+                )
+        ];
+
+        let ts_code = ToTs::to_ts(typed_stmts, None);
+
+        let expected_ts_code = "const tmp1=0;";
+
+        assert_eq!(ts_code, expected_ts_code);
+
+    }
+
+    #[test]
+    fn test_has_type_var_declaration() {
+        let typed_stmts = vec![
+            TypedStmt::VariableDeclaration(
+                TypedVariableDeclaration::new(
+                    TypedIdent::new(
+                        "tmp1".to_string()),
+                    Some(TypeFlag::NumberType),
+                    Some(
+                        TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(0))
+                    ))
+            )
+        ];
+
+        let ts_code = ToTs::to_ts(typed_stmts, None);
+
+        let expected_ts_code = "const tmp1:number=0;";
+
+        assert_eq!(ts_code, expected_ts_code);
+    }
+
+    #[test]
     fn test_add_func() {
         let typed_stmts = vec![
             TypedStmt::Func(
