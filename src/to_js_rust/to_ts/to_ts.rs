@@ -36,7 +36,7 @@ impl ToTs {
     fn stmt_to_ts(&mut self, typed_stmt: TypedStmt) -> String {
         match typed_stmt {
             TypedStmt::VariableDeclaration(var_decl) => self.var_decl_to_ts(var_decl),
-            TypedStmt::ExprStmt(typed_expr) => self.expr_to_ts(typed_expr),
+            TypedStmt::ExprStmt(typed_expr) => format!("{};", self.expr_to_ts(typed_expr)),
             TypedStmt::Func(typed_func) => self.func_to_ts(typed_func),
             TypedStmt::ReturnStmt(return_stmt) => self.return_stmt_to_ts(&return_stmt),
         }
@@ -88,7 +88,7 @@ impl ToTs {
             match ident_value {
                 Some(Some(can_assign_obj)) => {
                     match can_assign_obj {
-                        CanAssignObj::TypedFunc(typed_func) => {
+                        CanAssignObj::TypedFunc(_) => {
                             let args = {
                                 let args = typed_call_expr.get_args();
                                 let mut str_args: String;
@@ -111,7 +111,7 @@ impl ToTs {
                         _ => panic!("specified variable `{}` does not func. this is {:?}", func_name.get_name(), can_assign_obj)
                     }
                 },
-                _ => panic!("specified func `{}` does not initialized")
+                _ => panic!("specified func `{}` does not initialized",func_name.get_name())
             }
         } else {
             panic!("specified func `{} does not defined", func_name.get_name());
@@ -227,6 +227,214 @@ impl ToTs {
 mod tests {
     use crate::type_parser::typed_ast::{TypedStmt, TypedFunc, TypedIdent, TypedFuncArg, TypedReturnStmt, TypedExpr, TypedAstType, TypedVariableDeclaration, TypedCallExpr, TypedNumber, TypeFlag};
     use crate::to_js_rust::to_ts::to_ts::ToTs;
+    use std::collections::HashMap;
+    use crate::to_js_rust::common_struct::CanAssignObj;
+
+    #[test]
+    fn test_no_type_var_declaration() {
+        let typed_stmts = vec![
+            TypedStmt::VariableDeclaration(
+                TypedVariableDeclaration::new(
+                    TypedIdent::new(
+                        "tmp1".to_string()),
+                    None,
+                    Some(
+                        TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(0))
+                    ))
+                )
+        ];
+
+        let ts_code = ToTs::to_ts(typed_stmts, None);
+
+        let expected_ts_code = "const tmp1=0;";
+
+        assert_eq!(ts_code, expected_ts_code);
+
+    }
+
+    #[test]
+    fn test_has_type_var_declaration() {
+        let typed_stmts = vec![
+            TypedStmt::VariableDeclaration(
+                TypedVariableDeclaration::new(
+                    TypedIdent::new(
+                        "tmp1".to_string()),
+                    Some(TypeFlag::NumberType),
+                    Some(
+                        TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(0))
+                    ))
+            )
+        ];
+
+        let ts_code = ToTs::to_ts(typed_stmts, None);
+
+        let expected_ts_code = "const tmp1:number=0;";
+
+        assert_eq!(ts_code, expected_ts_code);
+    }
+
+    #[test]
+    fn test_num_expr_stmt() {
+        let typed_stmts = vec![
+            TypedStmt::ExprStmt(TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(0)))
+        ];
+
+        let ts_code = ToTs::to_ts(typed_stmts, None);
+
+        let expected_ts_code = "0;";
+
+        assert_eq!(ts_code, expected_ts_code);
+    }
+
+    #[test]
+    fn test_num_ident_expr_stmt() {
+        let typed_stmts = vec![
+            TypedStmt::ExprStmt(TypedExpr::NumIdentExpr(TypedAstType::Number, TypedIdent::new("tmp1".to_string())))
+        ];
+
+        let mut var_env: HashMap<TypedIdent, Option<CanAssignObj>> = HashMap::new();
+        var_env.insert(TypedIdent::new(
+            "tmp1".to_string()),
+                       Some(CanAssignObj::TypedExpr(
+                           TypedExpr::NumExpr(
+                               TypedAstType::Number,
+                               TypedNumber::new(0)
+                           )
+                       ))
+        );
+
+        let ts_code = ToTs::to_ts(typed_stmts, Some(var_env));
+
+        let expected_ts_code = "tmp1;";
+
+        assert_eq!(ts_code, expected_ts_code);
+    }
+
+    #[test]
+    fn test_num_add_expr_stmt() {
+        let typed_stmts = vec![
+            TypedStmt::ExprStmt(
+                TypedExpr::NumAddExpr(
+                    TypedAstType::Number,
+                    Box::new(
+                        TypedExpr::NumExpr(
+                            TypedAstType::Number,
+                            TypedNumber::new(1)
+                        )
+                    ),
+                    Box::new(
+                        TypedExpr::NumExpr(
+                            TypedAstType::Number,
+                            TypedNumber::new(2)
+                        )
+                    )
+                )
+            )
+        ];
+
+        let ts_code = ToTs::to_ts(typed_stmts, None);
+
+        let expected_ts_code = "1+2;";
+
+        assert_eq!(ts_code, expected_ts_code);
+    }
+
+
+    #[test]
+    fn test_call_expr_stmt() {
+        let typed_stmts = vec![
+            TypedStmt::ExprStmt(
+                TypedExpr::CallExpr(
+                    TypedAstType::Number,
+                    TypedCallExpr::new(
+                     TypedIdent::new("add".to_string()),
+                        vec![
+                            TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(1)),
+                            TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(2)),
+                        ]
+                    )
+                )
+            )
+        ];
+
+        let mut var_env: HashMap<TypedIdent, Option<CanAssignObj>> = HashMap::new();
+        var_env.insert(TypedIdent::new(
+            "add".to_string()),
+               Some(CanAssignObj::TypedFunc(
+                   TypedFunc::new(
+                       TypedIdent::new("add".to_string()),
+                       vec![
+                           TypedFuncArg::new(TypedIdent::new("a".to_string()), TypeFlag::NumberType),
+                           TypedFuncArg::new(TypedIdent::new("b".to_string()), TypeFlag::NumberType),
+                       ],
+                       vec![],
+                       Some(
+                           TypedReturnStmt::new(
+                               TypedExpr::NumAddExpr(
+                                   TypedAstType::Number,
+                                   Box::new(TypedExpr::NumIdentExpr(TypedAstType::Number, TypedIdent::new("a".to_string()))),
+                                   Box::new(TypedExpr::NumIdentExpr(TypedAstType::Number, TypedIdent::new("b".to_string()))),
+                               )
+                           )
+                       )
+                   )
+               ))
+        );
+
+        let ts_code = ToTs::to_ts(typed_stmts, Some(var_env));
+
+        let expected_ts_code = "add(1,2);";
+
+        assert_eq!(ts_code, expected_ts_code);
+    }
+
+    #[test]
+    fn test_func_declaration() {
+        let typed_stmts = vec![
+            TypedStmt::Func(
+                TypedFunc::new(
+                    TypedIdent::new("add".to_string()),
+                    vec![
+                        TypedFuncArg::new(TypedIdent::new("a".to_string()), TypeFlag::NumberType),
+                        TypedFuncArg::new(TypedIdent::new("b".to_string()), TypeFlag::NumberType),
+                    ],
+                    vec![],
+                    Some(
+                        TypedReturnStmt::new(
+                            TypedExpr::NumAddExpr(
+                                TypedAstType::Number,
+                                Box::new(TypedExpr::NumIdentExpr(TypedAstType::Number, TypedIdent::new("a".to_string()))),
+                                Box::new(TypedExpr::NumIdentExpr(TypedAstType::Number, TypedIdent::new("b".to_string()))),
+                            )
+                        )
+                    )
+                )
+            ),
+        ];
+
+        let ts_code = ToTs::to_ts(typed_stmts, None);
+
+        let expected_ts_code = "const add=(a:number,b:number):number=>{return a+b;}";
+
+        assert_eq!(ts_code, expected_ts_code);
+        }
+
+    #[test]
+    fn test_return_stmt() {
+        let typed_stmts = vec![
+            TypedStmt::ReturnStmt(
+                TypedReturnStmt::new(
+                    TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(0))
+                )
+            )
+        ];
+
+        let ts_code = ToTs::to_ts(typed_stmts, None);
+
+        let expected_ts_code = "return 0;";
+
+        assert_eq!(ts_code, expected_ts_code);
+    }
 
     #[test]
     fn test_add_func() {
