@@ -88,7 +88,7 @@ impl ToTs {
             match ident_value {
                 Some(Some(can_assign_obj)) => {
                     match can_assign_obj {
-                        CanAssignObj::TypedFunc(typed_func) => {
+                        CanAssignObj::TypedFunc(_) => {
                             let args = {
                                 let args = typed_call_expr.get_args();
                                 let mut str_args: String;
@@ -111,7 +111,7 @@ impl ToTs {
                         _ => panic!("specified variable `{}` does not func. this is {:?}", func_name.get_name(), can_assign_obj)
                     }
                 },
-                _ => panic!("specified func `{}` does not initialized")
+                _ => panic!("specified func `{}` does not initialized",func_name.get_name())
             }
         } else {
             panic!("specified func `{} does not defined", func_name.get_name());

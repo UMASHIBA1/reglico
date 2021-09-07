@@ -1,5 +1,4 @@
-use crate::type_parser::typed_ast::{TypedFunc, TypedExpr, TypedIdent};
-use std::collections::HashMap;
+use crate::type_parser::typed_ast::{TypedFunc, TypedExpr};
 
 #[derive(Debug, Clone)]
 pub enum CanAssignObj {
