@@ -388,6 +388,37 @@ mod tests {
         assert_eq!(ts_code, expected_ts_code);
     }
 
+    #[test]
+    fn test_func_declaration() {
+        let typed_stmts = vec![
+            TypedStmt::Func(
+                TypedFunc::new(
+                    TypedIdent::new("add".to_string()),
+                    vec![
+                        TypedFuncArg::new(TypedIdent::new("a".to_string()), TypeFlag::NumberType),
+                        TypedFuncArg::new(TypedIdent::new("b".to_string()), TypeFlag::NumberType),
+                    ],
+                    vec![],
+                    Some(
+                        TypedReturnStmt::new(
+                            TypedExpr::NumAddExpr(
+                                TypedAstType::Number,
+                                Box::new(TypedExpr::NumIdentExpr(TypedAstType::Number, TypedIdent::new("a".to_string()))),
+                                Box::new(TypedExpr::NumIdentExpr(TypedAstType::Number, TypedIdent::new("b".to_string()))),
+                            )
+                        )
+                    )
+                )
+            ),
+        ];
+
+        let ts_code = ToTs::to_ts(typed_stmts, None);
+
+        let expected_ts_code = "const add=(a:number,b:number):number=>{return a+b;}";
+
+        assert_eq!(ts_code, expected_ts_code);
+        }
+
 
     #[test]
     fn test_add_func() {
