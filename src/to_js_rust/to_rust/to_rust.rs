@@ -37,7 +37,7 @@ impl ToRust {
     fn stmt_to_rust(&mut self, typed_stmt: TypedStmt) -> String {
         match typed_stmt {
             TypedStmt::VariableDeclaration(var_decl) => self.var_decl_to_rust(var_decl),
-            TypedStmt::ExprStmt(typed_expr) => self.expr_to_rust(typed_expr),
+            TypedStmt::ExprStmt(typed_expr) => format!("{};", self.expr_to_rust(typed_expr)),
             TypedStmt::Func(typed_func) =>  self.func_to_rust(typed_func),
             TypedStmt::ReturnStmt(return_stmt) => self.return_stmt_to_rust(&return_stmt),
         }
