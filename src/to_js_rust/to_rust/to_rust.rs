@@ -179,10 +179,7 @@ impl ToRust {
         };
 
         let stmts_str = ToRust::to_rust(stmts, Some(func_var_env.clone()));
-
-        {
-            println!("{:?}", &func_var_env);
-        }
+        
         let (return_type, return_stmt_str) = {
             match &return_stmt {
                 Some(typed_return_stmt) => {
