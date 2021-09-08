@@ -8,20 +8,30 @@ struct ToRust {
 
 impl ToRust {
 
-    pub fn to_rust(typed_stmts: Vec<TypedStmt>) -> String {
+    pub fn to_rust(typed_stmts: Vec<TypedStmt>, var_env: Option<HashMap<TypedIdent, Option<CanAssignObj>>>) -> String {
         let mut rust_code = "".to_string();
 
-        let mut to_rust = ToRust::new();
+        let mut to_rust = ToRust::new(var_env);
         for typed_stmt in typed_stmts {
             rust_code = format!("{}{}", rust_code, to_rust.stmt_to_rust(typed_stmt));
         };
         rust_code
     }
 
-    fn new() -> ToRust {
-        ToRust {
-            var_env: HashMap::new(),
+    fn new(var_env: Option<HashMap<TypedIdent, Option<CanAssignObj>>>) -> ToRust {
+        match var_env {
+            Some(var_env) => {
+                ToRust {
+                    var_env
+                }
+            },
+            None => {
+                ToRust {
+                    var_env: HashMap::new(),
+                }
+            }
         }
+
     }
 
     fn stmt_to_rust(&mut self, typed_stmt: TypedStmt) -> String {
@@ -131,8 +141,10 @@ impl ToRust {
             Some(CanAssignObj::TypedFunc(typed_func))
         );
 
+        let mut func_var_env = self.var_env.clone();
+
         for arg in &args {
-            self.var_env.insert(
+            func_var_env.insert(
                 arg.get_name(),
                 Some(
                     CanAssignObj::TypedExpr(
@@ -166,28 +178,19 @@ impl ToRust {
             args_str
         };
 
-        let stmts_str = {
-            let mut stmts_str = "".to_string();
-            for stmt in stmts {
-                stmts_str = format!("{}{}", stmts_str, self.stmt_to_rust(stmt));
-            }
-            stmts_str
-        };
-
+        let stmts_str = ToRust::to_rust(stmts, Some(func_var_env.clone()));
+        
         let (return_type, return_stmt_str) = {
             match &return_stmt {
                 Some(typed_return_stmt) => {
                     let return_type = self.typed_ast_type_to_rust(typed_return_stmt.get_return_type());
-                    let return_stmt_str = self.return_stmt_to_rust(typed_return_stmt);
+                    let return_stmt_str = ToRust::to_rust(vec![TypedStmt::ReturnStmt(typed_return_stmt.clone())], Some(func_var_env));
                     (return_type, Some(return_stmt_str))
                 },
                 None => ("()".to_string(), None)
             }
         };
 
-        for arg in &args {
-            self.var_env.remove(&arg.get_name());
-        }
         match return_stmt_str {
             Some(return_stmt_str) => {
                 format!("fn {}({})->{}{{{}{}}}", name.get_name(), args_str, return_type, stmts_str, return_stmt_str
@@ -280,7 +283,7 @@ mod tests {
             )
         ];
 
-        let rust_code = ToRust::to_rust(typed_stmts);
+        let rust_code = ToRust::to_rust(typed_stmts, None);
 
         let expected_rust_code = "fn add(a:i32,b:i32)->i32{a+b}let total=add(1,2);";
 
