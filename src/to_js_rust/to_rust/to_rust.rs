@@ -241,6 +241,87 @@ impl ToRust {
 mod tests {
     use crate::type_parser::typed_ast::{TypedStmt, TypedIdent, TypedFunc, TypedFuncArg, TypeFlag, TypedReturnStmt, TypedAstType, TypedCallExpr, TypedNumber, TypedExpr, TypedVariableDeclaration};
     use crate::to_js_rust::to_rust::to_rust::ToRust;
+    use std::collections::HashMap;
+    use crate::to_js_rust::common_struct::CanAssignObj;
+
+    #[test]
+    fn test_no_type_var_declaration() {
+        let typed_stmts = vec![
+            TypedStmt::VariableDeclaration(
+                TypedVariableDeclaration::new(
+                    TypedIdent::new(
+                        "tmp1".to_string()),
+                    None,
+                    Some(
+                        TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(0))
+                    ))
+            )
+        ];
+
+        let rust_code = ToRust::to_rust(typed_stmts, None);
+
+        let expected_rust_code = "let tmp1=0;";
+
+        assert_eq!(rust_code, expected_rust_code)
+    }
+
+    #[test]
+    fn test_has_type_var_declaration() {
+        let typed_stmts = vec![
+            TypedStmt::VariableDeclaration(
+                TypedVariableDeclaration::new(
+                    TypedIdent::new(
+                        "tmp1".to_string()),
+                    Some(TypeFlag::NumberType),
+                    Some(
+                        TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(0))
+                    ))
+            )
+        ];
+
+        let rust_code = ToRust::to_rust(typed_stmts, None);
+
+        let expected_rust_code = "let tmp1:i32=0;";
+
+        assert_eq!(rust_code, expected_rust_code);
+    }
+
+    #[test]
+    fn test_num_expr_stmt() {
+        let typed_stmts = vec![
+            TypedStmt::ExprStmt(TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(0)))
+        ];
+
+        let rust_code = ToRust::to_rust(typed_stmts, None);
+
+        let expected_rust_code = "0;";
+
+        assert_eq!(rust_code, expected_rust_code);
+    }
+
+    #[test]
+    fn test_num_ident_expr_stmt() {
+        let typed_stmts = vec![
+            TypedStmt::ExprStmt(TypedExpr::NumIdentExpr(TypedAstType::Number, TypedIdent::new("tmp1".to_string())))
+        ];
+
+        let mut var_env: HashMap<TypedIdent, Option<CanAssignObj>> = HashMap::new();
+        var_env.insert(TypedIdent::new(
+            "tmp1".to_string()),
+                       Some(CanAssignObj::TypedExpr(
+                           TypedExpr::NumExpr(
+                               TypedAstType::Number,
+                               TypedNumber::new(0)
+                           )
+                       ))
+        );
+
+        let rust_code = ToRust::to_rust(typed_stmts, Some(var_env));
+
+        let expected_rust_code = "tmp1;";
+
+        assert_eq!(rust_code, expected_rust_code);
+    }
 
     #[test]
     fn test_add_func() {
