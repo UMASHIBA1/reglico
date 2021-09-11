@@ -93,6 +93,82 @@ mod test {
     }
 
     #[test]
+    fn test_op_add_and_sub() {
+        lalrpop_mod!(pub reglico);
+
+        let expr = reglico::ProgramParser::new().parse("4 + 2 - 3;").unwrap();
+
+        let expected_expr = vec![
+            Stmt::expr_new(
+                Expr::op_new(
+                    Expr::op_new(Expr::num_new(4), Opcode::Add, Expr::num_new(2)),
+                    Opcode::Sub,
+                    Expr::num_new(3),
+                )
+            )
+        ];
+
+        assert_eq!(expr, expected_expr);
+    }
+
+    #[test]
+    fn test_op_sub_and_add() {
+        lalrpop_mod!(pub reglico);
+
+        let expr = reglico::ProgramParser::new().parse("4 - 2 + 3;").unwrap();
+
+        let expected_expr = vec![
+            Stmt::expr_new(
+                Expr::op_new(
+                    Expr::op_new(Expr::num_new(4), Opcode::Sub, Expr::num_new(2)),
+                    Opcode::Add,
+                    Expr::num_new(3),
+                )
+            )
+        ];
+
+        assert_eq!(expr, expected_expr);
+    }
+
+    #[test]
+    fn test_op_add_and_add() {
+        lalrpop_mod!(pub reglico);
+
+        let expr = reglico::ProgramParser::new().parse("4 + 2 + 3;").unwrap();
+
+        let expected_expr = vec![
+            Stmt::expr_new(
+                Expr::op_new(
+                    Expr::op_new(Expr::num_new(4), Opcode::Add, Expr::num_new(2)),
+                    Opcode::Add,
+                    Expr::num_new(3),
+                )
+            )
+        ];
+
+        assert_eq!(expr, expected_expr);
+    }
+
+    #[test]
+    fn test_op_sub_and_sub() {
+        lalrpop_mod!(pub reglico);
+
+        let expr = reglico::ProgramParser::new().parse("6 - 2 - 3;").unwrap();
+
+        let expected_expr = vec![
+            Stmt::expr_new(
+                Expr::op_new(
+                    Expr::op_new(Expr::num_new(6), Opcode::Sub, Expr::num_new(2)),
+                    Opcode::Sub,
+                    Expr::num_new(3),
+                )
+            )
+        ];
+
+        assert_eq!(expr, expected_expr);
+    }
+
+    #[test]
     fn test_call() {
         lalrpop_mod!(pub reglico);
 
