@@ -30,12 +30,23 @@ Types: Types = {
 }
 
 Expr: Expr = {
-    <left: Term> <op: Opcode> <right: Term> => Expr::Op(Operation::new(left, op, right)),
-    Term,
+    <left: Expr> <op: Opcode> <right: Factor> => Expr::Op(Operation::new(left, op, right)),
+    Factor,
+}
+
+Factor: Expr = {
+    <left: Factor> <op: FactorOpcode> <right: Term> => Expr::op_new(left, op, right),
+    Term
+}
+
+FactorOpcode: Opcode = {
+    "*" => Opcode::Mul,
+    "/" => Opcode::Div,
 }
 
 Opcode: Opcode = {
     "+" => Opcode::Add,
+    "-" => Opcode::Sub,
 }
 
 Term: Expr = {

@@ -1,4 +1,4 @@
-use crate::parser::ast::{Stmt, Expr, VariableDeclaration, Ident, Types, Opcode, Func, ReturnStmt, CallExpr};
+use crate::parser::ast::{Stmt, Expr, VariableDeclaration, Ident, Types, Opcode, Func, ReturnStmt, CallExpr, Operation};
 use crate::type_parser::typed_ast::{TypedStmt, TypedIdent, TypedVariableDeclaration, TypedExpr, TypeFlag, TypedNumber, TypedAstType, TypedFunc, TypedFuncArg, TypedReturnStmt, TypedCallExpr};
 use std::collections::HashMap;
 
@@ -64,16 +64,35 @@ impl TypeCheckAndInference {
     fn check_and_inference_expr(&self, expr: Expr) -> TypedExpr {
         match expr {
             Expr::Num(num) => TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(num.get_num())),
-            Expr::Op(operation) => match operation.get_operation() {
-                // TODO: 後々String等の+演算等も出てくると思うのでここをStrAddExprとかFloatAddExprとか追加する
-                (l, Opcode::Add, r) => TypedExpr::NumAddExpr(
-                    TypedAstType::Number,
-                    Box::new(self.check_and_inference_expr(l)),
-                    Box::new(self.check_and_inference_expr(r))
-                ),
-            },
+            Expr::Op(operation) => self.check_and_inference_op(operation),
             Expr::Call(call_expr) => self.check_and_inference_call(call_expr),
             Expr::Ident(ident) => self.check_and_inference_ident(ident),
+        }
+    }
+
+    fn check_and_inference_op(&self, operation: Operation) -> TypedExpr {
+        match operation.get_operation() {
+            // TODO: 後々String等の+演算等も出てくると思うのでここをStrAddExprとかFloatAddExprとか追加する
+            (l, Opcode::Add, r) => TypedExpr::NumAddExpr(
+                TypedAstType::Number,
+                Box::new(self.check_and_inference_expr(l)),
+                Box::new(self.check_and_inference_expr(r))
+            ),
+            (l, Opcode::Sub, r) => TypedExpr::NumSubExpr(
+                TypedAstType::Number,
+                Box::new(self.check_and_inference_expr(l)),
+                Box::new(self.check_and_inference_expr(r))
+            ),
+            (l, Opcode::Mul, r) => TypedExpr::NumMulExpr(
+                TypedAstType::Number,
+                Box::new(self.check_and_inference_expr(l)),
+                Box::new(self.check_and_inference_expr(r))
+            ),
+            (l, Opcode::Div, r) => TypedExpr::NumDivExpr(
+                TypedAstType::Number,
+                Box::new(self.check_and_inference_expr(l)),
+                Box::new(self.check_and_inference_expr(r)),
+            )
         }
     }
 

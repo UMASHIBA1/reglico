@@ -81,6 +81,9 @@ impl ToRust {
                 }
             },
             TypedExpr::NumAddExpr(_, l, r) => format!("{}+{}", self.expr_to_rust(*l), self.expr_to_rust(*r)),
+            TypedExpr::NumSubExpr(_, l, r) => format!("{}-{}", self.expr_to_rust(*l), self.expr_to_rust(*r)),
+            TypedExpr::NumMulExpr(_, l, r) => format!("{}*{}", self.expr_to_rust(*l), self.expr_to_rust(*r)),
+            TypedExpr::NumDivExpr(_, l, r) => format!("{}/{}", self.expr_to_rust(*l), self.expr_to_rust(*r)),
             TypedExpr::CallExpr(_, call) => self.call_expr_to_rust(call)
         }
     }
