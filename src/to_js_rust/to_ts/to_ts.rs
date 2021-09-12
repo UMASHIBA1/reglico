@@ -344,6 +344,137 @@ mod tests {
 
 
     #[test]
+    fn test_num_sub_expr_stmt() {
+        let typed_stmts = vec![
+            TypedStmt::ExprStmt(
+                TypedExpr::NumSubExpr(
+                    TypedAstType::Number,
+                    Box::new(
+                        TypedExpr::NumExpr(
+                            TypedAstType::Number,
+                            TypedNumber::new(2)
+                        )
+                    ),
+                    Box::new(
+                        TypedExpr::NumExpr(
+                            TypedAstType::Number,
+                            TypedNumber::new(1)
+                        )
+                    )
+                )
+            )
+        ];
+
+        let rust_code = ToTs::to_ts(typed_stmts, None);
+
+        let expected_rust_code = "2-1;";
+
+        assert_eq!(rust_code, expected_rust_code);
+
+    }
+
+    #[test]
+    fn test_num_mul_expr_stmt() {
+        let typed_stmts = vec![
+            TypedStmt::ExprStmt(
+                TypedExpr::NumMulExpr(
+                    TypedAstType::Number,
+                    Box::new(
+                        TypedExpr::NumExpr(
+                            TypedAstType::Number,
+                            TypedNumber::new(2)
+                        )
+                    ),
+                    Box::new(
+                        TypedExpr::NumExpr(
+                            TypedAstType::Number,
+                            TypedNumber::new(1)
+                        )
+                    )
+                )
+            )
+        ];
+
+        let rust_code = ToTs::to_ts(typed_stmts, None);
+
+        let expected_rust_code = "2*1;";
+
+        assert_eq!(rust_code, expected_rust_code);
+
+    }
+
+    #[test]
+    fn test_num_div_expr_stmt() {
+        let typed_stmts = vec![
+            TypedStmt::ExprStmt(
+                TypedExpr::NumDivExpr(
+                    TypedAstType::Number,
+                    Box::new(
+                        TypedExpr::NumExpr(
+                            TypedAstType::Number,
+                            TypedNumber::new(4)
+                        )
+                    ),
+                    Box::new(
+                        TypedExpr::NumExpr(
+                            TypedAstType::Number,
+                            TypedNumber::new(2)
+                        )
+                    )
+                )
+            )
+        ];
+
+        let rust_code = ToTs::to_ts(typed_stmts, None);
+
+        let expected_rust_code = "4/2;";
+
+        assert_eq!(rust_code, expected_rust_code);
+    }
+
+    #[test]
+    fn test_num_multi_op_expr_stmt() {
+        let typed_stmts = vec![
+            TypedStmt::ExprStmt(
+                TypedExpr::NumAddExpr(
+                    TypedAstType::Number,
+                    Box::new(
+                        TypedExpr::NumMulExpr(
+                            TypedAstType::Number,
+                            Box::new(
+                                TypedExpr::NumExpr(
+                                    TypedAstType::Number,
+                                    TypedNumber::new(2)
+                                )
+                            ),
+                            Box::new(
+                                TypedExpr::NumExpr(
+                                    TypedAstType::Number,
+                                    TypedNumber::new(3)
+                                )
+                            )
+                        )
+                    ),
+                    Box::new(
+                        TypedExpr::NumExpr(
+                            TypedAstType::Number,
+                            TypedNumber::new(2)
+                        )
+                    )
+                )
+            )
+        ];
+
+        let rust_code = ToTs::to_ts(typed_stmts, None);
+
+        let expected_rust_code = "2*3+2;";
+
+        assert_eq!(rust_code, expected_rust_code);
+    }
+
+
+
+    #[test]
     fn test_call_expr_stmt() {
         let typed_stmts = vec![
             TypedStmt::ExprStmt(
