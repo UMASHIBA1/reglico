@@ -1,4 +1,4 @@
-use crate::parser::ast::{Stmt, Expr, VariableDeclaration, Ident, Types, Opcode, Func, ReturnStmt, CallExpr};
+use crate::parser::ast::{Stmt, Expr, VariableDeclaration, Ident, Types, Opcode, Func, ReturnStmt, CallExpr, Operation};
 use crate::type_parser::typed_ast::{TypedStmt, TypedIdent, TypedVariableDeclaration, TypedExpr, TypeFlag, TypedNumber, TypedAstType, TypedFunc, TypedFuncArg, TypedReturnStmt, TypedCallExpr};
 use std::collections::HashMap;
 
@@ -64,16 +64,35 @@ impl TypeCheckAndInference {
     fn check_and_inference_expr(&self, expr: Expr) -> TypedExpr {
         match expr {
             Expr::Num(num) => TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(num.get_num())),
-            Expr::Op(operation) => match operation.get_operation() {
-                // TODO: 後々String等の+演算等も出てくると思うのでここをStrAddExprとかFloatAddExprとか追加する
-                (l, Opcode::Add, r) => TypedExpr::NumAddExpr(
-                    TypedAstType::Number,
-                    Box::new(self.check_and_inference_expr(l)),
-                    Box::new(self.check_and_inference_expr(r))
-                ),
-            },
+            Expr::Op(operation) => self.check_and_inference_op(operation),
             Expr::Call(call_expr) => self.check_and_inference_call(call_expr),
             Expr::Ident(ident) => self.check_and_inference_ident(ident),
+        }
+    }
+
+    fn check_and_inference_op(&self, operation: Operation) -> TypedExpr {
+        match operation.get_operation() {
+            // TODO: 後々String等の+演算等も出てくると思うのでここをStrAddExprとかFloatAddExprとか追加する
+            (l, Opcode::Add, r) => TypedExpr::NumAddExpr(
+                TypedAstType::Number,
+                Box::new(self.check_and_inference_expr(l)),
+                Box::new(self.check_and_inference_expr(r))
+            ),
+            (l, Opcode::Sub, r) => TypedExpr::NumSubExpr(
+                TypedAstType::Number,
+                Box::new(self.check_and_inference_expr(l)),
+                Box::new(self.check_and_inference_expr(r))
+            ),
+            (l, Opcode::Mul, r) => TypedExpr::NumMulExpr(
+                TypedAstType::Number,
+                Box::new(self.check_and_inference_expr(l)),
+                Box::new(self.check_and_inference_expr(r))
+            ),
+            (l, Opcode::Div, r) => TypedExpr::NumDivExpr(
+                TypedAstType::Number,
+                Box::new(self.check_and_inference_expr(l)),
+                Box::new(self.check_and_inference_expr(r)),
+            )
         }
     }
 
@@ -278,6 +297,125 @@ mod tests {
                 TypedExpr::NumAddExpr(
                     TypedAstType::Number,
                     Box::new(TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(1))),
+                    Box::new(TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(2))),
+                )
+            )
+        ];
+
+        assert_eq!(typed_stmts, expected_typed_stmts)
+    }
+
+    #[test]
+    fn test_inference_num_sub_expr_stmt(){
+        let stmts = vec![
+            Stmt::expr_new(
+                Expr::op_new(
+                    Expr::num_new(1),
+                    Opcode::Sub,
+                    Expr::num_new(2),
+                )
+            )
+        ];
+
+        let typed_stmts = check_and_inference(stmts);
+
+        let expected_typed_stmts = vec![
+            TypedStmt::ExprStmt(
+                TypedExpr::NumSubExpr(
+                    TypedAstType::Number,
+                    Box::new(TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(1))),
+                    Box::new(TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(2))),
+                )
+            )
+        ];
+
+        assert_eq!(typed_stmts, expected_typed_stmts)
+    }
+
+    #[test]
+    fn test_inference_num_mul_expr_stmt(){
+        let stmts = vec![
+            Stmt::expr_new(
+                Expr::op_new(
+                    Expr::num_new(1),
+                    Opcode::Mul,
+                    Expr::num_new(2),
+                )
+            )
+        ];
+
+        let typed_stmts = check_and_inference(stmts);
+
+        let expected_typed_stmts = vec![
+            TypedStmt::ExprStmt(
+                TypedExpr::NumMulExpr(
+                    TypedAstType::Number,
+                    Box::new(TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(1))),
+                    Box::new(TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(2))),
+                )
+            )
+        ];
+
+        assert_eq!(typed_stmts, expected_typed_stmts)
+    }
+
+    #[test]
+    fn test_inference_num_div_expr_stmt(){
+        let stmts = vec![
+            Stmt::expr_new(
+                Expr::op_new(
+                    Expr::num_new(1),
+                    Opcode::Div,
+                    Expr::num_new(2),
+                )
+            )
+        ];
+
+        let typed_stmts = check_and_inference(stmts);
+
+        let expected_typed_stmts = vec![
+            TypedStmt::ExprStmt(
+                TypedExpr::NumDivExpr(
+                    TypedAstType::Number,
+                    Box::new(TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(1))),
+                    Box::new(TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(2))),
+                )
+            )
+        ];
+
+        assert_eq!(typed_stmts, expected_typed_stmts)
+    }
+
+    #[test]
+    fn test_inference_num_multi_op_expr_stmt(){
+        let stmts = vec![
+            Stmt::expr_new(
+
+                Expr::op_new(
+                    Expr::op_new(
+                        Expr::num_new(1),
+                        Opcode::Add,
+                        Expr::num_new(2),
+                    ),
+                    Opcode::Mul,
+                    Expr::num_new(2),
+                )
+            )
+        ];
+
+        let typed_stmts = check_and_inference(stmts);
+
+        let expected_typed_stmts = vec![
+            TypedStmt::ExprStmt(
+                TypedExpr::NumMulExpr(
+                    TypedAstType::Number,
+                    Box::new(
+                        TypedExpr::NumAddExpr(
+                            TypedAstType::Number,
+                            Box::new(TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(1))),
+                            Box::new(TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(2))),
+                        )
+                    ),
                     Box::new(TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(2))),
                 )
             )

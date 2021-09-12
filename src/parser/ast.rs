@@ -231,6 +231,9 @@ impl Expr {
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub enum Opcode {
     Add,
+    Sub,
+    Mul,
+    Div
 }
 
 #[derive(Debug, Eq, PartialEq, Clone)]

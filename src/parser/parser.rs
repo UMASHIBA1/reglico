@@ -36,6 +36,369 @@ mod test {
     }
 
     #[test]
+    fn test_op_sub() {
+        lalrpop_mod!(pub reglico);
+
+        let expr = reglico::ProgramParser::new().parse("2 - 1;").unwrap();
+
+        let expected_expr = vec![
+            Stmt::expr_new(
+                Expr::op_new(
+                    Expr::num_new(2),
+                    Opcode::Sub,
+                    Expr::num_new(1),
+                )
+            )
+        ];
+
+        assert_eq!(expr, expected_expr);
+    }
+
+    #[test]
+    fn test_op_mul() {
+        lalrpop_mod!(pub reglico);
+
+        let expr = reglico::ProgramParser::new().parse("2 * 2;").unwrap();
+
+        let expected_expr = vec![
+            Stmt::expr_new(
+                Expr::op_new(
+                    Expr::num_new(2),
+                    Opcode::Mul,
+                    Expr::num_new(2),
+                )
+            )
+        ];
+
+        assert_eq!(expr, expected_expr);
+    }
+
+    #[test]
+    fn test_op_div() {
+        lalrpop_mod!(pub reglico);
+
+        let expr = reglico::ProgramParser::new().parse("4 / 2;").unwrap();
+
+        let expected_expr = vec![
+            Stmt::expr_new(
+                Expr::op_new(
+                    Expr::num_new(4),
+                    Opcode::Div,
+                    Expr::num_new(2),
+                )
+            )
+        ];
+
+        assert_eq!(expr, expected_expr);
+    }
+
+    #[test]
+    fn test_op_add_and_sub() {
+        lalrpop_mod!(pub reglico);
+
+        let expr = reglico::ProgramParser::new().parse("4 + 2 - 3;").unwrap();
+
+        let expected_expr = vec![
+            Stmt::expr_new(
+                Expr::op_new(
+                    Expr::op_new(Expr::num_new(4), Opcode::Add, Expr::num_new(2)),
+                    Opcode::Sub,
+                    Expr::num_new(3),
+                )
+            )
+        ];
+
+        assert_eq!(expr, expected_expr);
+    }
+
+    #[test]
+    fn test_op_sub_and_add() {
+        lalrpop_mod!(pub reglico);
+
+        let expr = reglico::ProgramParser::new().parse("4 - 2 + 3;").unwrap();
+
+        let expected_expr = vec![
+            Stmt::expr_new(
+                Expr::op_new(
+                    Expr::op_new(Expr::num_new(4), Opcode::Sub, Expr::num_new(2)),
+                    Opcode::Add,
+                    Expr::num_new(3),
+                )
+            )
+        ];
+
+        assert_eq!(expr, expected_expr);
+    }
+
+    #[test]
+    fn test_op_add_and_add() {
+        lalrpop_mod!(pub reglico);
+
+        let expr = reglico::ProgramParser::new().parse("4 + 2 + 3;").unwrap();
+
+        let expected_expr = vec![
+            Stmt::expr_new(
+                Expr::op_new(
+                    Expr::op_new(Expr::num_new(4), Opcode::Add, Expr::num_new(2)),
+                    Opcode::Add,
+                    Expr::num_new(3),
+                )
+            )
+        ];
+
+        assert_eq!(expr, expected_expr);
+    }
+
+    #[test]
+    fn test_op_sub_and_sub() {
+        lalrpop_mod!(pub reglico);
+
+        let expr = reglico::ProgramParser::new().parse("6 - 2 - 3;").unwrap();
+
+        let expected_expr = vec![
+            Stmt::expr_new(
+                Expr::op_new(
+                    Expr::op_new(Expr::num_new(6), Opcode::Sub, Expr::num_new(2)),
+                    Opcode::Sub,
+                    Expr::num_new(3),
+                )
+            )
+        ];
+
+        assert_eq!(expr, expected_expr);
+    }
+
+    #[test]
+    fn test_op_add_and_mul() {
+        lalrpop_mod!(pub reglico);
+
+        let expr = reglico::ProgramParser::new().parse("6 + 2 * 3;").unwrap();
+
+        let expected_expr = vec![
+            Stmt::expr_new(
+                Expr::op_new(
+                    Expr::num_new(6),
+                    Opcode::Add,
+                    Expr::op_new(Expr::num_new(2), Opcode::Mul, Expr::num_new(3)),
+                )
+            )
+        ];
+
+        assert_eq!(expr, expected_expr);
+    }
+
+    #[test]
+    fn test_op_mul_and_add() {
+        lalrpop_mod!(pub reglico);
+
+        let expr = reglico::ProgramParser::new().parse("6 * 2 + 3;").unwrap();
+
+        let expected_expr = vec![
+            Stmt::expr_new(
+                Expr::op_new(
+                    Expr::op_new(Expr::num_new(6), Opcode::Mul, Expr::num_new(2)),
+                    Opcode::Add,
+                    Expr::num_new(3),
+                )
+            )
+        ];
+
+        assert_eq!(expr, expected_expr);
+    }
+
+    #[test]
+    fn test_op_add_and_div() {
+        lalrpop_mod!(pub reglico);
+
+        let expr = reglico::ProgramParser::new().parse("6 + 4 / 2;").unwrap();
+
+        let expected_expr = vec![
+            Stmt::expr_new(
+                Expr::op_new(
+                    Expr::num_new(6),
+                    Opcode::Add,
+                    Expr::op_new(Expr::num_new(4), Opcode::Div, Expr::num_new(2)),
+                )
+            )
+        ];
+
+        assert_eq!(expr, expected_expr);
+    }
+
+    #[test]
+    fn test_op_div_and_add() {
+        lalrpop_mod!(pub reglico);
+
+        let expr = reglico::ProgramParser::new().parse("6 / 2 + 3;").unwrap();
+
+        let expected_expr = vec![
+            Stmt::expr_new(
+                Expr::op_new(
+                    Expr::op_new(Expr::num_new(6), Opcode::Div, Expr::num_new(2)),
+                    Opcode::Add,
+                    Expr::num_new(3),
+                )
+            )
+        ];
+
+        assert_eq!(expr, expected_expr);
+    }
+
+
+    #[test]
+    fn test_op_sub_and_mul() {
+        lalrpop_mod!(pub reglico);
+
+        let expr = reglico::ProgramParser::new().parse("8 - 2 * 3;").unwrap();
+
+        let expected_expr = vec![
+            Stmt::expr_new(
+                Expr::op_new(
+                    Expr::num_new(8),
+                    Opcode::Sub,
+                    Expr::op_new(Expr::num_new(2), Opcode::Mul, Expr::num_new(3)),
+                )
+            )
+        ];
+
+        assert_eq!(expr, expected_expr);
+    }
+
+    #[test]
+    fn test_op_mul_and_sub() {
+        lalrpop_mod!(pub reglico);
+
+        let expr = reglico::ProgramParser::new().parse("6 * 2 - 3;").unwrap();
+
+        let expected_expr = vec![
+            Stmt::expr_new(
+                Expr::op_new(
+                    Expr::op_new(Expr::num_new(6), Opcode::Mul, Expr::num_new(2)),
+                    Opcode::Sub,
+                    Expr::num_new(3),
+                )
+            )
+        ];
+
+        assert_eq!(expr, expected_expr);
+    }
+
+    #[test]
+    fn test_op_sub_and_div() {
+        lalrpop_mod!(pub reglico);
+
+        let expr = reglico::ProgramParser::new().parse("6 - 4 / 2;").unwrap();
+
+        let expected_expr = vec![
+            Stmt::expr_new(
+                Expr::op_new(
+                    Expr::num_new(6),
+                    Opcode::Sub,
+                    Expr::op_new(Expr::num_new(4), Opcode::Div, Expr::num_new(2)),
+                )
+            )
+        ];
+
+        assert_eq!(expr, expected_expr);
+    }
+
+    #[test]
+    fn test_op_div_and_sub() {
+        lalrpop_mod!(pub reglico);
+
+        let expr = reglico::ProgramParser::new().parse("8 / 2 - 3;").unwrap();
+
+        let expected_expr = vec![
+            Stmt::expr_new(
+                Expr::op_new(
+                    Expr::op_new(Expr::num_new(8), Opcode::Div, Expr::num_new(2)),
+                    Opcode::Sub,
+                    Expr::num_new(3),
+                )
+            )
+        ];
+
+        assert_eq!(expr, expected_expr);
+    }
+
+
+    #[test]
+    fn test_op_mul_and_mul() {
+        lalrpop_mod!(pub reglico);
+
+        let expr = reglico::ProgramParser::new().parse("8 * 2 * 3;").unwrap();
+
+        let expected_expr = vec![
+            Stmt::expr_new(
+                Expr::op_new(
+                    Expr::op_new(Expr::num_new(8), Opcode::Mul, Expr::num_new(2)),
+                    Opcode::Mul,
+                    Expr::num_new(3),
+                )
+            )
+        ];
+
+        assert_eq!(expr, expected_expr);
+    }
+
+    #[test]
+    fn test_op_mul_and_div() {
+        lalrpop_mod!(pub reglico);
+
+        let expr = reglico::ProgramParser::new().parse("3 * 2 / 3;").unwrap();
+
+        let expected_expr = vec![
+            Stmt::expr_new(
+                Expr::op_new(
+                    Expr::op_new(Expr::num_new(3), Opcode::Mul, Expr::num_new(2)),
+                    Opcode::Div,
+                    Expr::num_new(3),
+                )
+            )
+        ];
+
+        assert_eq!(expr, expected_expr);
+    }
+
+    #[test]
+    fn test_op_div_and_mul() {
+        lalrpop_mod!(pub reglico);
+
+        let expr = reglico::ProgramParser::new().parse("6 / 2 * 3;").unwrap();
+
+        let expected_expr = vec![
+            Stmt::expr_new(
+                Expr::op_new(
+                    Expr::op_new(Expr::num_new(6), Opcode::Div, Expr::num_new(2)),
+                    Opcode::Mul,
+                    Expr::num_new(3),
+                )
+            )
+        ];
+
+        assert_eq!(expr, expected_expr);
+    }
+
+    #[test]
+    fn test_op_div_and_div() {
+        lalrpop_mod!(pub reglico);
+
+        let expr = reglico::ProgramParser::new().parse("8 / 2 / 4;").unwrap();
+
+        let expected_expr = vec![
+            Stmt::expr_new(
+                Expr::op_new(
+                    Expr::op_new(Expr::num_new(8), Opcode::Div, Expr::num_new(2)),
+                    Opcode::Div,
+                    Expr::num_new(4),
+                )
+            )
+        ];
+
+        assert_eq!(expr, expected_expr);
+    }
+
+    #[test]
     fn test_call() {
         lalrpop_mod!(pub reglico);
 

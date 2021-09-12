@@ -77,6 +77,9 @@ impl ToTs {
                 }
             },
             TypedExpr::NumAddExpr(_, l, r) => format!("{}+{}", self.expr_to_ts(*l), self.expr_to_ts(*r)),
+            TypedExpr::NumSubExpr(_, l, r) => format!("{}-{}", self.expr_to_ts(*l), self.expr_to_ts(*r)),
+            TypedExpr::NumMulExpr(_, l, r) => format!("{}*{}", self.expr_to_ts(*l), self.expr_to_ts(*r)),
+            TypedExpr::NumDivExpr(_, l, r) => format!("{}/{}", self.expr_to_ts(*l), self.expr_to_ts(*r)),
             TypedExpr::CallExpr(_, call) =>self.call_expr_to_ts(call),
         }
     }
@@ -338,6 +341,137 @@ mod tests {
 
         assert_eq!(ts_code, expected_ts_code);
     }
+
+
+    #[test]
+    fn test_num_sub_expr_stmt() {
+        let typed_stmts = vec![
+            TypedStmt::ExprStmt(
+                TypedExpr::NumSubExpr(
+                    TypedAstType::Number,
+                    Box::new(
+                        TypedExpr::NumExpr(
+                            TypedAstType::Number,
+                            TypedNumber::new(2)
+                        )
+                    ),
+                    Box::new(
+                        TypedExpr::NumExpr(
+                            TypedAstType::Number,
+                            TypedNumber::new(1)
+                        )
+                    )
+                )
+            )
+        ];
+
+        let rust_code = ToTs::to_ts(typed_stmts, None);
+
+        let expected_rust_code = "2-1;";
+
+        assert_eq!(rust_code, expected_rust_code);
+
+    }
+
+    #[test]
+    fn test_num_mul_expr_stmt() {
+        let typed_stmts = vec![
+            TypedStmt::ExprStmt(
+                TypedExpr::NumMulExpr(
+                    TypedAstType::Number,
+                    Box::new(
+                        TypedExpr::NumExpr(
+                            TypedAstType::Number,
+                            TypedNumber::new(2)
+                        )
+                    ),
+                    Box::new(
+                        TypedExpr::NumExpr(
+                            TypedAstType::Number,
+                            TypedNumber::new(1)
+                        )
+                    )
+                )
+            )
+        ];
+
+        let rust_code = ToTs::to_ts(typed_stmts, None);
+
+        let expected_rust_code = "2*1;";
+
+        assert_eq!(rust_code, expected_rust_code);
+
+    }
+
+    #[test]
+    fn test_num_div_expr_stmt() {
+        let typed_stmts = vec![
+            TypedStmt::ExprStmt(
+                TypedExpr::NumDivExpr(
+                    TypedAstType::Number,
+                    Box::new(
+                        TypedExpr::NumExpr(
+                            TypedAstType::Number,
+                            TypedNumber::new(4)
+                        )
+                    ),
+                    Box::new(
+                        TypedExpr::NumExpr(
+                            TypedAstType::Number,
+                            TypedNumber::new(2)
+                        )
+                    )
+                )
+            )
+        ];
+
+        let rust_code = ToTs::to_ts(typed_stmts, None);
+
+        let expected_rust_code = "4/2;";
+
+        assert_eq!(rust_code, expected_rust_code);
+    }
+
+    #[test]
+    fn test_num_multi_op_expr_stmt() {
+        let typed_stmts = vec![
+            TypedStmt::ExprStmt(
+                TypedExpr::NumAddExpr(
+                    TypedAstType::Number,
+                    Box::new(
+                        TypedExpr::NumMulExpr(
+                            TypedAstType::Number,
+                            Box::new(
+                                TypedExpr::NumExpr(
+                                    TypedAstType::Number,
+                                    TypedNumber::new(2)
+                                )
+                            ),
+                            Box::new(
+                                TypedExpr::NumExpr(
+                                    TypedAstType::Number,
+                                    TypedNumber::new(3)
+                                )
+                            )
+                        )
+                    ),
+                    Box::new(
+                        TypedExpr::NumExpr(
+                            TypedAstType::Number,
+                            TypedNumber::new(2)
+                        )
+                    )
+                )
+            )
+        ];
+
+        let rust_code = ToTs::to_ts(typed_stmts, None);
+
+        let expected_rust_code = "2*3+2;";
+
+        assert_eq!(rust_code, expected_rust_code);
+    }
+
 
 
     #[test]
