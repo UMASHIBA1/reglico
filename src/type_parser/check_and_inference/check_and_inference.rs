@@ -306,6 +306,87 @@ mod tests {
     }
 
     #[test]
+    fn test_inference_num_sub_expr_stmt(){
+        let stmts = vec![
+            Stmt::expr_new(
+                Expr::op_new(
+                    Expr::num_new(1),
+                    Opcode::Sub,
+                    Expr::num_new(2),
+                )
+            )
+        ];
+
+        let typed_stmts = check_and_inference(stmts);
+
+        let expected_typed_stmts = vec![
+            TypedStmt::ExprStmt(
+                TypedExpr::NumSubExpr(
+                    TypedAstType::Number,
+                    Box::new(TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(1))),
+                    Box::new(TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(2))),
+                )
+            )
+        ];
+
+        assert_eq!(typed_stmts, expected_typed_stmts)
+    }
+
+    #[test]
+    fn test_inference_num_mul_expr_stmt(){
+        let stmts = vec![
+            Stmt::expr_new(
+                Expr::op_new(
+                    Expr::num_new(1),
+                    Opcode::Mul,
+                    Expr::num_new(2),
+                )
+            )
+        ];
+
+        let typed_stmts = check_and_inference(stmts);
+
+        let expected_typed_stmts = vec![
+            TypedStmt::ExprStmt(
+                TypedExpr::NumMulExpr(
+                    TypedAstType::Number,
+                    Box::new(TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(1))),
+                    Box::new(TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(2))),
+                )
+            )
+        ];
+
+        assert_eq!(typed_stmts, expected_typed_stmts)
+    }
+
+    #[test]
+    fn test_inference_num_div_expr_stmt(){
+        let stmts = vec![
+            Stmt::expr_new(
+                Expr::op_new(
+                    Expr::num_new(1),
+                    Opcode::Div,
+                    Expr::num_new(2),
+                )
+            )
+        ];
+
+        let typed_stmts = check_and_inference(stmts);
+
+        let expected_typed_stmts = vec![
+            TypedStmt::ExprStmt(
+                TypedExpr::NumDivExpr(
+                    TypedAstType::Number,
+                    Box::new(TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(1))),
+                    Box::new(TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(2))),
+                )
+            )
+        ];
+
+        assert_eq!(typed_stmts, expected_typed_stmts)
+    }
+
+    #[test]
     fn test_inference_num_ident_expr_stmt(){
         let stmts = vec![
             Stmt::var_new(
