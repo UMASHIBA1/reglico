@@ -35,80 +35,6 @@ impl TypeCheckAndInference {
         }
     }
 
-
-    pub fn check_and_inference_expr(&self, expr: Expr) -> TypedExpr {
-        match expr {
-            Expr::Num(num) => TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(num.get_num())),
-            Expr::Op(operation) => self.check_and_inference_op(operation),
-            Expr::Call(call_expr) => self.check_and_inference_call(call_expr),
-            Expr::Ident(ident) => self.check_and_inference_ident(ident),
-        }
-    }
-
-    fn check_and_inference_op(&self, operation: Operation) -> TypedExpr {
-        match operation.get_operation() {
-            // TODO: 後々String等の+演算等も出てくると思うのでここをStrAddExprとかFloatAddExprとか追加する
-            (l, Opcode::Add, r) => TypedExpr::NumAddExpr(
-                TypedAstType::Number,
-                Box::new(self.check_and_inference_expr(l)),
-                Box::new(self.check_and_inference_expr(r))
-            ),
-            (l, Opcode::Sub, r) => TypedExpr::NumSubExpr(
-                TypedAstType::Number,
-                Box::new(self.check_and_inference_expr(l)),
-                Box::new(self.check_and_inference_expr(r))
-            ),
-            (l, Opcode::Mul, r) => TypedExpr::NumMulExpr(
-                TypedAstType::Number,
-                Box::new(self.check_and_inference_expr(l)),
-                Box::new(self.check_and_inference_expr(r))
-            ),
-            (l, Opcode::Div, r) => TypedExpr::NumDivExpr(
-                TypedAstType::Number,
-                Box::new(self.check_and_inference_expr(l)),
-                Box::new(self.check_and_inference_expr(r)),
-            )
-        }
-    }
-
-    fn check_and_inference_call(&self, call_expr: CallExpr) -> TypedExpr {
-        let func_name = call_expr.get_func_name();
-        let args = call_expr.get_args();
-
-        let typed_func_name = self.convert_ident_to_typed_ident(func_name);
-
-        let typed_ast_type = self.type_env.get(&typed_func_name);
-
-        let mut typed_args = vec![];
-        for arg in args {
-            typed_args.push(self.check_and_inference_expr(arg));
-        }
-
-
-
-        let func_return_ast_type = match typed_ast_type {
-            Some(typed_ast_type) => {
-                match typed_ast_type {
-                    TypedAstType::Func(_, return_type) => {
-                        match return_type {
-                            Some(return_type) => return_type,
-                            None => panic!("in type_parsing call, the calling func is not valid"),
-                        }
-                    },
-                    _ => panic!("parsing call is not call func: {:?}", typed_ast_type)
-                }
-            },
-            None => panic!("parsing call is not defined value{:?}", &typed_func_name)
-        };
-
-        let typed_call_expr = TypedCallExpr::new(
-            typed_func_name,
-            typed_args
-        );
-
-        TypedExpr::CallExpr(*func_return_ast_type.clone(), typed_call_expr)
-    }
-
     fn check_and_inference_func(&mut self, func: Func) -> TypedFunc {
         let name = self.convert_ident_to_typed_ident(func.get_name());
         let args = func.get_func_args();
@@ -181,20 +107,6 @@ impl TypeCheckAndInference {
             typed_return_stmt
         )
 
-    }
-
-    fn check_and_inference_ident(&self, ident: Ident) -> TypedExpr {
-        let typed_ident  = self.convert_ident_to_typed_ident(ident);
-        let typed_ast_type = self.type_env.get(&typed_ident);
-        match typed_ast_type {
-            Some(typed_ast_type) => {
-                // TODO: 今後Num意外にもたくさんIdentに格納されるものが増えるはずなので増えた際はここで判定処理をする
-                TypedExpr::NumIdentExpr(typed_ast_type.clone(), typed_ident)
-            },
-            None => {
-                panic!("parsing ident is not defined value${:?}", typed_ident);
-            }
-        }
     }
 
     fn convert_return_stmt_to_typed_return_stmt(&self, return_stmt: ReturnStmt) -> TypedReturnStmt {
