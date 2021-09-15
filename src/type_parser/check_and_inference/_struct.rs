@@ -1,5 +1,5 @@
-use crate::parser::ast::{Stmt, Expr, Ident, Types, Opcode, Func, ReturnStmt, CallExpr, Operation};
-use crate::type_parser::typed_ast::{TypedStmt, TypedIdent, TypedExpr, TypeFlag, TypedNumber, TypedAstType, TypedFunc, TypedFuncArg, TypedReturnStmt, TypedCallExpr};
+use crate::parser::ast::{Stmt, Ident, Types, ReturnStmt};
+use crate::type_parser::typed_ast::{TypedStmt, TypedIdent, TypeFlag, TypedAstType, TypedReturnStmt};
 use std::collections::HashMap;
 
 pub struct TypeCheckAndInference {
@@ -35,79 +35,7 @@ impl TypeCheckAndInference {
         }
     }
 
-    fn check_and_inference_func(&mut self, func: Func) -> TypedFunc {
-        let name = self.convert_ident_to_typed_ident(func.get_name());
-        let args = func.get_func_args();
-        let stmts =  func.get_stmts();
-        let mut arg_typed_ast_type = vec![];
 
-        // NOTE: check_and_inference args type
-        let mut typed_args = vec![];
-        for arg in args {
-            let arg_type = arg.get_arg_type();
-            let typed_arg_type = self.convert_type_to_typed_type(arg_type.clone());
-
-            arg_typed_ast_type.push(
-                self.convert_type_to_typed_ast_type(arg_type)
-            );
-
-            typed_args.push(
-                TypedFuncArg::new(
-                    self.convert_ident_to_typed_ident(arg.get_name()),
-                    typed_arg_type,
-                )
-            );
-        };
-
-        let mut func_type_env = self.type_env.clone();
-        // NOTE: add arg type to type_env
-        for (i, typed_arg) in typed_args.iter().enumerate() {
-            func_type_env.insert(typed_arg.get_name(), arg_typed_ast_type.get(i).unwrap().clone());
-        };
-
-        let mut func_stmts = TypeCheckAndInference::check_and_inference(stmts, Some(&func_type_env));
-        let mut typed_return_stmt: Option<TypedReturnStmt> = None;
-        let mut return_stmt_index: Option<usize> = None;
-        for (i, stmt) in func_stmts.iter().enumerate() {
-            match stmt {
-                TypedStmt::ReturnStmt(_) => {
-                    return_stmt_index = Some(i);
-                },
-                _ => {}
-            }
-        }
-        match return_stmt_index {
-            Some(i) => {
-                let will_typed_return_stmt = func_stmts.remove(i);
-                match will_typed_return_stmt {
-                    TypedStmt::ReturnStmt(return_stmt) => {
-                        typed_return_stmt = Some(return_stmt);
-                    }
-                    _ => {},
-                };
-            },
-            _ => {}
-        }
-
-        let return_typed_ast_type = {
-            match &typed_return_stmt {
-                Some(typed_return_stmt) => {
-                    Some(Box::new(typed_return_stmt.get_expr().get_typed_ast_type()))
-                },
-                None => Some(Box::new(TypedAstType::Void)),
-            }
-        };
-
-        self.type_env.insert(name.clone(), TypedAstType::Func(arg_typed_ast_type, return_typed_ast_type));
-
-        TypedFunc::new(
-            name,
-            typed_args,
-            func_stmts,
-            typed_return_stmt
-        )
-
-    }
 
     fn convert_return_stmt_to_typed_return_stmt(&self, return_stmt: ReturnStmt) -> TypedReturnStmt {
         TypedReturnStmt::new(
@@ -126,7 +54,7 @@ impl TypeCheckAndInference {
         }
     }
 
-    fn convert_type_to_typed_ast_type(&self, type_flag: Types) -> TypedAstType {
+    pub fn convert_type_to_typed_ast_type(&self, type_flag: Types) -> TypedAstType {
         match type_flag {
             Types::NumberType => TypedAstType::Number,
             _ => TypedAstType::Func(vec![TypedAstType::Number],Some(Box::new(TypedAstType::Number))) // TODO: 適当に書いた、後で直す
