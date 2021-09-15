@@ -1,5 +1,6 @@
-pub mod check_and_inference;
 mod _struct;
-mod variable_declaration;
+pub mod check_and_inference;
+mod common_methods;
 mod expr_stmt;
 mod func;
+mod variable_declaration;
