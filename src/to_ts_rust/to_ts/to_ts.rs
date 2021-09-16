@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use crate::type_parser::typed_ast::{TypedIdent, TypedStmt, TypedVariableDeclaration, TypeFlag, TypedExpr, TypedCallExpr, TypedFunc, TypedNumber, TypedAstType, TypedReturnStmt};
-use crate::to_js_rust::common_struct::CanAssignObj;
+use crate::to_ts_rust::common_struct::CanAssignObj;
 
 struct ToTs {
     var_env: HashMap<TypedIdent, Option<CanAssignObj>>
@@ -229,9 +229,9 @@ impl ToTs {
 #[cfg(test)]
 mod tests {
     use crate::type_parser::typed_ast::{TypedStmt, TypedFunc, TypedIdent, TypedFuncArg, TypedReturnStmt, TypedExpr, TypedAstType, TypedVariableDeclaration, TypedCallExpr, TypedNumber, TypeFlag};
-    use crate::to_js_rust::to_ts::to_ts::ToTs;
+    use crate::to_ts_rust::to_ts::to_ts::ToTs;
     use std::collections::HashMap;
-    use crate::to_js_rust::common_struct::CanAssignObj;
+    use crate::to_ts_rust::common_struct::CanAssignObj;
 
     #[test]
     fn test_no_type_var_declaration() {
