@@ -1,5 +1,5 @@
 use crate::parser::ast::{Ident, Types};
-use crate::type_parser::check_and_inference::_struct::TypeCheckAndInference;
+use crate::type_parser::check_and_inference::type_check_and_inference_struct::TypeCheckAndInference;
 use crate::type_parser::typed_ast::{TypeFlag, TypedAstType, TypedIdent};
 
 impl TypeCheckAndInference {

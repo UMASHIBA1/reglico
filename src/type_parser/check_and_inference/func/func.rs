@@ -1,4 +1,4 @@
-use crate::type_parser::check_and_inference::_struct::TypeCheckAndInference;
+use crate::type_parser::check_and_inference::type_check_and_inference_struct::TypeCheckAndInference;
 use crate::parser::ast::Func;
 use crate::type_parser::typed_ast::{TypedFunc, TypedFuncArg, TypedReturnStmt, TypedStmt, TypedAstType};
 
@@ -81,8 +81,8 @@ impl TypeCheckAndInference {
 #[cfg(test)]
 mod tests {
     use crate::parser::ast::{Stmt, Ident, FuncArg, Types, ReturnStmt, Expr, Opcode};
-    use crate::type_parser::check_and_inference::check_and_inference::check_and_inference;
     use crate::type_parser::typed_ast::{TypedStmt, TypedFunc, TypedIdent, TypedFuncArg, TypeFlag, TypedReturnStmt, TypedExpr, TypedAstType};
+    use crate::type_parser::type_parser::type_parser;
 
     #[test]
     fn test_inference_func(){
@@ -105,7 +105,7 @@ mod tests {
             ),
         ];
 
-        let typed_stmts = check_and_inference(stmts);
+        let typed_stmts = type_parser(stmts);
 
         let expected_typed_stmts = vec![
             TypedStmt::Func(

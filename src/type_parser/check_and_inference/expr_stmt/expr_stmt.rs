@@ -1,4 +1,4 @@
-use crate::type_parser::check_and_inference::_struct::TypeCheckAndInference;
+use crate::type_parser::check_and_inference::type_check_and_inference_struct::TypeCheckAndInference;
 use crate::parser::ast::{Expr, Operation, Opcode, CallExpr, Ident};
 use crate::type_parser::typed_ast::{TypedExpr, TypedAstType, TypedNumber, TypedCallExpr};
 
@@ -95,8 +95,8 @@ impl TypeCheckAndInference {
 #[cfg(test)]
 mod tests {
     use crate::parser::ast::{Stmt, Expr, Opcode, Ident, Types, FuncArg, ReturnStmt};
-    use crate::type_parser::check_and_inference::check_and_inference::check_and_inference;
     use crate::type_parser::typed_ast::{TypedStmt, TypedExpr, TypedAstType, TypedNumber, TypedVariableDeclaration, TypedIdent, TypeFlag, TypedFunc, TypedFuncArg, TypedReturnStmt, TypedCallExpr};
+    use crate::type_parser::type_parser::type_parser;
 
     #[test]
     fn test_inference_num_add_expr_stmt(){
@@ -110,7 +110,7 @@ mod tests {
             )
         ];
 
-        let typed_stmts = check_and_inference(stmts);
+        let typed_stmts = type_parser(stmts);
 
         let expected_typed_stmts = vec![
             TypedStmt::ExprStmt(
@@ -137,7 +137,7 @@ mod tests {
             )
         ];
 
-        let typed_stmts = check_and_inference(stmts);
+        let typed_stmts = type_parser(stmts);
 
         let expected_typed_stmts = vec![
             TypedStmt::ExprStmt(
@@ -164,7 +164,7 @@ mod tests {
             )
         ];
 
-        let typed_stmts = check_and_inference(stmts);
+        let typed_stmts = type_parser(stmts);
 
         let expected_typed_stmts = vec![
             TypedStmt::ExprStmt(
@@ -191,7 +191,7 @@ mod tests {
             )
         ];
 
-        let typed_stmts = check_and_inference(stmts);
+        let typed_stmts = type_parser(stmts);
 
         let expected_typed_stmts = vec![
             TypedStmt::ExprStmt(
@@ -223,7 +223,7 @@ mod tests {
             )
         ];
 
-        let typed_stmts = check_and_inference(stmts);
+        let typed_stmts = type_parser(stmts);
 
         let expected_typed_stmts = vec![
             TypedStmt::ExprStmt(
@@ -255,7 +255,7 @@ mod tests {
             Stmt::expr_new(Expr::ident_new(Ident::new("tmp1".to_string())))
         ];
 
-        let typed_stmts = check_and_inference(stmts);
+        let typed_stmts = type_parser(stmts);
 
         let expected_typed_stmts = vec![
             TypedStmt::VariableDeclaration(
@@ -304,7 +304,7 @@ mod tests {
             )
         ];
 
-        let typed_stmts = check_and_inference(stmts);
+        let typed_stmts = type_parser(stmts);
 
         let expected_typed_stmts = vec![
             TypedStmt::Func(
