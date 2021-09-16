@@ -1,4 +1,4 @@
-use crate::type_parser::typed_ast::{TypedFunc, TypedExpr};
+use crate::type_parser::typed_ast::{TypedExpr, TypedFunc};
 
 #[derive(Debug, Clone)]
 pub enum CanAssignObj {
