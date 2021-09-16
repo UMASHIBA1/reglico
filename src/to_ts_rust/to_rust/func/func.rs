@@ -119,7 +119,7 @@ mod tests {
 
         let rust_code = ToRust::to_rust(typed_stmts, None);
 
-        let expected_rust_code = "fn add(a:i32,b:i32)->i32{a+b}";
+        let expected_rust_code = "fn add(a:f32,b:f32)->f32{a+b}";
 
         assert_eq!(rust_code, expected_rust_code);
     }

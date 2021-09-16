@@ -75,7 +75,7 @@ mod tests {
 
         let rust_code = ToRust::to_rust(typed_stmts, None);
 
-        let expected_rust_code = "let tmp1:i32=0;";
+        let expected_rust_code = "let tmp1:f32=0;";
 
         assert_eq!(rust_code, expected_rust_code);
     }
