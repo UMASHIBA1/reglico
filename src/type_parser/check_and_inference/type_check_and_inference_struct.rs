@@ -48,3 +48,28 @@ impl TypeCheckAndInference {
         TypedReturnStmt::new(self.check_and_inference_expr(return_stmt.get_expr()))
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::parser::ast::{Stmt, Expr};
+    use crate::type_parser::type_parser::type_parser;
+    use crate::type_parser::typed_ast::{TypedStmt, TypedReturnStmt, TypedExpr, TypedAstType, TypedNumber};
+
+    #[test]
+    fn test_check_and_inference_return_stmt() {
+        let stmts = vec![Stmt::return_new(Expr::num_new(1))];
+
+        let typed_stmt = type_parser(stmts);
+
+        let expected_typed_stmts = vec![TypedStmt::ReturnStmt(
+            TypedReturnStmt::new(TypedExpr::NumExpr(
+                TypedAstType::Number,
+                TypedNumber::new(1),
+            ))
+        )];
+
+        assert_eq!(typed_stmt, expected_typed_stmts)
+
+    }
+
+}

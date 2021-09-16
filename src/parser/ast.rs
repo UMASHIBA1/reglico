@@ -241,6 +241,10 @@ impl Stmt {
     pub fn func_new(name: Ident, args: Vec<FuncArg>, stmts: Vec<Stmt>) -> Stmt {
         Stmt::Func(Func::new(name, args, stmts))
     }
+
+    pub fn return_new(expr: Expr) -> Stmt {
+        Stmt::ReturnStmt(ReturnStmt::new(expr))
+    }
 }
 
 #[cfg(test)]
