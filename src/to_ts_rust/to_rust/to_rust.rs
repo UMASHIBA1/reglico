@@ -2,8 +2,8 @@ use crate::type_parser::typed_ast::{TypedStmt, TypedVariableDeclaration, TypedEx
 use std::collections::HashMap;
 use crate::to_ts_rust::common_struct::CanAssignObj;
 
-struct ToRust {
-    var_env: HashMap<TypedIdent, Option<CanAssignObj>>,
+pub struct ToRust {
+    pub var_env: HashMap<TypedIdent, Option<CanAssignObj>>,
 }
 
 impl ToRust {
@@ -210,35 +210,7 @@ impl ToRust {
             self.expr_to_rust(expr)
     }
 
-    fn type_flag_to_rust(&self, type_flag: TypeFlag) -> String {
-        match type_flag {
-            TypeFlag::NumberType => "i32".to_string()
-        }
-    }
-
-    fn typed_ast_type_to_rust(&self, typed_ast_type: TypedAstType) -> String {
-        match typed_ast_type {
-            TypedAstType::Number => "i32".to_string(),
-            TypedAstType::Void => "()".to_string(),
-            _ => "()".to_string() // TODO: Funcの型生成するの面倒くさいので後回しにしてます、あとでやりましょう！
-        }
-    }
-
-    fn is_exist_ident(&self, ident: &TypedIdent) -> bool {
-        match self.var_env.get(ident) {
-            Some(option_type_expr) => {
-                match option_type_expr {
-                    Some(_) => true,
-                    None => false,
-                }
-            },
-            None => false,
-        }
-    }
-
 }
-
-
 
 #[cfg(test)]
 mod tests {
