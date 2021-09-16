@@ -7,9 +7,7 @@ pub struct TypedIdent {
 
 impl TypedIdent {
     pub fn new(ident_name: String) -> TypedIdent {
-        TypedIdent {
-            name: ident_name
-        }
+        TypedIdent { name: ident_name }
     }
 
     pub fn get_name(&self) -> String {
@@ -17,12 +15,10 @@ impl TypedIdent {
     }
 }
 
-
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub enum TypeFlag {
     NumberType, // x: number
 }
-
 
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub enum TypedAstType {
@@ -33,34 +29,28 @@ pub enum TypedAstType {
 
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub struct TypedNumber {
-    num: i32
+    num: i32,
 }
 
 impl TypedNumber {
     pub fn new(num: i32) -> TypedNumber {
-        TypedNumber {
-            num
-        }
+        TypedNumber { num }
     }
 
     pub fn get_num(&self) -> i32 {
         self.num.clone()
     }
-
 }
 
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub struct TypedCallExpr {
     func_name: TypedIdent,
-    args: Vec<TypedExpr>
+    args: Vec<TypedExpr>,
 }
 
 impl TypedCallExpr {
     pub fn new(func_name: TypedIdent, args: Vec<TypedExpr>) -> TypedCallExpr {
-        TypedCallExpr {
-            func_name,
-            args
-        }
+        TypedCallExpr { func_name, args }
     }
 
     pub fn get_func_name(&self) -> TypedIdent {
@@ -70,13 +60,12 @@ impl TypedCallExpr {
     pub fn get_args(&self) -> Vec<TypedExpr> {
         self.args.to_vec()
     }
-
 }
 
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub enum TypedExpr {
-    CallExpr(TypedAstType, TypedCallExpr), // add(1, 1 + 1)
-    NumExpr(TypedAstType, TypedNumber), // 1
+    CallExpr(TypedAstType, TypedCallExpr),  // add(1, 1 + 1)
+    NumExpr(TypedAstType, TypedNumber),     // 1
     NumIdentExpr(TypedAstType, TypedIdent), // x
     NumAddExpr(TypedAstType, Box<TypedExpr>, Box<TypedExpr>), // 1 + 2
     NumSubExpr(TypedAstType, Box<TypedExpr>, Box<TypedExpr>), // 2 - 1
@@ -87,35 +76,30 @@ pub enum TypedExpr {
 impl TypedExpr {
     pub fn get_typed_ast_type(&self) -> TypedAstType {
         match self {
-            TypedExpr::CallExpr(typed_ast_type,_) => {
-                typed_ast_type.clone()
-            },
-            TypedExpr::NumExpr(typed_ast_type,_) => {
-                typed_ast_type.clone()
-            },
-            TypedExpr::NumIdentExpr(typed_ast_type, _) => {
-                typed_ast_type.clone()
-            },
-            TypedExpr::NumAddExpr(typed_ast_type, ..) |
-            TypedExpr::NumSubExpr(typed_ast_type, ..) |
-            TypedExpr::NumMulExpr(typed_ast_type, ..) |
-            TypedExpr::NumDivExpr(typed_ast_type, ..) => {
-                typed_ast_type.clone()
-            }
+            TypedExpr::CallExpr(typed_ast_type, _) => typed_ast_type.clone(),
+            TypedExpr::NumExpr(typed_ast_type, _) => typed_ast_type.clone(),
+            TypedExpr::NumIdentExpr(typed_ast_type, _) => typed_ast_type.clone(),
+            TypedExpr::NumAddExpr(typed_ast_type, ..)
+            | TypedExpr::NumSubExpr(typed_ast_type, ..)
+            | TypedExpr::NumMulExpr(typed_ast_type, ..)
+            | TypedExpr::NumDivExpr(typed_ast_type, ..) => typed_ast_type.clone(),
         }
     }
 }
-
 
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub struct TypedVariableDeclaration {
     name: TypedIdent,
     type_name: Option<TypeFlag>,
-    value: Option<TypedExpr>
+    value: Option<TypedExpr>,
 }
 
 impl TypedVariableDeclaration {
-    pub fn new(name: TypedIdent, type_name: Option<TypeFlag>, value: Option<TypedExpr>) -> TypedVariableDeclaration {
+    pub fn new(
+        name: TypedIdent,
+        type_name: Option<TypeFlag>,
+        value: Option<TypedExpr>,
+    ) -> TypedVariableDeclaration {
         TypedVariableDeclaration {
             name,
             type_name,
@@ -144,10 +128,7 @@ pub struct TypedFuncArg {
 
 impl TypedFuncArg {
     pub fn new(name: TypedIdent, arg_type: TypeFlag) -> TypedFuncArg {
-        TypedFuncArg {
-            name,
-            arg_type,
-        }
+        TypedFuncArg { name, arg_type }
     }
 
     pub fn get_name(&self) -> TypedIdent {
@@ -157,7 +138,6 @@ impl TypedFuncArg {
     pub fn get_arg_type(&self) -> TypeFlag {
         self.arg_type.clone()
     }
-
 }
 
 #[derive(Debug, Eq, PartialEq, Clone)]
@@ -167,17 +147,16 @@ pub struct TypedReturnStmt {
 
 impl TypedReturnStmt {
     pub fn new(expr: TypedExpr) -> TypedReturnStmt {
-        TypedReturnStmt {
-            expr
-        }
+        TypedReturnStmt { expr }
     }
 
     pub fn get_expr(&self) -> TypedExpr {
         self.expr.clone()
     }
 
-    pub fn get_return_type(&self) -> TypedAstType {self.expr.get_typed_ast_type()}
-
+    pub fn get_return_type(&self) -> TypedAstType {
+        self.expr.get_typed_ast_type()
+    }
 }
 
 #[derive(Debug, Eq, PartialEq, Clone)]
@@ -189,12 +168,17 @@ pub struct TypedFunc {
 }
 
 impl TypedFunc {
-    pub fn new(name: TypedIdent, args: Vec<TypedFuncArg>, stmts: Vec<TypedStmt>, return_stmt: Option<TypedReturnStmt>) -> TypedFunc {
+    pub fn new(
+        name: TypedIdent,
+        args: Vec<TypedFuncArg>,
+        stmts: Vec<TypedStmt>,
+        return_stmt: Option<TypedReturnStmt>,
+    ) -> TypedFunc {
         TypedFunc {
             name,
             args,
             stmts,
-            return_stmt
+            return_stmt,
         }
     }
 
@@ -213,8 +197,6 @@ impl TypedFunc {
     pub fn get_return_stmt(&self) -> Option<TypedReturnStmt> {
         self.return_stmt.clone()
     }
-
-
 }
 
 #[derive(Debug, Eq, PartialEq, Clone)]

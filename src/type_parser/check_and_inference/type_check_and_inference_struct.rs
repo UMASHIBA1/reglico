@@ -1,7 +1,5 @@
 use crate::parser::ast::{ReturnStmt, Stmt};
-use crate::type_parser::typed_ast::{
-    TypedAstType, TypedIdent, TypedReturnStmt, TypedStmt,
-};
+use crate::type_parser::typed_ast::{TypedAstType, TypedIdent, TypedReturnStmt, TypedStmt};
 use std::collections::HashMap;
 
 pub struct TypeCheckAndInference {
