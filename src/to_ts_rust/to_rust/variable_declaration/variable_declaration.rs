@@ -35,10 +35,7 @@ impl ToRust {
 #[cfg(test)]
 mod tests {
     use crate::to_ts_rust::to_rust::to_rust::ToRust;
-    use crate::type_parser::typed_ast::{
-        TypeFlag, TypedAstType, TypedExpr, TypedIdent, TypedNumber, TypedStmt,
-        TypedVariableDeclaration,
-    };
+    use crate::type_parser::typed_ast::{TypeFlag, TypedAstType, TypedExpr, TypedIdent, TypedNumber, TypedStmt, TypedVariableDeclaration, TypedBool};
 
     #[test]
     fn test_no_type_var_declaration() {
@@ -61,7 +58,7 @@ mod tests {
     }
 
     #[test]
-    fn test_has_type_var_declaration() {
+    fn test_has_type_number_var_declaration() {
         let typed_stmts = vec![TypedStmt::VariableDeclaration(
             TypedVariableDeclaration::new(
                 TypedIdent::new("tmp1".to_string()),
@@ -79,4 +76,25 @@ mod tests {
 
         assert_eq!(rust_code, expected_rust_code);
     }
+
+    #[test]
+    fn test_has_type_bool_var_declaration() {
+        let typed_stmts = vec![TypedStmt::VariableDeclaration(
+            TypedVariableDeclaration::new(
+                TypedIdent::new("tmp1".to_string()),
+                Some(TypeFlag::BoolType),
+                Some(TypedExpr::BoolExpr(
+                    TypedAstType::Bool,
+                    TypedBool::new(true),
+                )),
+            ),
+        )];
+
+        let rust_code = ToRust::to_rust(typed_stmts, None);
+
+        let expected_rust_code = "let tmp1:bool=true;";
+
+        assert_eq!(rust_code, expected_rust_code);
+    }
+
 }
