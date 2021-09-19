@@ -347,6 +347,69 @@ mod test {
     }
 
     #[test]
+    fn test_op_less_than_or_equal_with_num_and_arithmetic() {
+        lalrpop_mod!(pub reglico);
+
+        let expr = reglico::ProgramParser::new().parse("2 <= 2 * 2;").unwrap();
+
+        let expected_expr = vec![Stmt::expr_new(Expr::op_new(
+            Expr::num_new(2),
+            Opcode::LessThanOrEqual,
+            Expr::op_new(Expr::num_new(2), Opcode::Mul, Expr::num_new(2)),
+        ))];
+
+        assert_eq!(expr, expected_expr);
+    }
+
+    #[test]
+    fn test_op_arithmetic_with_call() {
+        lalrpop_mod!(pub reglico);
+
+        let expr = reglico::ProgramParser::new().parse("add(1,2) + 3;").unwrap();
+
+        let add_call_expr= Expr::call_new(
+            Ident::new("add".to_string()),
+            vec![
+                Expr::num_new(1),
+                Expr::num_new(2)
+            ]
+        );
+
+
+        let expected_expr = vec![Stmt::expr_new(Expr::op_new(
+            add_call_expr,
+            Opcode::Add,
+            Expr::num_new(3)
+        ))];
+
+        assert_eq!(expr, expected_expr);
+    }
+
+    #[test]
+    fn test_op_less_than_or_equal_with_call() {
+        lalrpop_mod!(pub reglico);
+
+        let expr = reglico::ProgramParser::new().parse("add(1,2) <= 4;").unwrap();
+
+        let add_call_expr= Expr::call_new(
+            Ident::new("add".to_string()),
+            vec![
+                Expr::num_new(1),
+                Expr::num_new(2)
+            ]
+        );
+
+
+        let expected_expr = vec![Stmt::expr_new(Expr::op_new(
+            add_call_expr,
+            Opcode::LessThanOrEqual,
+            Expr::num_new(4)
+        ))];
+
+        assert_eq!(expr, expected_expr);
+    }
+
+    #[test]
     fn test_call() {
         lalrpop_mod!(pub reglico);
 
