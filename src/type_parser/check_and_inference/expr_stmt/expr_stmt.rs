@@ -1,13 +1,16 @@
 use crate::parser::ast::{CallExpr, Expr, Ident, Opcode, Operation};
 use crate::type_parser::check_and_inference::type_check_and_inference_struct::TypeCheckAndInference;
-use crate::type_parser::typed_ast::{TypedAstType, TypedCallExpr, TypedExpr, TypedNumber};
+use crate::type_parser::typed_ast::{TypedAstType, TypedCallExpr, TypedExpr, TypedNumber, TypedBool};
 
 impl TypeCheckAndInference {
     pub fn check_and_inference_expr(&self, expr: Expr) -> TypedExpr {
         match expr {
             Expr::Num(num) => {
                 TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(num.get_num()))
-            }
+            },
+            Expr::Bool(bool) => {
+                TypedExpr::BoolExpr(TypedAstType::Bool, TypedBool::new(bool.get_bool()))
+            },
             Expr::Op(operation) => self.check_and_inference_op(operation),
             Expr::Call(call_expr) => self.check_and_inference_call(call_expr),
             Expr::Ident(ident) => self.check_and_inference_ident(ident),
@@ -74,8 +77,16 @@ impl TypeCheckAndInference {
         let typed_ast_type = self.type_env.get(&typed_ident);
         match typed_ast_type {
             Some(typed_ast_type) => {
-                // TODO: 今後Num意外にもたくさんIdentに格納されるものが増えるはずなので増えた際はここで判定処理をする
-                TypedExpr::NumIdentExpr(typed_ast_type.clone(), typed_ident)
+                match typed_ast_type {
+                    TypedAstType::Number => {
+                        TypedExpr::NumIdentExpr(typed_ast_type.clone(), typed_ident)
+                    },
+                    TypedAstType::Bool => {
+                        TypedExpr::BoolIdentExpr(typed_ast_type.clone(), typed_ident)
+                    },
+                    // TODO: FuncIdentを加える
+                    _ => panic!("parsing ident value's type does not allow `${:?}`, type:${:?} ", typed_ident, typed_ast_type.clone()),
+                }
             }
             None => {
                 panic!("parsing ident is not defined value${:?}", typed_ident);
@@ -88,10 +99,35 @@ impl TypeCheckAndInference {
 mod tests {
     use crate::parser::ast::{Expr, FuncArg, Ident, Opcode, ReturnStmt, Stmt, Types};
     use crate::type_parser::type_parser::type_parser;
-    use crate::type_parser::typed_ast::{
-        TypeFlag, TypedAstType, TypedCallExpr, TypedExpr, TypedFunc, TypedFuncArg, TypedIdent,
-        TypedNumber, TypedReturnStmt, TypedStmt, TypedVariableDeclaration,
-    };
+    use crate::type_parser::typed_ast::{TypeFlag, TypedAstType, TypedCallExpr, TypedExpr, TypedFunc, TypedFuncArg, TypedIdent, TypedNumber, TypedReturnStmt, TypedStmt, TypedVariableDeclaration, TypedBool};
+
+    #[test]
+    fn test_inference_num_expr_stmt() {
+        let stmts = vec![Stmt::expr_new(Expr::num_new(10))];
+
+        let typed_stmts = type_parser(stmts);
+
+        let expected_typed_stmts = vec![TypedStmt::ExprStmt(TypedExpr::NumExpr(
+            TypedAstType::Number,
+            TypedNumber::new(10)
+        ))];
+
+        assert_eq!(typed_stmts, expected_typed_stmts)
+    }
+
+    #[test]
+    fn test_inference_bool_expr_stmt() {
+        let stmts = vec![Stmt::expr_new(Expr::bool_new(false))];
+
+        let typed_stmts = type_parser(stmts);
+
+        let expected_typed_stmts = vec![TypedStmt::ExprStmt(TypedExpr::BoolExpr(
+            TypedAstType::Bool,
+            TypedBool::new(false)
+        ))];
+
+        assert_eq!(typed_stmts, expected_typed_stmts)
+    }
 
     #[test]
     fn test_inference_num_add_expr_stmt() {
@@ -249,6 +285,38 @@ mod tests {
             )),
             TypedStmt::ExprStmt(TypedExpr::NumIdentExpr(
                 TypedAstType::Number,
+                TypedIdent::new("tmp1".to_string()),
+            )),
+        ];
+
+        assert_eq!(typed_stmts, expected_typed_stmts)
+    }
+
+
+    #[test]
+    fn test_inference_bool_ident_expr_stmt() {
+        let stmts = vec![
+            Stmt::var_new(
+                Ident::new("tmp1".to_string()),
+                Some(Types::BoolType),
+                Some(Expr::bool_new(true)),
+            ),
+            Stmt::expr_new(Expr::ident_new(Ident::new("tmp1".to_string()))),
+        ];
+
+        let typed_stmts = type_parser(stmts);
+
+        let expected_typed_stmts = vec![
+            TypedStmt::VariableDeclaration(TypedVariableDeclaration::new(
+                TypedIdent::new("tmp1".to_string()),
+                Some(TypeFlag::BoolType),
+                Some(TypedExpr::BoolExpr(
+                    TypedAstType::Bool,
+                    TypedBool::new(true)
+                )),
+            )),
+            TypedStmt::ExprStmt(TypedExpr::NumIdentExpr(
+                TypedAstType::Bool,
                 TypedIdent::new("tmp1".to_string()),
             )),
         ];

@@ -81,6 +81,7 @@ pub enum TypedExpr {
     NumExpr(TypedAstType, TypedNumber),     // 1
     BoolExpr(TypedAstType, TypedBool),      // true or false
     NumIdentExpr(TypedAstType, TypedIdent), // x
+    BoolIdentExpr(TypedAstType, TypedIdent),
     NumAddExpr(TypedAstType, Box<TypedExpr>, Box<TypedExpr>), // 1 + 2
     NumSubExpr(TypedAstType, Box<TypedExpr>, Box<TypedExpr>), // 2 - 1
     NumMulExpr(TypedAstType, Box<TypedExpr>, Box<TypedExpr>), // 2 * 2
@@ -94,6 +95,7 @@ impl TypedExpr {
             TypedExpr::NumExpr(typed_ast_type, _) => typed_ast_type.clone(),
             TypedExpr::BoolExpr(typed_ast_type, _) => typed_ast_type.clone(),
             TypedExpr::NumIdentExpr(typed_ast_type, _) => typed_ast_type.clone(),
+            TypedExpr::BoolIdentExpr(typed_ast_type, _) => typed_ast_type.clone(),
             TypedExpr::NumAddExpr(typed_ast_type, ..)
             | TypedExpr::NumSubExpr(typed_ast_type, ..)
             | TypedExpr::NumMulExpr(typed_ast_type, ..)
