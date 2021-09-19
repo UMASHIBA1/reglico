@@ -31,8 +31,13 @@ Types: Types = {
 }
 
 Expr: Expr = {
-    <left: Expr> <op: Opcode> <right: Factor> => Expr::Op(Operation::new(left, op, right)),
-    Factor,
+    <left: Expr> <op: ComparisonOpcode> <right: Arithmetic> => Expr::Op(Operation::new(left, op, right)),
+    Arithmetic,
+}
+
+Arithmetic: Expr = {
+    <left: Arithmetic> <op: ArithmeticOpcode> <right: Factor> => Expr::op_new(left, op, right),
+    Factor
 }
 
 Factor: Expr = {
@@ -40,14 +45,18 @@ Factor: Expr = {
     Term
 }
 
+ComparisonOpcode: Opcode = {
+    "<=" => Opcode::LessThanOrEqual,
+}
+
+ArithmeticOpcode: Opcode = {
+    "+" => Opcode::Add,
+    "-" => Opcode::Sub,
+}
+
 FactorOpcode: Opcode = {
     "*" => Opcode::Mul,
     "/" => Opcode::Div,
-}
-
-Opcode: Opcode = {
-    "+" => Opcode::Add,
-    "-" => Opcode::Sub,
 }
 
 Term: Expr = {

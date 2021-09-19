@@ -215,10 +215,11 @@ impl Expr {
 
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub enum Opcode {
-    Add,
-    Sub,
-    Mul,
-    Div,
+    Add, // +
+    Sub, // -
+    Mul, // *
+    Div, // /
+    LessThanOrEqual, // <=
 }
 
 #[derive(Debug, Eq, PartialEq, Clone)]
