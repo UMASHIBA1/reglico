@@ -5,12 +5,14 @@ impl ToRust {
     pub fn type_flag_to_rust(&self, type_flag: TypeFlag) -> String {
         match type_flag {
             TypeFlag::NumberType => "f32".to_string(),
+            TypeFlag::BoolType => "bool".to_string(),
         }
     }
 
     pub fn typed_ast_type_to_rust(&self, typed_ast_type: TypedAstType) -> String {
         match typed_ast_type {
             TypedAstType::Number => "f32".to_string(),
+            TypedAstType::Bool => "bool".to_string(),
             TypedAstType::Void => "()".to_string(),
             _ => "()".to_string(), // TODO: Funcの型生成するの面倒くさいので後回しにしてます、あとでやりましょう！
         }

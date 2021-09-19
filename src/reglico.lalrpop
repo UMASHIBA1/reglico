@@ -27,6 +27,7 @@ IdentExpr: Ident = {
 
 Types: Types = {
     "number" => Types::NumberType,
+    "bool" => Types::BoolType,
 }
 
 Expr: Expr = {
@@ -51,6 +52,7 @@ Opcode: Opcode = {
 
 Term: Expr = {
     Num => Expr::num_new(<>),
+    Bool => Expr::bool_new(<>),
     IdentExpr => Expr::ident_new(<>),
     CallExpr => Expr::Call(<>),
     "(" <Expr> ")",
@@ -59,6 +61,11 @@ Term: Expr = {
 Num: i32 = {
    r"[1-9][0-9]*" => <>.parse().unwrap(),
    r"0" => 0
+}
+
+Bool: bool = {
+    "true" => true,
+    "false" => false,
 }
 
 CallExpr: CallExpr = {

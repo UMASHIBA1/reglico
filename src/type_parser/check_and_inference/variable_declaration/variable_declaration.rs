@@ -31,13 +31,10 @@ impl TypeCheckAndInference {
 mod tests {
     use crate::parser::ast::{Expr, Ident, Stmt, Types};
     use crate::type_parser::type_parser::type_parser;
-    use crate::type_parser::typed_ast::{
-        TypeFlag, TypedAstType, TypedExpr, TypedIdent, TypedNumber, TypedStmt,
-        TypedVariableDeclaration,
-    };
+    use crate::type_parser::typed_ast::{TypeFlag, TypedAstType, TypedExpr, TypedIdent, TypedNumber, TypedStmt, TypedVariableDeclaration, TypedBool};
 
     #[test]
-    fn test_inference_var_declaration() {
+    fn test_inference_var_declaration_number_type() {
         let stmts = vec![Stmt::var_new(
             Ident::new("tmp1".to_string()),
             Some(Types::NumberType),
@@ -59,4 +56,30 @@ mod tests {
 
         assert_eq!(typed_stmts, expected_typed_stmts)
     }
+
+    #[test]
+    fn test_inference_var_declaration_bool_type() {
+        let stmts = vec![Stmt::var_new(
+            Ident::new("tmp1".to_string()),
+            Some(Types::BoolType),
+            Some(Expr::bool_new(true)),
+        )];
+
+        let typed_stmts = type_parser(stmts);
+
+        let expected_typed_stmts = vec![TypedStmt::VariableDeclaration(
+            TypedVariableDeclaration::new(
+                TypedIdent::new("tmp1".to_string()),
+                Some(TypeFlag::BoolType),
+                Some(TypedExpr::BoolExpr(
+                    TypedAstType::Bool,
+                    TypedBool::new(true)
+                )),
+            ),
+        )];
+
+        assert_eq!(typed_stmts, expected_typed_stmts)
+    }
+
+
 }

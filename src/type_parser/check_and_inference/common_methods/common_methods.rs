@@ -10,12 +10,14 @@ impl TypeCheckAndInference {
     pub fn convert_type_to_typed_type(&self, type_flag: Types) -> TypeFlag {
         match type_flag {
             Types::NumberType => TypeFlag::NumberType,
+            Types::BoolType => TypeFlag::BoolType,
         }
     }
 
     pub fn convert_type_to_typed_ast_type(&self, type_flag: Types) -> TypedAstType {
         match type_flag {
             Types::NumberType => TypedAstType::Number,
+            Types::BoolType => TypedAstType::Bool,
             _ => TypedAstType::Func(
                 vec![TypedAstType::Number],
                 Some(Box::new(TypedAstType::Number)),
