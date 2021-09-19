@@ -34,10 +34,7 @@ impl ToTs {
 #[cfg(test)]
 mod tests {
     use crate::to_ts_rust::to_ts::to_ts::ToTs;
-    use crate::type_parser::typed_ast::{
-        TypeFlag, TypedAstType, TypedExpr, TypedIdent, TypedNumber, TypedStmt,
-        TypedVariableDeclaration,
-    };
+    use crate::type_parser::typed_ast::{TypeFlag, TypedAstType, TypedExpr, TypedIdent, TypedNumber, TypedStmt, TypedVariableDeclaration, TypedBool};
 
     #[test]
     fn test_no_type_var_declaration() {
@@ -60,7 +57,7 @@ mod tests {
     }
 
     #[test]
-    fn test_has_type_var_declaration() {
+    fn test_has_type_number_var_declaration() {
         let typed_stmts = vec![TypedStmt::VariableDeclaration(
             TypedVariableDeclaration::new(
                 TypedIdent::new("tmp1".to_string()),
@@ -78,4 +75,25 @@ mod tests {
 
         assert_eq!(ts_code, expected_ts_code);
     }
+
+    #[test]
+    fn test_has_type_bool_var_declaration() {
+        let typed_stmts = vec![TypedStmt::VariableDeclaration(
+            TypedVariableDeclaration::new(
+                TypedIdent::new("tmp1".to_string()),
+                Some(TypeFlag::BoolType),
+                Some(TypedExpr::BoolExpr(
+                    TypedAstType::Bool,
+                    TypedBool::new(true),
+                )),
+            ),
+        )];
+
+        let ts_code = ToTs::to_ts(typed_stmts, None);
+
+        let expected_ts_code = "const tmp1:boolean=true;";
+
+        assert_eq!(ts_code, expected_ts_code);
+    }
+
 }

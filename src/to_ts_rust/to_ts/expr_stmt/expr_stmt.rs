@@ -6,16 +6,40 @@ impl ToTs {
     pub fn expr_to_ts(&self, typed_expr: TypedExpr) -> String {
         match typed_expr {
             TypedExpr::NumExpr(_, num) => format!("{}", num.get_num()),
+            TypedExpr::BoolExpr(_, bool) => format!("{}", bool.get_bool()),
             TypedExpr::NumIdentExpr(_, ident) => {
-                if self.is_exist_ident(&ident) {
-                    ident.get_name()
-                } else {
-                    panic!(
-                        "specified ident `{}` does not defined or initialized",
-                        ident.get_name()
-                    )
+                let ident_value = self.var_env.get(&ident);
+
+                match ident_value {
+                    Some(Some(can_assign_obj)) => {
+                        match can_assign_obj {
+                            CanAssignObj::TypedExpr(TypedExpr::NumExpr(..)) => {
+                                ident.get_name()
+                            },
+                            _ => panic!("specified ident `{}` is not number type. this type is {:?}", ident.get_name(), can_assign_obj)
+                        }
+                    }
+                    _ => {
+                        panic!("specified ident `{}` does not defined or initialized", ident.get_name())
+                    }
                 }
-            }
+            },
+            TypedExpr::BoolIdentExpr(_, ident) => {
+                let ident_value = self.var_env.get(&ident);
+                match ident_value {
+                    Some(Some(can_assign_obj)) => {
+                        match can_assign_obj {
+                            CanAssignObj::TypedExpr(TypedExpr::BoolExpr(..)) => {
+                                ident.get_name()
+                            },
+                            _ => panic!("specified ident `{}` is not bool type. this type is {:?}", ident.get_name(), can_assign_obj)
+                        }
+                    }
+                    _ => {
+                        panic!("specified ident `{}` does not defined or initialized", ident.get_name())
+                    }
+                }
+            },
             TypedExpr::NumAddExpr(_, l, r) => {
                 format!("{}+{}", self.expr_to_ts(*l), self.expr_to_ts(*r))
             }
@@ -83,11 +107,22 @@ impl ToTs {
 mod tests {
     use crate::to_ts_rust::common_struct::CanAssignObj;
     use crate::to_ts_rust::to_ts::to_ts::ToTs;
-    use crate::type_parser::typed_ast::{
-        TypeFlag, TypedAstType, TypedCallExpr, TypedExpr, TypedFunc, TypedFuncArg, TypedIdent,
-        TypedNumber, TypedReturnStmt, TypedStmt,
-    };
+    use crate::type_parser::typed_ast::{TypeFlag, TypedAstType, TypedCallExpr, TypedExpr, TypedFunc, TypedFuncArg, TypedIdent, TypedNumber, TypedReturnStmt, TypedStmt, TypedBool};
     use std::collections::HashMap;
+
+    #[test]
+    fn test_bool_expr_stmt() {
+        let typed_stmts = vec![TypedStmt::ExprStmt(TypedExpr::BoolExpr(
+            TypedAstType::Bool,
+            TypedBool::new(true)
+        ))];
+
+        let ts_code = ToTs::to_ts(typed_stmts, None);
+
+        let expected_ts_code = "true;";
+
+        assert_eq!(ts_code, expected_ts_code);
+    }
 
     #[test]
     fn test_num_expr_stmt() {
@@ -124,6 +159,69 @@ mod tests {
         let expected_ts_code = "tmp1;";
 
         assert_eq!(ts_code, expected_ts_code);
+    }
+
+    #[test]
+    fn test_bool_ident_expr_stmt() {
+        let typed_stmts = vec![TypedStmt::ExprStmt(TypedExpr::BoolIdentExpr(
+            TypedAstType::Bool,
+            TypedIdent::new("tmp1".to_string()),
+        ))];
+
+        let mut var_env: HashMap<TypedIdent, Option<CanAssignObj>> = HashMap::new();
+        var_env.insert(
+            TypedIdent::new("tmp1".to_string()),
+            Some(CanAssignObj::TypedExpr(TypedExpr::BoolExpr(
+                TypedAstType::Bool,
+                TypedBool::new(true)
+            ))),
+        );
+
+        let ts_code = ToTs::to_ts(typed_stmts, Some(var_env));
+
+        let expected_ts_code = "tmp1;";
+
+        assert_eq!(ts_code, expected_ts_code);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_bool_ident_with_num_var_decl() {
+        let typed_stmts = vec![TypedStmt::ExprStmt(TypedExpr::BoolIdentExpr(
+            TypedAstType::Bool,
+            TypedIdent::new("tmp1".to_string()),
+        ))];
+
+        let mut var_env: HashMap<TypedIdent, Option<CanAssignObj>> = HashMap::new();
+        var_env.insert(
+            TypedIdent::new("tmp1".to_string()),
+            Some(CanAssignObj::TypedExpr(TypedExpr::NumExpr(
+                TypedAstType::Number,
+                TypedNumber::new(10),
+            ))),
+        );
+
+        ToTs::to_ts(typed_stmts, Some(var_env));
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_num_ident_with_bool_var_decl() {
+        let typed_stmts = vec![TypedStmt::ExprStmt(TypedExpr::NumIdentExpr(
+            TypedAstType::Number,
+            TypedIdent::new("tmp1".to_string()),
+        ))];
+
+        let mut var_env: HashMap<TypedIdent, Option<CanAssignObj>> = HashMap::new();
+        var_env.insert(
+            TypedIdent::new("tmp1".to_string()),
+            Some(CanAssignObj::TypedExpr(TypedExpr::BoolExpr(
+                TypedAstType::Bool,
+                TypedBool::new(true),
+            ))),
+        );
+
+        ToTs::to_ts(typed_stmts, Some(var_env));
     }
 
     #[test]

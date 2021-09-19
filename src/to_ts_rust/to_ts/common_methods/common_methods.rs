@@ -5,12 +5,14 @@ impl ToTs {
     pub fn type_flag_to_ts(&self, type_flag: TypeFlag) -> String {
         match type_flag {
             TypeFlag::NumberType => "number".to_string(),
+            TypeFlag::BoolType => "boolean".to_string(),
         }
     }
 
     pub fn typed_ast_type_to_ts(&self, typed_ast_type: TypedAstType) -> String {
         match typed_ast_type {
             TypedAstType::Number => "number".to_string(),
+            TypedAstType::Bool => "boolean".to_string(),
             TypedAstType::Void => "void".to_string(),
             _ => "void".to_string(), // TODO: Funcの型生成する
         }
@@ -25,4 +27,5 @@ impl ToTs {
             None => false,
         }
     }
+
 }
