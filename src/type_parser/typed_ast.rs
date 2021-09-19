@@ -86,6 +86,7 @@ pub enum TypedExpr {
     NumSubExpr(TypedAstType, Box<TypedExpr>, Box<TypedExpr>), // 2 - 1
     NumMulExpr(TypedAstType, Box<TypedExpr>, Box<TypedExpr>), // 2 * 2
     NumDivExpr(TypedAstType, Box<TypedExpr>, Box<TypedExpr>), // 4 / 2
+    NumLessThanOrEqualExpr(TypedAstType, Box<TypedExpr>, Box<TypedExpr>), // 1 <= 2
 }
 
 impl TypedExpr {
@@ -99,7 +100,8 @@ impl TypedExpr {
             TypedExpr::NumAddExpr(typed_ast_type, ..)
             | TypedExpr::NumSubExpr(typed_ast_type, ..)
             | TypedExpr::NumMulExpr(typed_ast_type, ..)
-            | TypedExpr::NumDivExpr(typed_ast_type, ..) => typed_ast_type.clone(),
+            | TypedExpr::NumDivExpr(typed_ast_type, ..)
+            | TypedExpr::NumLessThanOrEqualExpr(typed_ast_type, ..) => typed_ast_type.clone(),
         }
     }
 }

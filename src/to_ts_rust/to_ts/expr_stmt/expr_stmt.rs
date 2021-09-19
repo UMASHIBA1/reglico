@@ -51,7 +51,10 @@ impl ToTs {
             }
             TypedExpr::NumDivExpr(_, l, r) => {
                 format!("{}/{}", self.expr_to_ts(*l), self.expr_to_ts(*r))
-            }
+            },
+            TypedExpr::NumLessThanOrEqualExpr(_, l, r) => {
+                format!("{}<={}", self.expr_to_ts(*l), self.expr_to_ts(*r))
+            },
             TypedExpr::CallExpr(_, call) => self.call_expr_to_ts(call),
         }
     }
@@ -259,11 +262,11 @@ mod tests {
             )),
         ))];
 
-        let rust_code = ToTs::to_ts(typed_stmts, None);
+        let ts_code = ToTs::to_ts(typed_stmts, None);
 
-        let expected_rust_code = "2-1;";
+        let expected_ts_code = "2-1;";
 
-        assert_eq!(rust_code, expected_rust_code);
+        assert_eq!(ts_code, expected_ts_code);
     }
 
     #[test]
@@ -280,11 +283,11 @@ mod tests {
             )),
         ))];
 
-        let rust_code = ToTs::to_ts(typed_stmts, None);
+        let ts_code = ToTs::to_ts(typed_stmts, None);
 
-        let expected_rust_code = "2*1;";
+        let expected_ts_code = "2*1;";
 
-        assert_eq!(rust_code, expected_rust_code);
+        assert_eq!(ts_code, expected_ts_code);
     }
 
     #[test]
@@ -301,11 +304,32 @@ mod tests {
             )),
         ))];
 
-        let rust_code = ToTs::to_ts(typed_stmts, None);
+        let ts_code = ToTs::to_ts(typed_stmts, None);
 
-        let expected_rust_code = "4/2;";
+        let expected_ts_code = "4/2;";
 
-        assert_eq!(rust_code, expected_rust_code);
+        assert_eq!(ts_code, expected_ts_code);
+    }
+
+    #[test]
+    fn test_num_less_than_or_equal_expr_stmt() {
+        let typed_stmts = vec![TypedStmt::ExprStmt(TypedExpr::NumLessThanOrEqualExpr(
+            TypedAstType::Bool,
+            Box::new(TypedExpr::NumExpr(
+                TypedAstType::Number,
+                TypedNumber::new(2),
+            )),
+            Box::new(TypedExpr::NumExpr(
+                TypedAstType::Number,
+                TypedNumber::new(3),
+            ))
+        ))];
+
+        let ts_code = ToTs::to_ts(typed_stmts, None);
+
+        let expected_ts_code = "2<=3;";
+
+        assert_eq!(ts_code, expected_ts_code);
     }
 
     #[test]
@@ -329,11 +353,11 @@ mod tests {
             )),
         ))];
 
-        let rust_code = ToTs::to_ts(typed_stmts, None);
+        let ts_code = ToTs::to_ts(typed_stmts, None);
 
-        let expected_rust_code = "2*3+2;";
+        let expected_ts_code = "2*3+2;";
 
-        assert_eq!(rust_code, expected_rust_code);
+        assert_eq!(ts_code, expected_ts_code);
     }
 
     #[test]
