@@ -315,7 +315,7 @@ mod tests {
                     TypedBool::new(true)
                 )),
             )),
-            TypedStmt::ExprStmt(TypedExpr::NumIdentExpr(
+            TypedStmt::ExprStmt(TypedExpr::BoolIdentExpr(
                 TypedAstType::Bool,
                 TypedIdent::new("tmp1".to_string()),
             )),

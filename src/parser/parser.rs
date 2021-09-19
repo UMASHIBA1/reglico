@@ -447,13 +447,13 @@ mod test {
         lalrpop_mod!(pub reglico);
 
         let expr = reglico::ProgramParser::new()
-            .parse("const tmp1: bool;")
+            .parse("const tmp1: bool = true;")
             .unwrap();
 
         let expected_expr = vec![Stmt::var_new(
             Ident::new("tmp1".to_string()),
             Some(Types::BoolType),
-            None
+            Some(Expr::bool_new(true))
         )];
 
         assert_eq!(expr, expected_expr);
