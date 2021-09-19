@@ -18,11 +18,13 @@ impl TypedIdent {
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub enum TypeFlag {
     NumberType, // x: number
+    BoolType, // x: bool
 }
 
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub enum TypedAstType {
     Number,
+    Bool,
     Func(Vec<TypedAstType>, Option<Box<TypedAstType>>), // Vec<TypedAstType> -> func args, second TypedAstType -> return type,
     Void,
 }
@@ -40,6 +42,17 @@ impl TypedNumber {
     pub fn get_num(&self) -> i32 {
         self.num.clone()
     }
+}
+
+#[derive(Debug, Eq, PartialEq, Clone)]
+pub struct TypedBool {
+    bool: bool
+}
+
+impl TypedBool {
+    pub fn new(bool: bool) -> TypedBool { TypedBool {bool} }
+
+    pub fn get_bool(&self) -> bool { self.bool.clone() }
 }
 
 #[derive(Debug, Eq, PartialEq, Clone)]
@@ -66,11 +79,12 @@ impl TypedCallExpr {
 pub enum TypedExpr {
     CallExpr(TypedAstType, TypedCallExpr),  // add(1, 1 + 1)
     NumExpr(TypedAstType, TypedNumber),     // 1
+    BoolExpr(TypedAstType, TypedBool),      // true or false
     NumIdentExpr(TypedAstType, TypedIdent), // x
     NumAddExpr(TypedAstType, Box<TypedExpr>, Box<TypedExpr>), // 1 + 2
     NumSubExpr(TypedAstType, Box<TypedExpr>, Box<TypedExpr>), // 2 - 1
     NumMulExpr(TypedAstType, Box<TypedExpr>, Box<TypedExpr>), // 2 * 2
-    NumDivExpr(TypedAstType, Box<TypedExpr>, Box<TypedExpr>),
+    NumDivExpr(TypedAstType, Box<TypedExpr>, Box<TypedExpr>), // 4 / 2
 }
 
 impl TypedExpr {
@@ -78,6 +92,7 @@ impl TypedExpr {
         match self {
             TypedExpr::CallExpr(typed_ast_type, _) => typed_ast_type.clone(),
             TypedExpr::NumExpr(typed_ast_type, _) => typed_ast_type.clone(),
+            TypedExpr::BoolExpr(typed_ast_type, _) => typed_ast_type.clone(),
             TypedExpr::NumIdentExpr(typed_ast_type, _) => typed_ast_type.clone(),
             TypedExpr::NumAddExpr(typed_ast_type, ..)
             | TypedExpr::NumSubExpr(typed_ast_type, ..)
