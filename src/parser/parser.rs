@@ -335,7 +335,7 @@ mod test {
     fn test_op_less_than_or_equal_and_arithmetic() {
         lalrpop_mod!(pub reglico);
 
-        let expr = reglico::ProgramParser::new().parse("1 + 2 <= 2 * 2").unwrap();
+        let expr = reglico::ProgramParser::new().parse("1 + 2 <= 2 * 2;").unwrap();
 
         let expected_expr = vec![Stmt::expr_new(Expr::op_new(
             Expr::op_new(Expr::num_new(1), Opcode::Add, Expr::num_new(2)),
