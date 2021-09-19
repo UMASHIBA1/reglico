@@ -62,9 +62,9 @@ impl TypeCheckAndInference {
                     Some(return_type) => return_type,
                     None => panic!("in type_parsing call, the calling func is not valid"),
                 },
-                _ => panic!("parsing call is not call func: {:?}", typed_ast_type),
+                _ => panic!("parsing call does not call func: {:?}", typed_ast_type),
             },
-            None => panic!("parsing call is not defined value{:?}", &typed_func_name),
+            None => panic!("parsing call does not defined value{:?}", &typed_func_name),
         };
 
         let typed_call_expr = TypedCallExpr::new(typed_func_name, typed_args);
@@ -89,7 +89,7 @@ impl TypeCheckAndInference {
                 }
             }
             None => {
-                panic!("parsing ident is not defined value${:?}", typed_ident);
+                panic!("parsing ident does not defined value${:?}", typed_ident);
             }
         }
     }
