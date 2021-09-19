@@ -45,6 +45,7 @@ impl VariableDeclaration {
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub enum Types {
     NumberType,
+    BoolType,
 }
 
 #[derive(Debug, Eq, PartialEq, Clone)]
@@ -143,6 +144,17 @@ impl Number {
 }
 
 #[derive(Debug, Eq, PartialEq, Clone)]
+pub struct Boolean {
+    bool: bool,
+}
+
+impl Boolean {
+    pub fn new(bool: bool) -> Boolean {Boolean {bool}}
+
+    pub fn get_bool(&self) -> bool { self.bool }
+}
+
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub struct Operation {
     opcode: Opcode,
     l_expr: Box<Expr>,
@@ -169,6 +181,7 @@ impl Operation {
 
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub enum Expr {
+    Bool(Boolean),
     Num(Number),
     Op(Operation),
     Ident(Ident),
@@ -184,6 +197,8 @@ impl Expr {
     pub fn op_new(l_expr: Expr, op: Opcode, r_expr: Expr) -> Expr {
         Expr::Op(Operation::new(l_expr, op, r_expr))
     }
+
+    pub fn bool_new(bool: bool) -> Expr { Expr::Bool(Boolean::new(bool)) }
 
     pub fn num_new(num: i32) -> Expr {
         Expr::Num(Number::new(num))

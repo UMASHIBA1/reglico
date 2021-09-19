@@ -342,6 +342,28 @@ mod test {
     }
 
     #[test]
+    fn test_bool_true() {
+        lalrpop_mod!(pub reglico);
+
+        let expr = reglico::ProgramParser::new().parse("true;").unwrap();
+
+        let expected_expr = vec![Stmt::expr_new(Expr::bool_new(true))];
+
+        assert_eq!(expr, expected_expr);
+    }
+
+    #[test]
+    fn test_bool_false() {
+        lalrpop_mod!(pub reglico);
+
+        let expr = reglico::ProgramParser::new().parse("false;").unwrap();
+
+        let expected_expr = vec![Stmt::expr_new(Expr::bool_new(false))];
+
+        assert_eq!(expr, expected_expr);
+    }
+
+    #[test]
     fn test_number_type_is_not_stmt() {
         lalrpop_mod!(pub reglico);
 
@@ -415,6 +437,23 @@ mod test {
             Ident::new("tmp1".to_string()),
             None,
             Some(Expr::num_new(10)),
+        )];
+
+        assert_eq!(expr, expected_expr);
+    }
+
+    #[test]
+    fn test_bool_type_declaration() {
+        lalrpop_mod!(pub reglico);
+
+        let expr = reglico::ProgramParser::new()
+            .parse("const tmp1: bool;")
+            .unwrap();
+
+        let expected_expr = vec![Stmt::var_new(
+            Ident::new("tmp1".to_string()),
+            Some(Types::BoolType),
+            None
         )];
 
         assert_eq!(expr, expected_expr);
