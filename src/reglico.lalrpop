@@ -1,5 +1,5 @@
 grammar;
-use super::ast::{Ident, Opcode, Types, Expr, ExprStmt, CallExpr, Operation, VariableDeclaration, FuncArg,  Func, ReturnStmt, Stmt};
+use super::ast::{Ident, Opcode, Types, Expr, BlockExpr, ExprStmt, CallExpr, Operation, VariableDeclaration, FuncArg,  Func, ReturnStmt, Stmt};
 
 pub Program = {
     Stmt*
@@ -64,6 +64,7 @@ Term: Expr = {
     Bool => Expr::bool_new(<>),
     IdentExpr => Expr::ident_new(<>),
     CallExpr => Expr::Call(<>),
+    BlockExpr => Expr::Block(<>),
     "(" <Expr> ")",
 }
 
@@ -79,6 +80,10 @@ Bool: bool = {
 
 CallExpr: CallExpr = {
     <ident: IdentExpr> "(" <args: CommaSeparate<Expr>> ")" => CallExpr::new(ident, args)
+}
+
+BlockExpr: BlockExpr = {
+    "{" <stmts: Stmt*> "}" => BlockExpr::new(stmts)
 }
 
 Func: Func = {
