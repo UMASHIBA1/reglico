@@ -424,6 +424,35 @@ mod test {
     }
 
     #[test]
+    fn test_block() {
+        lalrpop_mod!(pub reglico);
+
+        let expr = reglico::ProgramParser::new().parse("{1;};").unwrap();
+
+
+        let expected_expr = vec![Stmt::expr_new(Expr::block_new(vec![
+            Stmt::expr_new(Expr::num_new(1))
+        ]))];
+
+        assert_eq!(expr, expected_expr);
+    }
+
+    #[test]
+    fn test_block_with_multi_stmts() {
+        lalrpop_mod!(pub reglico);
+
+        let expr = reglico::ProgramParser::new().parse("{1;return 2;};").unwrap();
+
+
+        let expected_expr = vec![Stmt::expr_new(Expr::block_new(vec![
+            Stmt::expr_new(Expr::num_new(1)),
+            Stmt::return_new(Expr::num_new(2)),
+        ]))];
+
+        assert_eq!(expr, expected_expr);
+    }
+
+    #[test]
     fn test_num() {
         lalrpop_mod!(pub reglico);
 

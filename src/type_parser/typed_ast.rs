@@ -76,12 +76,31 @@ impl TypedCallExpr {
 }
 
 #[derive(Debug, Eq, PartialEq, Clone)]
+pub struct TypedBlock {
+    stmts: Vec<TypedStmt>,
+}
+
+impl TypedBlock {
+    pub fn new(stmts: Vec<TypedStmt>) -> TypedBlock {
+        TypedBlock {stmts}
+    }
+
+    pub fn get_stmts(&self) -> Vec<TypedStmt> {
+        self.stmts.to_vec()
+    }
+
+}
+
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub enum TypedExpr {
     CallExpr(TypedAstType, TypedCallExpr),  // add(1, 1 + 1)
     NumExpr(TypedAstType, TypedNumber),     // 1
     BoolExpr(TypedAstType, TypedBool),      // true or false
     NumIdentExpr(TypedAstType, TypedIdent), // x
-    BoolIdentExpr(TypedAstType, TypedIdent),
+    BoolIdentExpr(TypedAstType, TypedIdent), // x
+    NumBlockExpr(TypedAstType, TypedBlock), // {return 1;}
+    BoolBlockExpr(TypedAstType, TypedBlock), // {return true;}
+    VoidBlockExpr(TypedAstType, TypedBlock), // { a += 1; }
     NumAddExpr(TypedAstType, Box<TypedExpr>, Box<TypedExpr>), // 1 + 2
     NumSubExpr(TypedAstType, Box<TypedExpr>, Box<TypedExpr>), // 2 - 1
     NumMulExpr(TypedAstType, Box<TypedExpr>, Box<TypedExpr>), // 2 * 2
@@ -97,6 +116,10 @@ impl TypedExpr {
             TypedExpr::BoolExpr(typed_ast_type, _) => typed_ast_type.clone(),
             TypedExpr::NumIdentExpr(typed_ast_type, _) => typed_ast_type.clone(),
             TypedExpr::BoolIdentExpr(typed_ast_type, _) => typed_ast_type.clone(),
+            TypedExpr::NumBlockExpr(typed_ast_type, _)
+            | TypedExpr::BoolBlockExpr(typed_ast_type, _)
+            | TypedExpr::VoidBlockExpr(typed_ast_type, _)
+            => typed_ast_type.clone(),
             TypedExpr::NumAddExpr(typed_ast_type, ..)
             | TypedExpr::NumSubExpr(typed_ast_type, ..)
             | TypedExpr::NumMulExpr(typed_ast_type, ..)
@@ -104,6 +127,27 @@ impl TypedExpr {
             | TypedExpr::NumLessThanOrEqualExpr(typed_ast_type, ..) => typed_ast_type.clone(),
         }
     }
+
+    pub fn num_expr_new(num: i32) -> TypedExpr {
+        TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(num))
+    }
+
+    pub fn bool_expr_new(bool: bool) -> TypedExpr {
+        TypedExpr::BoolExpr(TypedAstType::Bool, TypedBool::new(bool))
+    }
+
+    pub fn num_block_new(stmts: Vec<TypedStmt>) -> TypedExpr {
+        TypedExpr::NumBlockExpr(TypedAstType::Number, TypedBlock::new(stmts))
+    }
+
+    pub fn bool_block_new(stmts: Vec<TypedStmt>) -> TypedExpr {
+        TypedExpr::BoolBlockExpr(TypedAstType::Bool, TypedBlock::new(stmts))
+    }
+
+    pub fn void_block_new(stmts: Vec<TypedStmt>) -> TypedExpr {
+        TypedExpr::VoidBlockExpr(TypedAstType::Void, TypedBlock::new(stmts))
+    }
+
 }
 
 #[derive(Debug, Eq, PartialEq, Clone)]
@@ -224,4 +268,38 @@ pub enum TypedStmt {
     ExprStmt(TypedExpr),
     Func(TypedFunc),
     ReturnStmt(TypedReturnStmt),
+}
+
+impl TypedStmt {
+    pub fn var_new(
+        name: TypedIdent,
+        type_name: Option<TypeFlag>,
+        value: Option<TypedExpr>,
+    ) -> TypedStmt {
+        TypedStmt::VariableDeclaration(
+            TypedVariableDeclaration::new(name, type_name, value)
+        )
+    }
+
+    pub fn expr_new(expr: TypedExpr) -> TypedStmt {
+        TypedStmt::ExprStmt(
+            expr
+        )
+    }
+
+    pub fn func_new(
+        name: TypedIdent,
+        args: Vec<TypedFuncArg>,
+        stmts: Vec<TypedStmt>,
+        return_stmt: Option<TypedReturnStmt>,
+    ) -> TypedStmt {
+        TypedStmt::Func(
+            TypedFunc::new(name, args, stmts, return_stmt)
+        )
+    }
+
+    pub fn return_new(expr: TypedExpr) -> TypedStmt {
+        TypedStmt::ReturnStmt(TypedReturnStmt::new(expr))
+    }
+
 }

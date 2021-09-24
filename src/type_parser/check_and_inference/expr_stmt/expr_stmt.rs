@@ -1,6 +1,6 @@
-use crate::parser::ast::{CallExpr, Expr, Ident, Opcode, Operation};
+use crate::parser::ast::{CallExpr, Expr, Ident, Opcode, Operation, BlockExpr, Stmt};
 use crate::type_parser::check_and_inference::type_check_and_inference_struct::TypeCheckAndInference;
-use crate::type_parser::typed_ast::{TypedAstType, TypedCallExpr, TypedExpr, TypedNumber, TypedBool};
+use crate::type_parser::typed_ast::{TypedAstType, TypedCallExpr, TypedExpr, TypedNumber, TypedBool, TypedStmt, TypedBlock};
 
 impl TypeCheckAndInference {
     pub fn check_and_inference_expr(&self, expr: Expr) -> TypedExpr {
@@ -14,7 +14,53 @@ impl TypeCheckAndInference {
             Expr::Op(operation) => self.check_and_inference_op(operation),
             Expr::Call(call_expr) => self.check_and_inference_call(call_expr),
             Expr::Ident(ident) => self.check_and_inference_ident(ident),
+            Expr::Block(block) => self.check_and_inference_block(block),
         }
+    }
+
+    fn check_and_inference_block(&self, block: BlockExpr) -> TypedExpr {
+        let stmts = block.get_stmts();
+
+        let block_type_env = self.type_env.clone();
+
+        let typed_stmts = TypeCheckAndInference::check_and_inference(stmts, Some(&block_type_env));
+
+        let mut return_type: TypedAstType = TypedAstType::Void;
+        for typed_stmt in &typed_stmts {
+            match typed_stmt {
+                TypedStmt::ReturnStmt(return_stmt) => {
+                    return_type = return_stmt.get_return_type();
+                    break;
+                }
+                _ => {}
+            };
+        };
+
+        let typed_block = TypedBlock::new(typed_stmts);
+
+        match return_type {
+            TypedAstType::Number => {
+                TypedExpr::NumBlockExpr(
+                    TypedAstType::Number,
+                    typed_block
+                )
+            },
+            TypedAstType::Bool => {
+                TypedExpr::BoolBlockExpr(
+                    TypedAstType::Bool,
+                    typed_block
+                )
+            },
+            TypedAstType::Void => {
+                TypedExpr::VoidBlockExpr(
+                    TypedAstType::Void,
+                    typed_block
+                )
+            }
+            // TODO: Funcも返せるようにする
+            _ => panic!("func does not allow to return: {:?}", block)
+        }
+
     }
 
     fn check_and_inference_op(&self, operation: Operation) -> TypedExpr {
@@ -102,7 +148,7 @@ impl TypeCheckAndInference {
 
 #[cfg(test)]
 mod tests {
-    use crate::parser::ast::{Expr, FuncArg, Ident, Opcode, ReturnStmt, Stmt, Types};
+    use crate::parser::ast::{Expr, FuncArg, Ident, Opcode, ReturnStmt, Stmt, Types, BlockExpr};
     use crate::type_parser::type_parser::type_parser;
     use crate::type_parser::typed_ast::{TypeFlag, TypedAstType, TypedCallExpr, TypedExpr, TypedFunc, TypedFuncArg, TypedIdent, TypedNumber, TypedReturnStmt, TypedStmt, TypedVariableDeclaration, TypedBool};
 
@@ -352,6 +398,126 @@ mod tests {
         ];
 
         assert_eq!(typed_stmts, expected_typed_stmts)
+    }
+
+    #[test]
+    fn test_check_and_inference_num_block() {
+        let stmts = vec![
+            Stmt::expr_new(
+            Expr::block_new(
+                vec![
+                    Stmt::return_new(Expr::num_new(1))
+                    ]
+                )
+            )
+        ];
+
+        let typed_stmts = type_parser(stmts);
+
+        let expected_typed_stmts = vec![
+            TypedStmt::expr_new(
+                TypedExpr::num_block_new(
+                    vec![
+                        TypedStmt::return_new(
+                            TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(1))
+                        )
+                    ]
+                )
+            )
+        ];
+
+        assert_eq!(typed_stmts, expected_typed_stmts);
+    }
+
+    #[test]
+    fn test_check_and_inference_bool_block() {
+        let stmts = vec![
+            Stmt::expr_new(
+                Expr::block_new(
+                    vec![
+                        Stmt::return_new(Expr::bool_new(true))
+                    ]
+                )
+            )
+        ];
+
+        let typed_stmts = type_parser(stmts);
+
+        let expected_typed_stmts = vec![
+            TypedStmt::expr_new(
+                TypedExpr::bool_block_new(
+                    vec![
+                        TypedStmt::return_new(
+                            TypedExpr::BoolExpr(TypedAstType::Bool, TypedBool::new(true))
+                        )
+                    ]
+                )
+            )
+        ];
+
+        assert_eq!(typed_stmts, expected_typed_stmts);
+    }
+
+    #[test]
+    fn test_check_and_inference_void_block() {
+        let stmts = vec![
+            Stmt::expr_new(
+                Expr::block_new(
+                    vec![
+                        Stmt::expr_new(Expr::num_new(1))
+                    ]
+                )
+            )
+        ];
+
+        let typed_stmts = type_parser(stmts);
+
+        let expected_typed_stmts = vec![
+            TypedStmt::expr_new(
+                TypedExpr::void_block_new(
+                    vec![
+                        TypedStmt::expr_new(
+                            TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(1))
+                        )
+                    ]
+                )
+            )
+        ];
+
+        assert_eq!(typed_stmts, expected_typed_stmts);
+    }
+
+    #[test]
+    fn test_check_and_inference_multi_stmts_block() {
+        let stmts = vec![
+            Stmt::expr_new(
+                Expr::block_new(
+                    vec![
+                        Stmt::expr_new(Expr::num_new(1)),
+                        Stmt::expr_new(Expr::num_new(2)),
+                        Stmt::return_new(Expr::bool_new(true))
+                    ]
+                )
+            )
+        ];
+
+        let typed_stmts = type_parser(stmts);
+
+        let expected_typed_stmts = vec![
+            TypedStmt::expr_new(
+                TypedExpr::bool_block_new(
+                    vec![
+                        TypedStmt::expr_new(TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(1))),
+                        TypedStmt::expr_new(TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(2))),
+                        TypedStmt::return_new(
+                            TypedExpr::BoolExpr(TypedAstType::Bool, TypedBool::new(true))
+                        )
+                    ]
+                )
+            )
+        ];
+
+        assert_eq!(typed_stmts, expected_typed_stmts);
     }
 
     #[test]

@@ -1,6 +1,6 @@
 use crate::to_ts_rust::common_struct::CanAssignObj;
 use crate::to_ts_rust::to_rust::to_rust::ToRust;
-use crate::type_parser::typed_ast::{TypedCallExpr, TypedExpr};
+use crate::type_parser::typed_ast::{TypedCallExpr, TypedExpr, TypedBlock, TypedAstType};
 
 impl ToRust {
     pub fn expr_to_rust(&self, typed_expr: TypedExpr) -> String {
@@ -40,6 +40,9 @@ impl ToRust {
                     }
                 }
             },
+            TypedExpr::NumBlockExpr(_, block)
+            | TypedExpr::BoolBlockExpr(_, block)
+            | TypedExpr::VoidBlockExpr(_, block) => self.block_to_rust(block),
             TypedExpr::NumAddExpr(_, l, r) => {
                 format!("{}+{}", self.expr_to_rust(*l), self.expr_to_rust(*r))
             }
@@ -57,6 +60,12 @@ impl ToRust {
             }
             TypedExpr::CallExpr(_, call) => self.call_expr_to_rust(call),
         }
+    }
+
+    fn block_to_rust(&self, block: TypedBlock) -> String {
+        let block_var_env = self.var_env.clone();
+        let ts_stmts = ToRust::to_rust(block.get_stmts(), Some(block_var_env));
+        format!("{{{}}}", ts_stmts)
     }
 
     fn call_expr_to_rust(&self, typed_call_expr: TypedCallExpr) -> String {
@@ -238,6 +247,60 @@ mod tests {
         );
 
         ToRust::to_rust(typed_stmts, Some(var_env));
+    }
+
+    #[test]
+    fn test_num_block_expr_stmt() {
+        let typed_stmts = vec![TypedStmt::expr_new(TypedExpr::num_block_new(
+            vec![TypedStmt::return_new(TypedExpr::num_expr_new(1))]
+        ))];
+
+        let ts_code = ToRust::to_rust(typed_stmts, None);
+
+        let expected_ts_code = "{1};";
+
+        assert_eq!(ts_code, expected_ts_code);
+    }
+
+    #[test]
+    fn test_bool_block_expr_stmt() {
+        let typed_stmts = vec![TypedStmt::expr_new(TypedExpr::num_block_new(
+            vec![TypedStmt::return_new(TypedExpr::bool_expr_new(true))]
+        ))];
+
+        let ts_code = ToRust::to_rust(typed_stmts, None);
+
+        let expected_ts_code = "{true};";
+
+        assert_eq!(ts_code, expected_ts_code);
+    }
+
+    #[test]
+    fn test_void_block_expr_stmt() {
+        let typed_stmts = vec![TypedStmt::expr_new(TypedExpr::void_block_new(vec![
+            TypedStmt::expr_new(TypedExpr::num_expr_new(1))
+        ]))];
+
+        let ts_code = ToRust::to_rust(typed_stmts, None);
+
+        let expected_ts_code = "{1;};";
+
+        assert_eq!(ts_code, expected_ts_code);
+    }
+
+    #[test]
+    fn test_multi_stmts_block_expr_stmt() {
+        let typed_stmts = vec![TypedStmt::expr_new(TypedExpr::num_block_new(vec![
+            TypedStmt::expr_new(TypedExpr::num_expr_new(1)),
+            TypedStmt::expr_new(TypedExpr::bool_expr_new(true)),
+            TypedStmt::return_new(TypedExpr::num_expr_new(2))
+        ]))];
+
+        let ts_code = ToRust::to_rust(typed_stmts, None);
+
+        let expected_ts_code = "{1;true;2};";
+
+        assert_eq!(ts_code, expected_ts_code);
     }
 
     #[test]

@@ -180,12 +180,30 @@ impl Operation {
 }
 
 #[derive(Debug, Eq, PartialEq, Clone)]
+pub struct BlockExpr {
+    stmts: Vec<Stmt>,
+}
+
+impl BlockExpr {
+    pub fn new(stmts: Vec<Stmt>) -> BlockExpr {
+        BlockExpr {
+            stmts,
+        }
+    }
+
+    pub fn get_stmts(&self) -> Vec<Stmt> {
+        self.stmts.clone()
+    }
+}
+
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub enum Expr {
     Bool(Boolean),
     Num(Number),
     Op(Operation),
     Ident(Ident),
     Call(CallExpr),
+    Block(BlockExpr),
 }
 
 impl Expr {
@@ -206,6 +224,10 @@ impl Expr {
 
     pub fn call_new(func_name: Ident, args: Vec<Expr>) -> Expr {
         Expr::Call(CallExpr::new(func_name, args))
+    }
+
+    pub fn block_new(stmts: Vec<Stmt>) -> Expr {
+        Expr::Block(BlockExpr::new(stmts))
     }
 
     pub fn ident_new(ident: Ident) -> Expr {
