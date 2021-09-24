@@ -66,7 +66,7 @@ impl ToTs {
         let block_var_env = self.var_env.clone();
         let ts_stmts = ToTs::to_ts(block.get_stmts(), Some(block_var_env));
         let ts_ast_type = self.typed_ast_type_to_ts(typed_ast_type);
-        format!("():{} => {{{}}}()", ts_ast_type, ts_stmts)
+        format!("():{}=>{{{}}}()", ts_ast_type, ts_stmts)
     }
 
     fn call_expr_to_ts(&self, typed_call_expr: TypedCallExpr) -> String {
@@ -252,7 +252,7 @@ mod tests {
 
     #[test]
     fn test_bool_block_expr_stmt() {
-        let typed_stmts = vec![TypedStmt::expr_new(TypedExpr::num_block_new(
+        let typed_stmts = vec![TypedStmt::expr_new(TypedExpr::bool_block_new(
             vec![TypedStmt::return_new(TypedExpr::bool_expr_new(true))]
         ))];
 
