@@ -1,6 +1,6 @@
 use crate::to_ts_rust::common_struct::CanAssignObj;
 use crate::to_ts_rust::to_ts::to_ts::ToTs;
-use crate::type_parser::typed_ast::{TypedCallExpr, TypedExpr};
+use crate::type_parser::typed_ast::{TypedCallExpr, TypedExpr, TypedBlock, TypedAstType};
 
 impl ToTs {
     pub fn expr_to_ts(&self, typed_expr: TypedExpr) -> String {
@@ -40,6 +40,9 @@ impl ToTs {
                     }
                 }
             },
+            TypedExpr::NumBlockExpr(typed_ast_type, block) => self.block_to_ts(block, typed_ast_type),
+            TypedExpr::BoolBlockExpr(typed_ast_type, block) => self.block_to_ts(block, typed_ast_type),
+            TypedExpr::VoidBlockExpr(typed_ast_type, block) => self.block_to_ts(block, typed_ast_type),
             TypedExpr::NumAddExpr(_, l, r) => {
                 format!("{}+{}", self.expr_to_ts(*l), self.expr_to_ts(*r))
             }
@@ -57,6 +60,13 @@ impl ToTs {
             },
             TypedExpr::CallExpr(_, call) => self.call_expr_to_ts(call),
         }
+    }
+
+    fn block_to_ts(&self, block: TypedBlock, typed_ast_type: TypedAstType) -> String {
+        let block_var_env = self.var_env.clone();
+        let ts_stmts = ToTs::to_ts(block.get_stmts(), Some(block_var_env));
+        let ts_ast_type = self.typed_ast_type_to_ts(typed_ast_type);
+        format!("():{} => {{{}}}()", ts_ast_type, ts_stmts)
     }
 
     fn call_expr_to_ts(&self, typed_call_expr: TypedCallExpr) -> String {
@@ -225,6 +235,60 @@ mod tests {
         );
 
         ToTs::to_ts(typed_stmts, Some(var_env));
+    }
+
+    #[test]
+    fn test_num_block_expr_stmt() {
+        let typed_stmts = vec![TypedStmt::expr_new(TypedExpr::num_block_new(
+            vec![TypedStmt::return_new(TypedExpr::num_expr_new(1))]
+        ))];
+
+        let ts_code = ToTs::to_ts(typed_stmts, None);
+
+        let expected_ts_code = "():number=>{return 1;}();";
+
+        assert_eq!(ts_code, expected_ts_code);
+    }
+
+    #[test]
+    fn test_bool_block_expr_stmt() {
+        let typed_stmts = vec![TypedStmt::expr_new(TypedExpr::num_block_new(
+            vec![TypedStmt::return_new(TypedExpr::bool_expr_new(true))]
+        ))];
+
+        let ts_code = ToTs::to_ts(typed_stmts, None);
+
+        let expected_ts_code = "():boolean=>{return true;}();";
+
+        assert_eq!(ts_code, expected_ts_code);
+    }
+
+    #[test]
+    fn test_void_block_expr_stmt() {
+        let typed_stmts = vec![TypedStmt::expr_new(TypedExpr::void_block_new(vec![
+            TypedStmt::expr_new(TypedExpr::num_expr_new(1))
+        ]))];
+
+        let ts_code = ToTs::to_ts(typed_stmts, None);
+
+        let expected_ts_code = "():void=>{1;}();";
+
+        assert_eq!(ts_code, expected_ts_code);
+    }
+
+    #[test]
+    fn test_multi_stmts_block_expr_stmt() {
+        let typed_stmts = vec![TypedStmt::expr_new(TypedExpr::num_block_new(vec![
+            TypedStmt::expr_new(TypedExpr::num_expr_new(1)),
+            TypedStmt::expr_new(TypedExpr::bool_expr_new(true)),
+            TypedStmt::return_new(TypedExpr::num_expr_new(2))
+        ]))];
+
+        let ts_code = ToTs::to_ts(typed_stmts, None);
+
+        let expected_ts_code = "():number=>{1;true;return 2;}();";
+
+        assert_eq!(ts_code, expected_ts_code);
     }
 
     #[test]

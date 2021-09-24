@@ -128,6 +128,14 @@ impl TypedExpr {
         }
     }
 
+    pub fn num_expr_new(num: i32) -> TypedExpr {
+        TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(num))
+    }
+
+    pub fn bool_expr_new(bool: bool) -> TypedExpr {
+        TypedExpr::BoolExpr(TypedAstType::Bool, TypedBool::new(bool))
+    }
+
     pub fn num_block_new(stmts: Vec<TypedStmt>) -> TypedExpr {
         TypedExpr::NumBlockExpr(TypedAstType::Number, TypedBlock::new(stmts))
     }
