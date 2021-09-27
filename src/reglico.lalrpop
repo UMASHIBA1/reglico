@@ -1,5 +1,5 @@
 grammar;
-use super::ast::{Ident, Opcode, Types, Expr, BlockExpr, ExprStmt, CallExpr, Operation, VariableDeclaration, FuncArg,  Func, ReturnStmt, Stmt};
+use super::ast::{Ident, Opcode, Types, Expr, BlockExpr, ExprStmt, CallExpr, Operation, VariableDeclaration, FuncArg,  Func, ReturnStmt, IfStmt, BlockBox, CanElseStmt, Stmt};
 
 pub Program = {
     Stmt*
@@ -9,7 +9,8 @@ Stmt: Stmt = {
     ConstAssignment => Stmt::VariableDeclaration(<>),
     ExprStmt => Stmt::ExprStmt(<>),
     ReturnStmt => Stmt::ReturnStmt(<>),
-    Func => Stmt::Func(<>)
+    Func => Stmt::Func(<>),
+    IfStmt => Stmt::IfStmt(<>),
 }
 
 ExprStmt: ExprStmt = {
@@ -98,6 +99,16 @@ ReturnStmt: ReturnStmt = {
     "return" <expr: Expr> ";" => ReturnStmt::new(expr),
 }
 
+IfStmt: IfStmt = {
+    "if" <expr: Expr> <then_stmt: BlockBox> "else" <else_stmt: BlockBox> => IfStmt::new(expr, then_stmt, Some(CanElseStmt::new_from_block_box(else_stmt))),
+    "if" <expr: Expr> <then_stmt: BlockBox> "else" <else_stmt: IfStmt> => IfStmt::new(expr, then_stmt, Some(CanElseStmt::new_from_if_stmt(else_stmt))),
+    "if" <expr: Expr> <then_stmt: BlockBox> => IfStmt::new(expr, then_stmt, None),
+}
+
+BlockBox: BlockBox = {
+    "{" <stmts: Stmt*> "}" => BlockBox::new(stmts),
+}
+
 CommaSeparate<T>: Vec<T> = { // (1)
     <mut v:(<T> ",")*> <e:T?> => match e { // (2)
         None => v,
@@ -107,4 +118,3 @@ CommaSeparate<T>: Vec<T> = { // (1)
         }
     }
 };
-

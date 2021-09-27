@@ -43,6 +43,24 @@ impl VariableDeclaration {
 }
 
 #[derive(Debug, Eq, PartialEq, Clone)]
+pub struct BlockBox {
+    stmts: Vec<Stmt>,
+}
+
+impl BlockBox {
+    pub fn new(stmts: Vec<Stmt>) -> BlockBox {
+        BlockBox {
+            stmts
+        }
+    }
+
+    pub fn get_stmts(&self) -> Vec<Stmt> {
+        self.stmts.to_vec()
+    }
+
+}
+
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub enum Types {
     NumberType,
     BoolType,
@@ -260,11 +278,58 @@ impl ExprStmt {
 }
 
 #[derive(Debug, Eq, PartialEq, Clone)]
+pub enum CanElseStmt {
+    BlockBox(BlockBox),
+    IfStmt(IfStmt),
+}
+
+impl CanElseStmt {
+    pub fn block_box_new(stmts: Vec<Stmt>) -> CanElseStmt {
+        CanElseStmt::BlockBox(BlockBox::new(stmts))
+    }
+
+    pub fn if_stmt_new(condition_expr: Expr, then_stmt: BlockBox, else_stmt: Option<CanElseStmt>) -> CanElseStmt {
+        CanElseStmt::IfStmt(IfStmt::new(condition_expr, then_stmt, else_stmt))
+    }
+
+    pub fn new_from_if_stmt(if_stmt: IfStmt) -> CanElseStmt {
+        CanElseStmt::IfStmt(if_stmt)
+    }
+
+    pub fn new_from_block_box(block_box: BlockBox) -> CanElseStmt {
+        CanElseStmt::BlockBox(block_box)
+    }
+
+}
+
+#[derive(Debug, Eq, PartialEq, Clone)]
+pub struct IfStmt {
+    condition_expr: Expr,
+    then_stmt: BlockBox,
+    else_stmt: Option<Box<CanElseStmt>>,
+}
+
+impl IfStmt {
+    pub fn new(condition_expr: Expr, then_stmt: BlockBox, else_stmt: Option<CanElseStmt>) -> IfStmt {
+        let else_stmt = match else_stmt {
+            Some(can_else_stmt) => Some(Box::new(can_else_stmt)),
+            None => None,
+        };
+        IfStmt {
+            condition_expr,
+            then_stmt,
+            else_stmt,
+        }
+    }
+}
+
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub enum Stmt {
     VariableDeclaration(VariableDeclaration),
     ExprStmt(ExprStmt),
     Func(Func),
     ReturnStmt(ReturnStmt),
+    IfStmt(IfStmt)
 }
 
 impl Stmt {
@@ -283,6 +348,11 @@ impl Stmt {
     pub fn return_new(expr: Expr) -> Stmt {
         Stmt::ReturnStmt(ReturnStmt::new(expr))
     }
+
+    pub fn if_stmt(condition_expr: Expr, then_stmt: BlockBox, else_stmt: Option<CanElseStmt>) -> Stmt {
+        Stmt::IfStmt(IfStmt::new(condition_expr, then_stmt, else_stmt))
+    }
+
 }
 
 #[cfg(test)]
