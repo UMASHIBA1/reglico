@@ -321,6 +321,19 @@ impl IfStmt {
             else_stmt,
         }
     }
+
+    pub fn get_condition_expr(&self) -> Expr {
+        self.condition_expr.clone()
+    }
+
+    pub fn get_then_stmt(&self) -> BlockBox {
+        self.then_stmt.clone()
+    }
+
+    pub fn get_else_stmt(&self) -> Option<Box<CanElseStmt>> {
+        self.else_stmt.clone()
+    }
+
 }
 
 #[derive(Debug, Eq, PartialEq, Clone)]

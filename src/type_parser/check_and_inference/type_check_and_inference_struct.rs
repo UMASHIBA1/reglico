@@ -40,7 +40,8 @@ impl TypeCheckAndInference {
             Stmt::Func(func) => TypedStmt::Func(self.check_and_inference_func(func)),
             Stmt::ReturnStmt(return_stmt) => {
                 TypedStmt::ReturnStmt(self.convert_return_stmt_to_typed_return_stmt(return_stmt))
-            }
+            },
+            Stmt::IfStmt(if_stmt) => TypedStmt::IfStmt(self.check_and_inference_if_stmt(if_stmt)),
         }
     }
 

@@ -56,6 +56,30 @@ impl TypedBool {
 }
 
 #[derive(Debug, Eq, PartialEq, Clone)]
+pub struct TypedBlockBox {
+    stmts: Vec<TypedStmt>,
+    return_stmt: Option<TypedReturnStmt>,
+}
+
+impl TypedBlockBox {
+    pub fn new(stmts: Vec<TypedStmt>, return_stmt: Option<TypedReturnStmt>) -> TypedBlockBox {
+        TypedBlockBox {
+            stmts,
+            return_stmt,
+        }
+    }
+
+    pub fn get_stmts(&self) -> Vec<TypedStmt> {
+        self.stmts.to_vec()
+    }
+
+    pub fn get_return_stmt(&self) -> Option<TypedReturnStmt> {
+        self.return_stmt.clone()
+    }
+
+}
+
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub struct TypedCallExpr {
     func_name: TypedIdent,
     args: Vec<TypedExpr>,
@@ -134,6 +158,22 @@ impl TypedExpr {
 
     pub fn bool_expr_new(bool: bool) -> TypedExpr {
         TypedExpr::BoolExpr(TypedAstType::Bool, TypedBool::new(bool))
+    }
+
+    pub fn num_add_new(left: TypedExpr, right: TypedExpr) -> TypedExpr {
+        TypedExpr::NumAddExpr(TypedAstType::Number, Box::new(left), Box::new(right))
+    }
+
+    pub fn num_sub_new(left: TypedExpr, right: TypedExpr) -> TypedExpr {
+        TypedExpr::NumSubExpr(TypedAstType::Number, Box::new(left), Box::new(right))
+    }
+
+    pub fn num_mul_new(left: TypedExpr, right: TypedExpr) -> TypedExpr {
+        TypedExpr::NumMulExpr(TypedAstType::Number, Box::new(left), Box::new(right))
+    }
+
+    pub fn num_div_new(left: TypedExpr, right: TypedExpr) -> TypedExpr {
+        TypedExpr::NumDivExpr(TypedAstType::Number, Box::new(left), Box::new(right))
     }
 
     pub fn num_block_new(stmts: Vec<TypedStmt>) -> TypedExpr {
@@ -263,11 +303,63 @@ impl TypedFunc {
 }
 
 #[derive(Debug, Eq, PartialEq, Clone)]
+pub enum TypedCanElseStmt {
+    BlockBox(TypedBlockBox),
+    IfStmt(TypedIfStmt),
+}
+
+#[derive(Debug, Eq, PartialEq, Clone)]
+pub struct TypedIfStmt {
+    condition_expr: TypedExpr,
+    then_stmt: TypedBlockBox,
+    else_stmt: Option<Box<TypedCanElseStmt>>,
+    return_stmt: Option<TypedReturnStmt>,
+}
+
+impl TypedIfStmt {
+    pub fn new(condition_expr: TypedExpr, then_stmt: TypedBlockBox, else_stmt: Option<TypedCanElseStmt>, return_stmt: Option<TypedReturnStmt>) -> TypedIfStmt {
+        let else_stmt = match else_stmt {
+            Some(can_else_stmt) => Some(Box::new(can_else_stmt)),
+            None => None,
+        };
+
+        TypedIfStmt {
+            condition_expr,
+            then_stmt,
+            else_stmt,
+            return_stmt
+        }
+
+    }
+
+    pub fn get_condition_expr(&self) -> TypedExpr {
+        self.condition_expr.clone()
+    }
+
+    pub fn get_then_stmt(&self) -> TypedBlockBox {
+        self.then_stmt.clone()
+    }
+
+    pub fn get_else_stmt(&self) -> Option<&Box<TypedCanElseStmt>> {
+        match &self.else_stmt {
+            Some(box_typed_can_else_stmt) => Some(box_typed_can_else_stmt),
+            None => None
+        }
+    }
+
+    pub fn get_return_stmt(&self) -> Option<TypedReturnStmt> {
+        self.return_stmt.clone()
+    }
+
+}
+
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub enum TypedStmt {
     VariableDeclaration(TypedVariableDeclaration),
     ExprStmt(TypedExpr),
     Func(TypedFunc),
     ReturnStmt(TypedReturnStmt),
+    IfStmt(TypedIfStmt),
 }
 
 impl TypedStmt {
@@ -300,6 +392,10 @@ impl TypedStmt {
 
     pub fn return_new(expr: TypedExpr) -> TypedStmt {
         TypedStmt::ReturnStmt(TypedReturnStmt::new(expr))
+    }
+
+    pub fn if_stmt_new(condition_expr: TypedExpr, then_stmt: TypedBlockBox, else_stmt: Option<TypedCanElseStmt>, return_stmt: Option<TypedReturnStmt>) -> TypedStmt {
+        TypedStmt::IfStmt(TypedIfStmt::new(condition_expr, then_stmt, else_stmt, return_stmt))
     }
 
 }
