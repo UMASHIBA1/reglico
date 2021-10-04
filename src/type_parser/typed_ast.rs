@@ -1,4 +1,5 @@
 use std::hash::Hash;
+use crate::type_parser::typed_ast::TypedCanElseStmt::BlockBox;
 
 #[derive(Debug, Hash, Eq, PartialEq, Clone)]
 pub struct TypedIdent {
@@ -306,6 +307,17 @@ impl TypedFunc {
 pub enum TypedCanElseStmt {
     BlockBox(TypedBlockBox),
     IfStmt(TypedIfStmt),
+}
+
+impl TypedCanElseStmt {
+    pub fn block_box_new(stmts: Vec<TypedStmt>, return_stmt: Option<TypedReturnStmt>) -> TypedCanElseStmt {
+        TypedCanElseStmt::BlockBox(TypedBlockBox::new(stmts, return_stmt))
+    }
+
+    pub fn if_stmt_new(condition_expr: TypedExpr, then_stmt: TypedBlockBox, else_stmt: Option<TypedCanElseStmt>, return_stmt: Option<TypedReturnStmt>) -> TypedCanElseStmt {
+        TypedCanElseStmt::IfStmt(TypedIfStmt::new(condition_expr, then_stmt, else_stmt, return_stmt))
+    }
+
 }
 
 #[derive(Debug, Eq, PartialEq, Clone)]

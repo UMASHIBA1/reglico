@@ -33,9 +33,69 @@ impl TypeCheckAndInference {
 
 #[cfg(test)]
 mod tests {
-    use crate::parser::ast::{Stmt, Expr, BlockBox, Number, Opcode};
+    use crate::parser::ast::{Stmt, Expr, BlockBox, Number, Opcode, CanElseStmt};
     use crate::type_parser::type_parser::type_parser;
-    use crate::type_parser::typed_ast::{TypedStmt, TypedExpr, TypedBlockBox};
+    use crate::type_parser::typed_ast::{TypedStmt, TypedExpr, TypedBlockBox, TypedCanElseStmt};
+
+    #[test]
+    fn test_inference_if_else_block_stmt() {
+        // if(true){1;}else{1;}
+        let stmts = vec![Stmt::if_stmt(
+            Expr::bool_new(true),
+            BlockBox::new(vec![Stmt::expr_new(Expr::op_new(Expr::num_new(1), Opcode::Add, Expr::num_new(2)))]),
+            Some(CanElseStmt::block_box_new(vec![Stmt::expr_new(Expr::num_new(1))]))
+        )];
+
+        let typed_stmts = type_parser(stmts);
+
+        let expected_typed_stmts = vec![TypedStmt::if_stmt_new(
+            TypedExpr::bool_expr_new(true),
+            TypedBlockBox::new(vec![TypedStmt::expr_new(TypedExpr::num_add_new(
+                TypedExpr::num_expr_new(1),
+                TypedExpr::num_expr_new(2)
+            ))], None),
+            Some(TypedCanElseStmt::block_box_new(
+                vec![TypedStmt::expr_new(TypedExpr::num_expr_new(1))],
+                None
+            )),
+            None
+        )];
+
+        assert_eq!(typed_stmts, expected_typed_stmts);
+    }
+
+    #[test]
+    fn test_inference_if_elseif_stmt() {
+        // if(true){1 + 2;}else if(true){1;}
+        let stmts = vec![Stmt::if_stmt(
+            Expr::bool_new(true),
+            BlockBox::new(vec![Stmt::expr_new(Expr::op_new(Expr::num_new(1), Opcode::Add, Expr::num_new(2)))]),
+            Some(CanElseStmt::if_stmt_new(
+                Expr::bool_new(true),
+                BlockBox::new(vec![Stmt::expr_new(Expr::num_new(1))]),
+                None,
+            ))
+        )];
+
+        let typed_stmts = type_parser(stmts);
+
+        let expected_typed_stmts = vec![TypedStmt::if_stmt_new(
+            TypedExpr::bool_expr_new(true),
+            TypedBlockBox::new(vec![TypedStmt::expr_new(TypedExpr::num_add_new(
+                TypedExpr::num_expr_new(1),
+                TypedExpr::num_expr_new(2)
+            ))], None),
+            Some(TypedCanElseStmt::if_stmt_new(
+                TypedExpr::bool_expr_new(true),
+                TypedBlockBox::new(vec![TypedStmt::expr_new(TypedExpr::num_expr_new(1))], None),
+                None,
+                None
+            )),
+            None
+        )];
+
+        assert_eq!(typed_stmts, expected_typed_stmts);
+    }
 
     #[test]
     fn test_inference_if_stmt() {
@@ -56,6 +116,8 @@ mod tests {
             None,
             None
         )];
+
+        assert_eq!(typed_stmts, expected_typed_stmts);
 
     }
 }
