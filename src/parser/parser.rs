@@ -1,6 +1,6 @@
 mod test {
     use super::super::ast;
-    use crate::parser::ast::{Expr, FuncArg, Ident, Opcode, ReturnStmt, Stmt, Types};
+    use crate::parser::ast::{Expr, FuncArg, Ident, Opcode, ReturnStmt, Stmt, Types, BlockBox, CanElseStmt};
     use lalrpop_util::lalrpop_mod;
 
     #[test]
@@ -327,6 +327,82 @@ mod test {
             Opcode::Div,
             Expr::num_new(4),
         ))];
+
+        assert_eq!(expr, expected_expr);
+    }
+
+    #[test]
+    fn test_if_else_block_stmt() {
+        lalrpop_mod!(pub reglico);
+
+        let expr = reglico::ProgramParser::new().parse("if(true){1;}else{1;}").unwrap();
+
+        let expected_expr = vec![
+            Stmt::if_stmt(
+                Expr::bool_new(true),
+                BlockBox::new(vec![Stmt::expr_new(Expr::num_new(1))]),
+                Some(CanElseStmt::block_box_new(vec![Stmt::expr_new(Expr::num_new(1))]))
+            )
+        ];
+
+        assert_eq!(expr, expected_expr);
+    }
+
+    #[test]
+    fn test_if_elseif_stmt() {
+        lalrpop_mod!(pub reglico);
+
+        let expr = reglico::ProgramParser::new().parse("if(true){1;}else if(true){1;}").unwrap();
+
+        let expected_expr = vec![
+            Stmt::if_stmt(
+                Expr::bool_new(true),
+                BlockBox::new(vec![Stmt::expr_new(Expr::num_new(1))]),
+                Some(CanElseStmt::if_stmt_new(
+                    Expr::bool_new(true),
+                    BlockBox::new(vec![Stmt::expr_new(Expr::num_new(1))]),
+                    None
+                ))
+            )
+        ];
+
+        assert_eq!(expr, expected_expr);
+    }
+
+    #[test]
+    fn test_if_stmt() {
+        lalrpop_mod!(pub reglico);
+
+        let expr = reglico::ProgramParser::new().parse("if(true){1;}").unwrap();
+
+        let expected_expr = vec![
+            Stmt::if_stmt(
+                Expr::bool_new(true),
+                BlockBox::new(vec![Stmt::expr_new(Expr::num_new(1))]),
+                None
+            )
+        ];
+
+        assert_eq!(expr, expected_expr);
+    }
+
+    #[test]
+    fn test_if_elseif_else_stmt() {
+        lalrpop_mod!(pub reglico);
+
+        let expr = reglico::ProgramParser::new().parse("if(true){1;}else if(true){1;}else{1;}").unwrap();
+
+        let expected_expr = vec![
+            Stmt::if_stmt(
+                Expr::bool_new(true),
+                BlockBox::new(vec![Stmt::expr_new(Expr::num_new(1))]),
+                Some(CanElseStmt::if_stmt_new(
+                    Expr::bool_new(true),
+                    BlockBox::new(vec![Stmt::expr_new(Expr::num_new(1))]),
+                    Some(CanElseStmt::block_box_new(vec![Stmt::expr_new(Expr::num_new(1))]))
+                ))
+            )
+        ];
 
         assert_eq!(expr, expected_expr);
     }

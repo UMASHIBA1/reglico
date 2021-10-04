@@ -36,6 +36,7 @@ impl ToTs {
             TypedStmt::ExprStmt(typed_expr) => format!("{};", self.expr_to_ts(typed_expr)),
             TypedStmt::Func(typed_func) => self.func_to_ts(typed_func),
             TypedStmt::ReturnStmt(return_stmt) => self.return_stmt_to_ts(&return_stmt),
+            TypedStmt::IfStmt(if_stmt) => self.if_stmt_to_ts(if_stmt),
         }
     }
 

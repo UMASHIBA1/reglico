@@ -1,5 +1,5 @@
 use crate::to_ts_rust::to_ts::to_ts::ToTs;
-use crate::type_parser::typed_ast::{TypeFlag, TypedAstType, TypedIdent};
+use crate::type_parser::typed_ast::{TypeFlag, TypedAstType, TypedIdent, TypedBlockBox, TypedStmt};
 
 impl ToTs {
     pub fn type_flag_to_ts(&self, type_flag: TypeFlag) -> String {
@@ -26,6 +26,22 @@ impl ToTs {
             },
             None => false,
         }
+    }
+
+    pub fn block_box_to_ts(&self, block_box: TypedBlockBox) -> String {
+        let block_box_var_env = self.var_env.clone();
+        let mut stmts = block_box.get_stmts();
+        match block_box.get_return_stmt() {
+            Some(return_stmt) => {
+                stmts.push(TypedStmt::ReturnStmt(return_stmt))
+            },
+            None => {}
+        }
+
+        let str_stmts = ToTs::to_ts(stmts, Some(block_box_var_env));
+
+        format!("{{{}}}", str_stmts)
+
     }
 
 }
