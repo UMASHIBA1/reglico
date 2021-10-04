@@ -35,6 +35,7 @@ impl ToRust {
             TypedStmt::ExprStmt(typed_expr) => format!("{};", self.expr_to_rust(typed_expr)),
             TypedStmt::Func(typed_func) => self.func_to_rust(typed_func),
             TypedStmt::ReturnStmt(return_stmt) => self.return_stmt_to_rust(&return_stmt),
+            TypedStmt::IfStmt(if_stmt) => self.if_stmt_to_rust(if_stmt)
         }
     }
 
