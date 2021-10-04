@@ -358,7 +358,11 @@ mod test {
             Stmt::if_stmt(
                 Expr::bool_new(true),
                 BlockBox::new(vec![Stmt::expr_new(Expr::num_new(1))]),
-                Some(CanElseStmt::block_box_new(vec![Stmt::expr_new(Expr::num_new(1))]))
+                Some(CanElseStmt::if_stmt_new(
+                    Expr::bool_new(true),
+                    BlockBox::new(vec![Stmt::expr_new(Expr::num_new(1))]),
+                    None
+                ))
             )
         ];
 
