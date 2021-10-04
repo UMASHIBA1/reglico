@@ -39,7 +39,7 @@ mod tests {
 
     #[test]
     fn test_inference_if_else_block_stmt() {
-        // if(true){1;}else{1;}
+        // if(true){1 + 2;}else{1;}
         let stmts = vec![Stmt::if_stmt(
             Expr::bool_new(true),
             BlockBox::new(vec![Stmt::expr_new(Expr::op_new(Expr::num_new(1), Opcode::Add, Expr::num_new(2)))]),
