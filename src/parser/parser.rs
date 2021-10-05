@@ -1,3 +1,19 @@
+use crate::parser::ast::Stmt;
+use lalrpop_util::lalrpop_mod;
+use super::ast;
+
+pub fn parser(reglico_code: &str) -> Vec<Stmt> {
+    lalrpop_mod!(pub reglico);
+
+    let will_stmts = reglico::ProgramParser::new().parse(reglico_code);
+
+    match will_stmts {
+        Ok(stmts) => stmts,
+        Err(e) => panic!("parser error!: {}", e)
+    }
+
+}
+
 mod test {
     use super::super::ast;
     use crate::parser::ast::{Expr, FuncArg, Ident, Opcode, ReturnStmt, Stmt, Types, BlockBox, CanElseStmt};
