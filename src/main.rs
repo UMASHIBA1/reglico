@@ -35,7 +35,7 @@ fn main() {
 
     let rust_code = create_wasm_setting_rust_code(transpile_to_rust(reglico_code.as_str()));
 
-    let mut ts_file = fs::File::create("output/js/output.ts").expect("can't create output/output.ts");
+    let mut ts_file = fs::File::create("output/ts_output/output.ts").expect("can't create output/output.ts");
     let mut rust_file = fs::File::create("output/src/lib.rs").expect("can't create output/output.rs");
 
     ts_file.write_all(ts_code.as_bytes());
