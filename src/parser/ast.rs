@@ -1,4 +1,4 @@
-#[derive(Debug, Eq, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Ident {
     name: String,
 }
@@ -13,7 +13,7 @@ impl Ident {
     }
 }
 
-#[derive(Debug, Eq, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct VariableDeclaration {
     name: Ident,
     type_name: Option<Types>,
@@ -42,7 +42,7 @@ impl VariableDeclaration {
     }
 }
 
-#[derive(Debug, Eq, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct BlockBox {
     stmts: Vec<Stmt>,
 }
@@ -60,13 +60,13 @@ impl BlockBox {
 
 }
 
-#[derive(Debug, Eq, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum Types {
     NumberType,
     BoolType,
 }
 
-#[derive(Debug, Eq, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct FuncArg {
     name: Ident,
     arg_type: Types,
@@ -86,7 +86,7 @@ impl FuncArg {
     }
 }
 
-#[derive(Debug, Eq, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct ReturnStmt {
     expr: Expr,
 }
@@ -101,7 +101,7 @@ impl ReturnStmt {
     }
 }
 
-#[derive(Debug, Eq, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Func {
     name: Ident,
     args: Vec<FuncArg>,
@@ -126,7 +126,7 @@ impl Func {
     }
 }
 
-#[derive(Debug, Eq, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct CallExpr {
     func_name: Ident,
     args: Vec<Expr>,
@@ -146,7 +146,7 @@ impl CallExpr {
     }
 }
 
-#[derive(Debug, Eq, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Number {
     num: f32,
 }
@@ -161,7 +161,7 @@ impl Number {
     }
 }
 
-#[derive(Debug, Eq, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Boolean {
     bool: bool,
 }
@@ -172,7 +172,7 @@ impl Boolean {
     pub fn get_bool(&self) -> bool { self.bool }
 }
 
-#[derive(Debug, Eq, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Operation {
     opcode: Opcode,
     l_expr: Box<Expr>,
@@ -197,7 +197,7 @@ impl Operation {
     }
 }
 
-#[derive(Debug, Eq, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct BlockExpr {
     stmts: Vec<Stmt>,
 }
@@ -214,7 +214,7 @@ impl BlockExpr {
     }
 }
 
-#[derive(Debug, Eq, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum Expr {
     Bool(Boolean),
     Num(Number),
@@ -253,7 +253,7 @@ impl Expr {
     }
 }
 
-#[derive(Debug, Eq, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum Opcode {
     Add, // +
     Sub, // -
@@ -262,7 +262,7 @@ pub enum Opcode {
     LessThanOrEqual, // <=
 }
 
-#[derive(Debug, Eq, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct ExprStmt {
     expr: Expr,
 }
@@ -277,7 +277,7 @@ impl ExprStmt {
     }
 }
 
-#[derive(Debug, Eq, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum CanElseStmt {
     BlockBox(BlockBox),
     IfStmt(IfStmt),
@@ -302,7 +302,7 @@ impl CanElseStmt {
 
 }
 
-#[derive(Debug, Eq, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct IfStmt {
     condition_expr: Expr,
     then_stmt: BlockBox,
@@ -336,7 +336,7 @@ impl IfStmt {
 
 }
 
-#[derive(Debug, Eq, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum Stmt {
     VariableDeclaration(VariableDeclaration),
     ExprStmt(ExprStmt),
