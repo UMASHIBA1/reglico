@@ -108,7 +108,7 @@ mod tests {
         let ts_code = ToTs::to_ts(typed_stmts, None);
 
         let expected_ts_code =
-            "const add=(a:number,b:number):number=>{return a+b;}const total=add(1,2);";
+            "const add=(a:number,b:number):number=>{return a+b;};const total=add(1,2);";
 
         assert_eq!(ts_code, expected_ts_code);
     }

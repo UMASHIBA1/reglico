@@ -72,7 +72,7 @@ impl ToTs {
         match return_stmt_str {
             Some(return_stmt_str) => {
                 format!(
-                    "const {}=({}):{}=>{{{}{}}}",
+                    "const {}=({}):{}=>{{{}{}}};",
                     name.get_name(),
                     args_str,
                     return_type,
@@ -82,7 +82,7 @@ impl ToTs {
             }
             None => {
                 format!(
-                    "const {}=({}):void=>{{{}}}",
+                    "const {}=({}):void=>{{{}}};",
                     name.get_name(),
                     args_str,
                     stmts_str
@@ -123,8 +123,44 @@ mod tests {
 
         let ts_code = ToTs::to_ts(typed_stmts, None);
 
-        let expected_ts_code = "const add=(a:number,b:number):number=>{return a+b;}";
+        let expected_ts_code = "const add=(a:number,b:number):number=>{return a+b;};";
 
         assert_eq!(ts_code, expected_ts_code);
     }
+
+    #[test]
+    fn test_return_void_func_declaration() {
+        let typed_stmts = vec![TypedStmt::Func(TypedFunc::new(
+            TypedIdent::new("add".to_string()),
+            vec![
+                TypedFuncArg::new(TypedIdent::new("a".to_string()), TypeFlag::NumberType),
+                TypedFuncArg::new(TypedIdent::new("b".to_string()), TypeFlag::NumberType),
+            ],
+            vec![TypedStmt::ExprStmt(TypedExpr::num_expr_new(1))],
+            None
+        ))];
+
+        let ts_code = ToTs::to_ts(typed_stmts, None);
+
+        let expected_ts_code = "const add=(a:number,b:number):void=>{1;};";
+
+        assert_eq!(ts_code, expected_ts_code);
+    }
+
+    #[test]
+    fn test_no_args_func_declaration() {
+        let typed_stmts = vec![TypedStmt::Func(TypedFunc::new(
+            TypedIdent::new("add".to_string()),
+            vec![],
+            vec![TypedStmt::ExprStmt(TypedExpr::num_expr_new(1))],
+            None
+        ))];
+
+        let ts_code = ToTs::to_ts(typed_stmts, None);
+
+        let expected_ts_code = "const add=():void=>{1;};";
+
+        assert_eq!(ts_code, expected_ts_code);
+    }
+
 }
