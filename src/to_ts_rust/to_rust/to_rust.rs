@@ -56,7 +56,7 @@ mod tests {
     #[test]
     fn test_return_stmt() {
         let typed_stmts = vec![TypedStmt::ReturnStmt(TypedReturnStmt::new(
-            TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(0)),
+            TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(0.0)),
         ))];
 
         let rust_code = ToRust::to_rust(typed_stmts, None);
@@ -96,8 +96,8 @@ mod tests {
                     TypedCallExpr::new(
                         TypedIdent::new("add".to_string()),
                         vec![
-                            TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(1)),
-                            TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(2)),
+                            TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(1.0)),
+                            TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(2.0)),
                         ],
                     ),
                 )),
