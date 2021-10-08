@@ -45,7 +45,7 @@ mod tests {
         let typed_stmts = vec![TypedStmt::if_stmt_new(
             TypedExpr::bool_expr_new(true),
             TypedBlockBox::new(
-                vec![TypedStmt::expr_new(TypedExpr::num_expr_new(1))],
+                vec![TypedStmt::expr_new(TypedExpr::num_expr_new(1.0))],
                 None
             ),
             None,
@@ -65,11 +65,11 @@ mod tests {
         let typed_stmts = vec![TypedStmt::if_stmt_new(
             TypedExpr::bool_expr_new(true),
             TypedBlockBox::new(vec![TypedStmt::expr_new(TypedExpr::num_add_new(
-                TypedExpr::num_expr_new(1),
-                TypedExpr::num_expr_new(2)
+                TypedExpr::num_expr_new(1.0),
+                TypedExpr::num_expr_new(2.0)
             ))], None),
             Some(TypedCanElseStmt::block_box_new(
-                vec![TypedStmt::expr_new(TypedExpr::num_expr_new(1))],
+                vec![TypedStmt::expr_new(TypedExpr::num_expr_new(1.0))],
                 None
             )),
             None
@@ -89,12 +89,12 @@ mod tests {
         let typed_stmts = vec![TypedStmt::if_stmt_new(
             TypedExpr::bool_expr_new(true),
             TypedBlockBox::new(vec![TypedStmt::expr_new(TypedExpr::num_add_new(
-                TypedExpr::num_expr_new(1),
-                TypedExpr::num_expr_new(2)
+                TypedExpr::num_expr_new(1.0),
+                TypedExpr::num_expr_new(2.0)
             ))], None),
             Some(TypedCanElseStmt::if_stmt_new(
                 TypedExpr::bool_expr_new(true),
-                TypedBlockBox::new(vec![TypedStmt::expr_new(TypedExpr::num_expr_new(1))], None),
+                TypedBlockBox::new(vec![TypedStmt::expr_new(TypedExpr::num_expr_new(1.0))], None),
                 None,
                 None
             )),
