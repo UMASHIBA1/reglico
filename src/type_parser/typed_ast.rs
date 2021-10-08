@@ -1,7 +1,7 @@
 use std::hash::Hash;
 use crate::type_parser::typed_ast::TypedCanElseStmt::BlockBox;
 
-#[derive(Debug, Hash, Eq, PartialEq, Clone)]
+#[derive(Debug, Eq, Hash, PartialEq, Clone)]
 pub struct TypedIdent {
     name: String,
 }
@@ -16,13 +16,13 @@ impl TypedIdent {
     }
 }
 
-#[derive(Debug, Eq, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum TypeFlag {
     NumberType, // x: number
     BoolType, // x: bool
 }
 
-#[derive(Debug, Eq, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum TypedAstType {
     Number,
     Bool,
@@ -30,22 +30,22 @@ pub enum TypedAstType {
     Void,
 }
 
-#[derive(Debug, Eq, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct TypedNumber {
-    num: i32,
+    num: f32,
 }
 
 impl TypedNumber {
-    pub fn new(num: i32) -> TypedNumber {
+    pub fn new(num: f32) -> TypedNumber {
         TypedNumber { num }
     }
 
-    pub fn get_num(&self) -> i32 {
+    pub fn get_num(&self) -> f32 {
         self.num.clone()
     }
 }
 
-#[derive(Debug, Eq, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct TypedBool {
     bool: bool
 }
@@ -56,7 +56,7 @@ impl TypedBool {
     pub fn get_bool(&self) -> bool { self.bool.clone() }
 }
 
-#[derive(Debug, Eq, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct TypedBlockBox {
     stmts: Vec<TypedStmt>,
     return_stmt: Option<TypedReturnStmt>,
@@ -80,7 +80,7 @@ impl TypedBlockBox {
 
 }
 
-#[derive(Debug, Eq, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct TypedCallExpr {
     func_name: TypedIdent,
     args: Vec<TypedExpr>,
@@ -100,7 +100,7 @@ impl TypedCallExpr {
     }
 }
 
-#[derive(Debug, Eq, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct TypedBlock {
     stmts: Vec<TypedStmt>,
 }
@@ -116,7 +116,7 @@ impl TypedBlock {
 
 }
 
-#[derive(Debug, Eq, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum TypedExpr {
     CallExpr(TypedAstType, TypedCallExpr),  // add(1, 1 + 1)
     NumExpr(TypedAstType, TypedNumber),     // 1
@@ -153,7 +153,7 @@ impl TypedExpr {
         }
     }
 
-    pub fn num_expr_new(num: i32) -> TypedExpr {
+    pub fn num_expr_new(num: f32) -> TypedExpr {
         TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(num))
     }
 
@@ -191,7 +191,7 @@ impl TypedExpr {
 
 }
 
-#[derive(Debug, Eq, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct TypedVariableDeclaration {
     name: TypedIdent,
     type_name: Option<TypeFlag>,
@@ -224,7 +224,7 @@ impl TypedVariableDeclaration {
     }
 }
 
-#[derive(Debug, Eq, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct TypedFuncArg {
     name: TypedIdent,
     arg_type: TypeFlag,
@@ -244,7 +244,7 @@ impl TypedFuncArg {
     }
 }
 
-#[derive(Debug, Eq, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct TypedReturnStmt {
     expr: TypedExpr,
 }
@@ -263,7 +263,7 @@ impl TypedReturnStmt {
     }
 }
 
-#[derive(Debug, Eq, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct TypedFunc {
     name: TypedIdent,
     args: Vec<TypedFuncArg>,
@@ -303,7 +303,7 @@ impl TypedFunc {
     }
 }
 
-#[derive(Debug, Eq, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum TypedCanElseStmt {
     BlockBox(TypedBlockBox),
     IfStmt(TypedIfStmt),
@@ -320,7 +320,7 @@ impl TypedCanElseStmt {
 
 }
 
-#[derive(Debug, Eq, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct TypedIfStmt {
     condition_expr: TypedExpr,
     then_stmt: TypedBlockBox,
@@ -365,7 +365,7 @@ impl TypedIfStmt {
 
 }
 
-#[derive(Debug, Eq, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum TypedStmt {
     VariableDeclaration(TypedVariableDeclaration),
     ExprStmt(TypedExpr),

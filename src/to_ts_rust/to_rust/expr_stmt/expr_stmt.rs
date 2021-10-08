@@ -152,7 +152,7 @@ mod tests {
     fn test_num_expr_stmt() {
         let typed_stmts = vec![TypedStmt::ExprStmt(TypedExpr::NumExpr(
             TypedAstType::Number,
-            TypedNumber::new(0),
+            TypedNumber::new(0.0),
         ))];
 
         let rust_code = ToRust::to_rust(typed_stmts, None);
@@ -174,7 +174,7 @@ mod tests {
             TypedIdent::new("tmp1".to_string()),
             Some(CanAssignObj::TypedExpr(TypedExpr::NumExpr(
                 TypedAstType::Number,
-                TypedNumber::new(0),
+                TypedNumber::new(0.0),
             ))),
         );
 
@@ -221,7 +221,7 @@ mod tests {
             TypedIdent::new("tmp1".to_string()),
             Some(CanAssignObj::TypedExpr(TypedExpr::NumExpr(
                 TypedAstType::Number,
-                TypedNumber::new(10),
+                TypedNumber::new(10.0),
             ))),
         );
 
@@ -252,7 +252,7 @@ mod tests {
     #[test]
     fn test_num_block_expr_stmt() {
         let typed_stmts = vec![TypedStmt::expr_new(TypedExpr::num_block_new(
-            vec![TypedStmt::return_new(TypedExpr::num_expr_new(1))]
+            vec![TypedStmt::return_new(TypedExpr::num_expr_new(1.0))]
         ))];
 
         let ts_code = ToRust::to_rust(typed_stmts, None);
@@ -278,7 +278,7 @@ mod tests {
     #[test]
     fn test_void_block_expr_stmt() {
         let typed_stmts = vec![TypedStmt::expr_new(TypedExpr::void_block_new(vec![
-            TypedStmt::expr_new(TypedExpr::num_expr_new(1))
+            TypedStmt::expr_new(TypedExpr::num_expr_new(1.0))
         ]))];
 
         let ts_code = ToRust::to_rust(typed_stmts, None);
@@ -291,9 +291,9 @@ mod tests {
     #[test]
     fn test_multi_stmts_block_expr_stmt() {
         let typed_stmts = vec![TypedStmt::expr_new(TypedExpr::num_block_new(vec![
-            TypedStmt::expr_new(TypedExpr::num_expr_new(1)),
+            TypedStmt::expr_new(TypedExpr::num_expr_new(1.0)),
             TypedStmt::expr_new(TypedExpr::bool_expr_new(true)),
-            TypedStmt::return_new(TypedExpr::num_expr_new(2))
+            TypedStmt::return_new(TypedExpr::num_expr_new(2.0))
         ]))];
 
         let ts_code = ToRust::to_rust(typed_stmts, None);
@@ -309,11 +309,11 @@ mod tests {
             TypedAstType::Number,
             Box::new(TypedExpr::NumExpr(
                 TypedAstType::Number,
-                TypedNumber::new(1),
+                TypedNumber::new(1.0),
             )),
             Box::new(TypedExpr::NumExpr(
                 TypedAstType::Number,
-                TypedNumber::new(2),
+                TypedNumber::new(2.0),
             )),
         ))];
 
@@ -330,11 +330,11 @@ mod tests {
             TypedAstType::Number,
             Box::new(TypedExpr::NumExpr(
                 TypedAstType::Number,
-                TypedNumber::new(2),
+                TypedNumber::new(2.0),
             )),
             Box::new(TypedExpr::NumExpr(
                 TypedAstType::Number,
-                TypedNumber::new(1),
+                TypedNumber::new(1.0),
             )),
         ))];
 
@@ -351,11 +351,11 @@ mod tests {
             TypedAstType::Number,
             Box::new(TypedExpr::NumExpr(
                 TypedAstType::Number,
-                TypedNumber::new(2),
+                TypedNumber::new(2.0),
             )),
             Box::new(TypedExpr::NumExpr(
                 TypedAstType::Number,
-                TypedNumber::new(1),
+                TypedNumber::new(1.0),
             )),
         ))];
 
@@ -372,11 +372,11 @@ mod tests {
             TypedAstType::Number,
             Box::new(TypedExpr::NumExpr(
                 TypedAstType::Number,
-                TypedNumber::new(4),
+                TypedNumber::new(4.0),
             )),
             Box::new(TypedExpr::NumExpr(
                 TypedAstType::Number,
-                TypedNumber::new(2),
+                TypedNumber::new(2.0),
             )),
         ))];
 
@@ -393,11 +393,11 @@ mod tests {
             TypedAstType::Bool,
             Box::new(TypedExpr::NumExpr(
                 TypedAstType::Number,
-                TypedNumber::new(2),
+                TypedNumber::new(2.0),
             )),
             Box::new(TypedExpr::NumExpr(
                 TypedAstType::Number,
-                TypedNumber::new(3),
+                TypedNumber::new(3.0),
             ))
         ))];
 
@@ -416,16 +416,16 @@ mod tests {
                 TypedAstType::Number,
                 Box::new(TypedExpr::NumExpr(
                     TypedAstType::Number,
-                    TypedNumber::new(2),
+                    TypedNumber::new(2.0),
                 )),
                 Box::new(TypedExpr::NumExpr(
                     TypedAstType::Number,
-                    TypedNumber::new(3),
+                    TypedNumber::new(3.0),
                 )),
             )),
             Box::new(TypedExpr::NumExpr(
                 TypedAstType::Number,
-                TypedNumber::new(2),
+                TypedNumber::new(2.0),
             )),
         ))];
 
@@ -443,8 +443,8 @@ mod tests {
             TypedCallExpr::new(
                 TypedIdent::new("add".to_string()),
                 vec![
-                    TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(1)),
-                    TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(2)),
+                    TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(1.0)),
+                    TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(2.0)),
                 ],
             ),
         ))];

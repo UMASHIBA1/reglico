@@ -44,7 +44,7 @@ mod tests {
                 None,
                 Some(TypedExpr::NumExpr(
                     TypedAstType::Number,
-                    TypedNumber::new(0),
+                    TypedNumber::new(0.0),
                 )),
             ),
         )];
@@ -64,7 +64,7 @@ mod tests {
                 Some(TypeFlag::NumberType),
                 Some(TypedExpr::NumExpr(
                     TypedAstType::Number,
-                    TypedNumber::new(0),
+                    TypedNumber::new(0.0),
                 )),
             ),
         )];
