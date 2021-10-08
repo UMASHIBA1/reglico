@@ -165,6 +165,11 @@ impl Number {
     pub fn get_num(&self) -> f32 {
         self.num
     }
+
+    pub fn get_raw_num_string(&self) -> String {
+        self.raw_num_string.clone()
+    }
+
 }
 
 #[derive(Debug, PartialEq, Clone)]

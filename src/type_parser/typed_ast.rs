@@ -33,11 +33,12 @@ pub enum TypedAstType {
 #[derive(Debug, PartialEq, Clone)]
 pub struct TypedNumber {
     num: f32,
+    raw_num_string: String,
 }
 
 impl TypedNumber {
-    pub fn new(num: f32) -> TypedNumber {
-        TypedNumber { num }
+    pub fn new(num: f32, raw_num_string: String) -> TypedNumber {
+        TypedNumber { num, raw_num_string }
     }
 
     pub fn get_num(&self) -> f32 {
@@ -153,8 +154,8 @@ impl TypedExpr {
         }
     }
 
-    pub fn num_expr_new(num: f32) -> TypedExpr {
-        TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(num))
+    pub fn num_expr_new(num: f32, raw_num_string: String) -> TypedExpr {
+        TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(num, raw_num_string))
     }
 
     pub fn bool_expr_new(bool: bool) -> TypedExpr {

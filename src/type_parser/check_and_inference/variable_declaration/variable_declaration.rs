@@ -49,7 +49,7 @@ mod tests {
                 Some(TypeFlag::NumberType),
                 Some(TypedExpr::NumExpr(
                     TypedAstType::Number,
-                    TypedNumber::new(10.0),
+                    TypedNumber::new(10.0, "10.0".to_string()),
                 )),
             ),
         )];

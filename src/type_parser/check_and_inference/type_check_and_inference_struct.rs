@@ -65,7 +65,7 @@ mod tests {
         let expected_typed_stmts = vec![TypedStmt::ReturnStmt(
             TypedReturnStmt::new(TypedExpr::NumExpr(
                 TypedAstType::Number,
-                TypedNumber::new(1.0),
+                TypedNumber::new(1.0, "1.0".to_string()),
             ))
         )];
 

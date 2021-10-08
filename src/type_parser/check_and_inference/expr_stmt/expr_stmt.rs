@@ -6,7 +6,7 @@ impl TypeCheckAndInference {
     pub fn check_and_inference_expr(&self, expr: Expr) -> TypedExpr {
         match expr {
             Expr::Num(num) => {
-                TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(num.get_num()))
+                TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(num.get_num(), num.get_raw_num_string()))
             },
             Expr::Bool(bool) => {
                 TypedExpr::BoolExpr(TypedAstType::Bool, TypedBool::new(bool.get_bool()))
@@ -160,7 +160,7 @@ mod tests {
 
         let expected_typed_stmts = vec![TypedStmt::ExprStmt(TypedExpr::NumExpr(
             TypedAstType::Number,
-            TypedNumber::new(10.0)
+            TypedNumber::new(10.0, "10.0".to_string())
         ))];
 
         assert_eq!(typed_stmts, expected_typed_stmts)
@@ -194,11 +194,11 @@ mod tests {
             TypedAstType::Number,
             Box::new(TypedExpr::NumExpr(
                 TypedAstType::Number,
-                TypedNumber::new(1.0),
+                TypedNumber::new(1.0, "1.0".to_string()),
             )),
             Box::new(TypedExpr::NumExpr(
                 TypedAstType::Number,
-                TypedNumber::new(2.0),
+                TypedNumber::new(2.0, "2.0".to_string()),
             )),
         ))];
 
@@ -219,11 +219,11 @@ mod tests {
             TypedAstType::Number,
             Box::new(TypedExpr::NumExpr(
                 TypedAstType::Number,
-                TypedNumber::new(1.0),
+                TypedNumber::new(1.0, "1.0".to_string()),
             )),
             Box::new(TypedExpr::NumExpr(
                 TypedAstType::Number,
-                TypedNumber::new(2.0),
+                TypedNumber::new(2.0, "2.0".to_string()),
             )),
         ))];
 
@@ -244,11 +244,11 @@ mod tests {
             TypedAstType::Number,
             Box::new(TypedExpr::NumExpr(
                 TypedAstType::Number,
-                TypedNumber::new(1.0),
+                TypedNumber::new(1.0, "1.0".to_string()),
             )),
             Box::new(TypedExpr::NumExpr(
                 TypedAstType::Number,
-                TypedNumber::new(2.0),
+                TypedNumber::new(2.0, "2.0".to_string()),
             )),
         ))];
 
@@ -269,11 +269,11 @@ mod tests {
             TypedAstType::Number,
             Box::new(TypedExpr::NumExpr(
                 TypedAstType::Number,
-                TypedNumber::new(1.0),
+                TypedNumber::new(1.0, "1.0".to_string()),
             )),
             Box::new(TypedExpr::NumExpr(
                 TypedAstType::Number,
-                TypedNumber::new(2.0),
+                TypedNumber::new(2.0, "2.0".to_string()),
             )),
         ))];
 
@@ -294,11 +294,11 @@ mod tests {
             TypedAstType::Bool,
             Box::new(TypedExpr::NumExpr(
                 TypedAstType::Number,
-                TypedNumber::new(1.0),
+                TypedNumber::new(1.0, "1.0".to_string()),
             )),
             Box::new(TypedExpr::NumExpr(
                 TypedAstType::Number,
-                TypedNumber::new(2.0),
+                TypedNumber::new(2.0, "2.0".to_string()),
             )),
         ))];
 
@@ -321,16 +321,16 @@ mod tests {
                 TypedAstType::Number,
                 Box::new(TypedExpr::NumExpr(
                     TypedAstType::Number,
-                    TypedNumber::new(1.0),
+                    TypedNumber::new(1.0, "1.0".to_string()),
                 )),
                 Box::new(TypedExpr::NumExpr(
                     TypedAstType::Number,
-                    TypedNumber::new(2.0),
+                    TypedNumber::new(2.0, "2.0".to_string()),
                 )),
             )),
             Box::new(TypedExpr::NumExpr(
                 TypedAstType::Number,
-                TypedNumber::new(2.0),
+                TypedNumber::new(2.0, "2.0".to_string()),
             )),
         ))];
 
@@ -356,7 +356,7 @@ mod tests {
                 Some(TypeFlag::NumberType),
                 Some(TypedExpr::NumExpr(
                     TypedAstType::Number,
-                    TypedNumber::new(10.0),
+                    TypedNumber::new(10.0, "10.0".to_string()),
                 )),
             )),
             TypedStmt::ExprStmt(TypedExpr::NumIdentExpr(
@@ -419,7 +419,7 @@ mod tests {
                 TypedExpr::num_block_new(
                     vec![
                         TypedStmt::return_new(
-                            TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(1.0))
+                            TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(1.0, "1.0".to_string()))
                         )
                     ]
                 )
@@ -477,7 +477,7 @@ mod tests {
                 TypedExpr::void_block_new(
                     vec![
                         TypedStmt::expr_new(
-                            TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(1.0))
+                            TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(1.0, "1.0".to_string()))
                         )
                     ]
                 )
@@ -507,8 +507,8 @@ mod tests {
             TypedStmt::expr_new(
                 TypedExpr::bool_block_new(
                     vec![
-                        TypedStmt::expr_new(TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(1.0))),
-                        TypedStmt::expr_new(TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(2.0))),
+                        TypedStmt::expr_new(TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(1.0, "1.0".to_string()))),
+                        TypedStmt::expr_new(TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(2.0, "2.0".to_string()))),
                         TypedStmt::return_new(
                             TypedExpr::BoolExpr(TypedAstType::Bool, TypedBool::new(true))
                         )
@@ -568,8 +568,8 @@ mod tests {
                 TypedCallExpr::new(
                     TypedIdent::new("add".to_string()),
                     vec![
-                        TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(1.0)),
-                        TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(2.0)),
+                        TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(1.0, "1.0".to_string())),
+                        TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(2.0, "1.0".to_string())),
                     ],
                 ),
             )),
