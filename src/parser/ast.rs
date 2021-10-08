@@ -148,15 +148,15 @@ impl CallExpr {
 
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub struct Number {
-    num: i32,
+    num: f32,
 }
 
 impl Number {
-    pub fn new(num: i32) -> Number {
+    pub fn new(num: f32) -> Number {
         Number { num }
     }
 
-    pub fn get_num(&self) -> i32 {
+    pub fn get_num(&self) -> f32 {
         self.num
     }
 }
@@ -236,7 +236,7 @@ impl Expr {
 
     pub fn bool_new(bool: bool) -> Expr { Expr::Bool(Boolean::new(bool)) }
 
-    pub fn num_new(num: i32) -> Expr {
+    pub fn num_new(num: f32) -> Expr {
         Expr::Num(Number::new(num))
     }
 

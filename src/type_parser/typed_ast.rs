@@ -32,15 +32,15 @@ pub enum TypedAstType {
 
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub struct TypedNumber {
-    num: i32,
+    num: f32,
 }
 
 impl TypedNumber {
-    pub fn new(num: i32) -> TypedNumber {
+    pub fn new(num: f32) -> TypedNumber {
         TypedNumber { num }
     }
 
-    pub fn get_num(&self) -> i32 {
+    pub fn get_num(&self) -> f32 {
         self.num.clone()
     }
 }
@@ -153,7 +153,7 @@ impl TypedExpr {
         }
     }
 
-    pub fn num_expr_new(num: i32) -> TypedExpr {
+    pub fn num_expr_new(num: f32) -> TypedExpr {
         TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(num))
     }
 
