@@ -58,7 +58,7 @@ mod tests {
 
     #[test]
     fn test_check_and_inference_return_stmt() {
-        let stmts = vec![Stmt::return_new(Expr::num_new(1.0))];
+        let stmts = vec![Stmt::return_new(Expr::num_new(1.0, "1.0"))];
 
         let typed_stmt = type_parser(stmts);
 

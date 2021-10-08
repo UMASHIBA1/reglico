@@ -154,7 +154,7 @@ mod tests {
 
     #[test]
     fn test_inference_num_expr_stmt() {
-        let stmts = vec![Stmt::expr_new(Expr::num_new(10.0))];
+        let stmts = vec![Stmt::expr_new(Expr::num_new(10.0, "10.0"))];
 
         let typed_stmts = type_parser(stmts);
 
@@ -183,9 +183,9 @@ mod tests {
     #[test]
     fn test_inference_num_add_expr_stmt() {
         let stmts = vec![Stmt::expr_new(Expr::op_new(
-            Expr::num_new(1.0),
+            Expr::num_new(1.0, "1.0"),
             Opcode::Add,
-            Expr::num_new(2.0),
+            Expr::num_new(2.0, "2.0"),
         ))];
 
         let typed_stmts = type_parser(stmts);
@@ -208,9 +208,9 @@ mod tests {
     #[test]
     fn test_inference_num_sub_expr_stmt() {
         let stmts = vec![Stmt::expr_new(Expr::op_new(
-            Expr::num_new(1.0),
+            Expr::num_new(1.0, "1.0"),
             Opcode::Sub,
-            Expr::num_new(2.0),
+            Expr::num_new(2.0, "2.0"),
         ))];
 
         let typed_stmts = type_parser(stmts);
@@ -233,9 +233,9 @@ mod tests {
     #[test]
     fn test_inference_num_mul_expr_stmt() {
         let stmts = vec![Stmt::expr_new(Expr::op_new(
-            Expr::num_new(1.0),
+            Expr::num_new(1.0, "1.0"),
             Opcode::Mul,
-            Expr::num_new(2.0),
+            Expr::num_new(2.0, "2.0"),
         ))];
 
         let typed_stmts = type_parser(stmts);
@@ -258,9 +258,9 @@ mod tests {
     #[test]
     fn test_inference_num_div_expr_stmt() {
         let stmts = vec![Stmt::expr_new(Expr::op_new(
-            Expr::num_new(1.0),
+            Expr::num_new(1.0, "1.0"),
             Opcode::Div,
-            Expr::num_new(2.0),
+            Expr::num_new(2.0, "2.0"),
         ))];
 
         let typed_stmts = type_parser(stmts);
@@ -283,9 +283,9 @@ mod tests {
     #[test]
     fn test_inference_num_less_than_or_equal_expr_stmt() {
         let stmts = vec![Stmt::expr_new(Expr::op_new(
-            Expr::num_new(1.0),
+            Expr::num_new(1.0, "1.0"),
             Opcode::LessThanOrEqual,
-            Expr::num_new(2.0),
+            Expr::num_new(2.0, "2.0"),
         ))];
 
         let typed_stmts = type_parser(stmts);
@@ -308,9 +308,9 @@ mod tests {
     #[test]
     fn test_inference_num_multi_op_expr_stmt() {
         let stmts = vec![Stmt::expr_new(Expr::op_new(
-            Expr::op_new(Expr::num_new(1.0), Opcode::Add, Expr::num_new(2.0)),
+            Expr::op_new(Expr::num_new(1.0, "1.0"), Opcode::Add, Expr::num_new(2.0, "2.0")),
             Opcode::Mul,
-            Expr::num_new(2.0),
+            Expr::num_new(2.0, "2.0"),
         ))];
 
         let typed_stmts = type_parser(stmts);
@@ -343,7 +343,7 @@ mod tests {
             Stmt::var_new(
                 Ident::new("tmp1".to_string()),
                 Some(Types::NumberType),
-                Some(Expr::num_new(10.0)),
+                Some(Expr::num_new(10.0, "10.0")),
             ),
             Stmt::expr_new(Expr::ident_new(Ident::new("tmp1".to_string()))),
         ];
@@ -406,7 +406,7 @@ mod tests {
             Stmt::expr_new(
             Expr::block_new(
                 vec![
-                    Stmt::return_new(Expr::num_new(1.0))
+                    Stmt::return_new(Expr::num_new(1.0, "1.0"))
                     ]
                 )
             )
@@ -464,7 +464,7 @@ mod tests {
             Stmt::expr_new(
                 Expr::block_new(
                     vec![
-                        Stmt::expr_new(Expr::num_new(1.0))
+                        Stmt::expr_new(Expr::num_new(1.0, "1.0"))
                     ]
                 )
             )
@@ -493,8 +493,8 @@ mod tests {
             Stmt::expr_new(
                 Expr::block_new(
                     vec![
-                        Stmt::expr_new(Expr::num_new(1.0)),
-                        Stmt::expr_new(Expr::num_new(2.0)),
+                        Stmt::expr_new(Expr::num_new(1.0, "1.0")),
+                        Stmt::expr_new(Expr::num_new(2.0, "1.0")),
                         Stmt::return_new(Expr::bool_new(true))
                     ]
                 )
@@ -537,7 +537,7 @@ mod tests {
             ),
             Stmt::expr_new(Expr::call_new(
                 Ident::new("add".to_string()),
-                vec![Expr::num_new(1.0), Expr::num_new(2.0)],
+                vec![Expr::num_new(1.0, "2.0"), Expr::num_new(2.0, "2.0")],
             )),
         ];
 

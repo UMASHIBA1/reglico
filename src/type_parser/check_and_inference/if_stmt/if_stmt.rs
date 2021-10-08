@@ -42,8 +42,8 @@ mod tests {
         // if(true){1 + 2;}else{1;}
         let stmts = vec![Stmt::if_stmt(
             Expr::bool_new(true),
-            BlockBox::new(vec![Stmt::expr_new(Expr::op_new(Expr::num_new(1.0), Opcode::Add, Expr::num_new(2.0)))]),
-            Some(CanElseStmt::block_box_new(vec![Stmt::expr_new(Expr::num_new(1.0))]))
+            BlockBox::new(vec![Stmt::expr_new(Expr::op_new(Expr::num_new(1.0, "1.0"), Opcode::Add, Expr::num_new(2.0, "2.0")))]),
+            Some(CanElseStmt::block_box_new(vec![Stmt::expr_new(Expr::num_new(1.0, "1.0"))]))
         )];
 
         let typed_stmts = type_parser(stmts);
@@ -69,10 +69,10 @@ mod tests {
         // if(true){1 + 2;}else if(true){1;}
         let stmts = vec![Stmt::if_stmt(
             Expr::bool_new(true),
-            BlockBox::new(vec![Stmt::expr_new(Expr::op_new(Expr::num_new(1.0), Opcode::Add, Expr::num_new(2.0)))]),
+            BlockBox::new(vec![Stmt::expr_new(Expr::op_new(Expr::num_new(1.0, "1.0"), Opcode::Add, Expr::num_new(2.0, "2.0")))]),
             Some(CanElseStmt::if_stmt_new(
                 Expr::bool_new(true),
-                BlockBox::new(vec![Stmt::expr_new(Expr::num_new(1.0))]),
+                BlockBox::new(vec![Stmt::expr_new(Expr::num_new(1.0, "1.0"))]),
                 None,
             ))
         )];
@@ -101,7 +101,7 @@ mod tests {
     fn test_inference_if_stmt() {
         let stmts = vec![Stmt::if_stmt(
             Expr::bool_new(true),
-            BlockBox::new(vec![Stmt::expr_new(Expr::op_new(Expr::num_new(1.0), Opcode::Add, Expr::num_new(2.0)))]),
+            BlockBox::new(vec![Stmt::expr_new(Expr::op_new(Expr::num_new(1.0, "1.0"), Opcode::Add, Expr::num_new(2.0, "2.0")))]),
             None
         )];
 
