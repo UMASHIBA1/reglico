@@ -154,13 +154,13 @@ mod tests {
 
     #[test]
     fn test_inference_num_expr_stmt() {
-        let stmts = vec![Stmt::expr_new(Expr::num_new(10))];
+        let stmts = vec![Stmt::expr_new(Expr::num_new(10.0))];
 
         let typed_stmts = type_parser(stmts);
 
         let expected_typed_stmts = vec![TypedStmt::ExprStmt(TypedExpr::NumExpr(
             TypedAstType::Number,
-            TypedNumber::new(10)
+            TypedNumber::new(10.0)
         ))];
 
         assert_eq!(typed_stmts, expected_typed_stmts)
@@ -183,9 +183,9 @@ mod tests {
     #[test]
     fn test_inference_num_add_expr_stmt() {
         let stmts = vec![Stmt::expr_new(Expr::op_new(
-            Expr::num_new(1),
+            Expr::num_new(1.0),
             Opcode::Add,
-            Expr::num_new(2),
+            Expr::num_new(2.0),
         ))];
 
         let typed_stmts = type_parser(stmts);
@@ -194,11 +194,11 @@ mod tests {
             TypedAstType::Number,
             Box::new(TypedExpr::NumExpr(
                 TypedAstType::Number,
-                TypedNumber::new(1),
+                TypedNumber::new(1.0),
             )),
             Box::new(TypedExpr::NumExpr(
                 TypedAstType::Number,
-                TypedNumber::new(2),
+                TypedNumber::new(2.0),
             )),
         ))];
 
@@ -208,9 +208,9 @@ mod tests {
     #[test]
     fn test_inference_num_sub_expr_stmt() {
         let stmts = vec![Stmt::expr_new(Expr::op_new(
-            Expr::num_new(1),
+            Expr::num_new(1.0),
             Opcode::Sub,
-            Expr::num_new(2),
+            Expr::num_new(2.0),
         ))];
 
         let typed_stmts = type_parser(stmts);
@@ -219,11 +219,11 @@ mod tests {
             TypedAstType::Number,
             Box::new(TypedExpr::NumExpr(
                 TypedAstType::Number,
-                TypedNumber::new(1),
+                TypedNumber::new(1.0),
             )),
             Box::new(TypedExpr::NumExpr(
                 TypedAstType::Number,
-                TypedNumber::new(2),
+                TypedNumber::new(2.0),
             )),
         ))];
 
@@ -233,9 +233,9 @@ mod tests {
     #[test]
     fn test_inference_num_mul_expr_stmt() {
         let stmts = vec![Stmt::expr_new(Expr::op_new(
-            Expr::num_new(1),
+            Expr::num_new(1.0),
             Opcode::Mul,
-            Expr::num_new(2),
+            Expr::num_new(2.0),
         ))];
 
         let typed_stmts = type_parser(stmts);
@@ -244,11 +244,11 @@ mod tests {
             TypedAstType::Number,
             Box::new(TypedExpr::NumExpr(
                 TypedAstType::Number,
-                TypedNumber::new(1),
+                TypedNumber::new(1.0),
             )),
             Box::new(TypedExpr::NumExpr(
                 TypedAstType::Number,
-                TypedNumber::new(2),
+                TypedNumber::new(2.0),
             )),
         ))];
 
@@ -258,9 +258,9 @@ mod tests {
     #[test]
     fn test_inference_num_div_expr_stmt() {
         let stmts = vec![Stmt::expr_new(Expr::op_new(
-            Expr::num_new(1),
+            Expr::num_new(1.0),
             Opcode::Div,
-            Expr::num_new(2),
+            Expr::num_new(2.0),
         ))];
 
         let typed_stmts = type_parser(stmts);
@@ -269,11 +269,11 @@ mod tests {
             TypedAstType::Number,
             Box::new(TypedExpr::NumExpr(
                 TypedAstType::Number,
-                TypedNumber::new(1),
+                TypedNumber::new(1.0),
             )),
             Box::new(TypedExpr::NumExpr(
                 TypedAstType::Number,
-                TypedNumber::new(2),
+                TypedNumber::new(2.0),
             )),
         ))];
 
@@ -283,9 +283,9 @@ mod tests {
     #[test]
     fn test_inference_num_less_than_or_equal_expr_stmt() {
         let stmts = vec![Stmt::expr_new(Expr::op_new(
-            Expr::num_new(1),
+            Expr::num_new(1.0),
             Opcode::LessThanOrEqual,
-            Expr::num_new(2),
+            Expr::num_new(2.0),
         ))];
 
         let typed_stmts = type_parser(stmts);
@@ -294,11 +294,11 @@ mod tests {
             TypedAstType::Bool,
             Box::new(TypedExpr::NumExpr(
                 TypedAstType::Number,
-                TypedNumber::new(1),
+                TypedNumber::new(1.0),
             )),
             Box::new(TypedExpr::NumExpr(
                 TypedAstType::Number,
-                TypedNumber::new(2),
+                TypedNumber::new(2.0),
             )),
         ))];
 
@@ -308,9 +308,9 @@ mod tests {
     #[test]
     fn test_inference_num_multi_op_expr_stmt() {
         let stmts = vec![Stmt::expr_new(Expr::op_new(
-            Expr::op_new(Expr::num_new(1), Opcode::Add, Expr::num_new(2)),
+            Expr::op_new(Expr::num_new(1.0), Opcode::Add, Expr::num_new(2.0)),
             Opcode::Mul,
-            Expr::num_new(2),
+            Expr::num_new(2.0),
         ))];
 
         let typed_stmts = type_parser(stmts);
@@ -321,16 +321,16 @@ mod tests {
                 TypedAstType::Number,
                 Box::new(TypedExpr::NumExpr(
                     TypedAstType::Number,
-                    TypedNumber::new(1),
+                    TypedNumber::new(1.0),
                 )),
                 Box::new(TypedExpr::NumExpr(
                     TypedAstType::Number,
-                    TypedNumber::new(2),
+                    TypedNumber::new(2.0),
                 )),
             )),
             Box::new(TypedExpr::NumExpr(
                 TypedAstType::Number,
-                TypedNumber::new(2),
+                TypedNumber::new(2.0),
             )),
         ))];
 
@@ -343,7 +343,7 @@ mod tests {
             Stmt::var_new(
                 Ident::new("tmp1".to_string()),
                 Some(Types::NumberType),
-                Some(Expr::num_new(10)),
+                Some(Expr::num_new(10.0)),
             ),
             Stmt::expr_new(Expr::ident_new(Ident::new("tmp1".to_string()))),
         ];
@@ -356,7 +356,7 @@ mod tests {
                 Some(TypeFlag::NumberType),
                 Some(TypedExpr::NumExpr(
                     TypedAstType::Number,
-                    TypedNumber::new(10),
+                    TypedNumber::new(10.0),
                 )),
             )),
             TypedStmt::ExprStmt(TypedExpr::NumIdentExpr(
@@ -406,7 +406,7 @@ mod tests {
             Stmt::expr_new(
             Expr::block_new(
                 vec![
-                    Stmt::return_new(Expr::num_new(1))
+                    Stmt::return_new(Expr::num_new(1.0))
                     ]
                 )
             )
@@ -419,7 +419,7 @@ mod tests {
                 TypedExpr::num_block_new(
                     vec![
                         TypedStmt::return_new(
-                            TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(1))
+                            TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(1.0))
                         )
                     ]
                 )
@@ -464,7 +464,7 @@ mod tests {
             Stmt::expr_new(
                 Expr::block_new(
                     vec![
-                        Stmt::expr_new(Expr::num_new(1))
+                        Stmt::expr_new(Expr::num_new(1.0))
                     ]
                 )
             )
@@ -477,7 +477,7 @@ mod tests {
                 TypedExpr::void_block_new(
                     vec![
                         TypedStmt::expr_new(
-                            TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(1))
+                            TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(1.0))
                         )
                     ]
                 )
@@ -493,8 +493,8 @@ mod tests {
             Stmt::expr_new(
                 Expr::block_new(
                     vec![
-                        Stmt::expr_new(Expr::num_new(1)),
-                        Stmt::expr_new(Expr::num_new(2)),
+                        Stmt::expr_new(Expr::num_new(1.0)),
+                        Stmt::expr_new(Expr::num_new(2.0)),
                         Stmt::return_new(Expr::bool_new(true))
                     ]
                 )
@@ -507,8 +507,8 @@ mod tests {
             TypedStmt::expr_new(
                 TypedExpr::bool_block_new(
                     vec![
-                        TypedStmt::expr_new(TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(1))),
-                        TypedStmt::expr_new(TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(2))),
+                        TypedStmt::expr_new(TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(1.0))),
+                        TypedStmt::expr_new(TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(2.0))),
                         TypedStmt::return_new(
                             TypedExpr::BoolExpr(TypedAstType::Bool, TypedBool::new(true))
                         )
@@ -537,7 +537,7 @@ mod tests {
             ),
             Stmt::expr_new(Expr::call_new(
                 Ident::new("add".to_string()),
-                vec![Expr::num_new(1), Expr::num_new(2)],
+                vec![Expr::num_new(1.0), Expr::num_new(2.0)],
             )),
         ];
 
@@ -568,8 +568,8 @@ mod tests {
                 TypedCallExpr::new(
                     TypedIdent::new("add".to_string()),
                     vec![
-                        TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(1)),
-                        TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(2)),
+                        TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(1.0)),
+                        TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(2.0)),
                     ],
                 ),
             )),
