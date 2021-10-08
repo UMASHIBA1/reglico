@@ -157,7 +157,7 @@ mod tests {
 
         let rust_code = ToRust::to_rust(typed_stmts, None);
 
-        let expected_rust_code = "0;";
+        let expected_rust_code = "0.0;";
 
         assert_eq!(rust_code, expected_rust_code);
     }
@@ -257,7 +257,7 @@ mod tests {
 
         let ts_code = ToRust::to_rust(typed_stmts, None);
 
-        let expected_ts_code = "{1};";
+        let expected_ts_code = "{1.0};";
 
         assert_eq!(ts_code, expected_ts_code);
     }
@@ -283,7 +283,7 @@ mod tests {
 
         let ts_code = ToRust::to_rust(typed_stmts, None);
 
-        let expected_ts_code = "{1;};";
+        let expected_ts_code = "{1.0;};";
 
         assert_eq!(ts_code, expected_ts_code);
     }
@@ -298,7 +298,7 @@ mod tests {
 
         let ts_code = ToRust::to_rust(typed_stmts, None);
 
-        let expected_ts_code = "{1;true;2};";
+        let expected_ts_code = "{1.0;true;2.0};";
 
         assert_eq!(ts_code, expected_ts_code);
     }
@@ -319,7 +319,7 @@ mod tests {
 
         let rust_code = ToRust::to_rust(typed_stmts, None);
 
-        let expected_rust_code = "1+2;";
+        let expected_rust_code = "1.0+2.0;";
 
         assert_eq!(rust_code, expected_rust_code);
     }
@@ -340,7 +340,7 @@ mod tests {
 
         let rust_code = ToRust::to_rust(typed_stmts, None);
 
-        let expected_rust_code = "2-1;";
+        let expected_rust_code = "2.0-1.0;";
 
         assert_eq!(rust_code, expected_rust_code);
     }
@@ -361,7 +361,7 @@ mod tests {
 
         let rust_code = ToRust::to_rust(typed_stmts, None);
 
-        let expected_rust_code = "2*1;";
+        let expected_rust_code = "2.0*1.0;";
 
         assert_eq!(rust_code, expected_rust_code);
     }
@@ -382,7 +382,7 @@ mod tests {
 
         let rust_code = ToRust::to_rust(typed_stmts, None);
 
-        let expected_rust_code = "4/2;";
+        let expected_rust_code = "4.0/2.0;";
 
         assert_eq!(rust_code, expected_rust_code);
     }
@@ -403,7 +403,7 @@ mod tests {
 
         let rust_code = ToRust::to_rust(typed_stmts, None);
 
-        let expected_rust_code = "2<=3;";
+        let expected_rust_code = "2.0<=3.0;";
 
         assert_eq!(rust_code, expected_rust_code);
     }
@@ -431,7 +431,7 @@ mod tests {
 
         let rust_code = ToRust::to_rust(typed_stmts, None);
 
-        let expected_rust_code = "2*3+2;";
+        let expected_rust_code = "2.0*3.0+2.0;";
 
         assert_eq!(rust_code, expected_rust_code);
     }
@@ -475,7 +475,7 @@ mod tests {
 
         let rust_code = ToRust::to_rust(typed_stmts, Some(var_env));
 
-        let expected_rust_code = "add(1,2);";
+        let expected_rust_code = "add(1.0,2.0);";
 
         assert_eq!(rust_code, expected_rust_code);
     }

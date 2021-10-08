@@ -149,11 +149,17 @@ impl CallExpr {
 #[derive(Debug, PartialEq, Clone)]
 pub struct Number {
     num: f32,
+    raw_num_string: String,
 }
 
 impl Number {
-    pub fn new(num: f32) -> Number {
-        Number { num }
+    pub fn new(num: f32, raw_num_str: &str) -> Number {
+        let mut raw_num_string = raw_num_str.to_string();
+        let is_int = !raw_num_string.contains(".");
+        if is_int {
+            raw_num_string = raw_num_string + ".0";
+        }
+        Number { num,  raw_num_string}
     }
 
     pub fn get_num(&self) -> f32 {
@@ -236,8 +242,8 @@ impl Expr {
 
     pub fn bool_new(bool: bool) -> Expr { Expr::Bool(Boolean::new(bool)) }
 
-    pub fn num_new(num: f32) -> Expr {
-        Expr::Num(Number::new(num))
+    pub fn num_new(num: f32, raw_num_str: &str) -> Expr {
+        Expr::Num(Number::new(num, raw_num_str))
     }
 
     pub fn call_new(func_name: Ident, args: Vec<Expr>) -> Expr {
