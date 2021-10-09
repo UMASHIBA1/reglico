@@ -14,7 +14,7 @@ macro_rules! console_log {
 }
 
 fn console_log(value: f32) {
-    console_log!(value);
+    console_log!(\"{}\", value);
 }
 ";
 

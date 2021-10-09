@@ -2,4 +2,4 @@ fn add(a: number, b: number) {
     return a + b;
 }
 
-const total = add(1,2);
+console_log(add(1,2));
