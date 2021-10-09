@@ -4,6 +4,19 @@ use wasm_bindgen::prelude::*;use web_sys::console;#[cfg(feature = "wee_alloc")]#
     pub fn main_js() -> Result<(), JsValue> {
         #[cfg(debug_assertions)]
         console_error_panic_hook::set_once();
-    fn add(a:f32,b:f32)->f32{a+b}let total=add(1.0,2.0);
+    
+#[wasm_bindgen]
+extern "C" {
+    #[wasm_bindgen(js_namespace = console)]
+    fn log(s: &str);
+}
+macro_rules! console_log {
+    ($($t:tt)*) => (log(&format_args!($($t)*).to_string()))
+}
+
+fn console_log(value: f32) {
+    console_log!("{}", value);
+}
+fn add(a:f32,b:f32)->f32{a+b}let total=add(1.0,2.0);console_log(total);
     Ok(())
     }

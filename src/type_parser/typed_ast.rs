@@ -195,6 +195,18 @@ impl TypedExpr {
         TypedExpr::VoidBlockExpr(TypedAstType::Void, TypedBlock::new(stmts))
     }
 
+    pub fn call_expr_new(typed_ast_type: TypedAstType, func_name: TypedIdent, args: Vec<TypedExpr>) -> TypedExpr {
+        TypedExpr::CallExpr(typed_ast_type, TypedCallExpr::new(func_name, args))
+    }
+
+    pub fn num_ident_new(ident: TypedIdent) -> TypedExpr {
+        TypedExpr::NumIdentExpr(TypedAstType::Number, ident)
+    }
+
+    pub fn bool_ident_new(ident: TypedIdent) -> TypedExpr {
+        TypedExpr::BoolIdentExpr(TypedAstType::Bool, ident)
+    }
+
 }
 
 #[derive(Debug, PartialEq, Clone)]

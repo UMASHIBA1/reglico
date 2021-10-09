@@ -2,6 +2,7 @@ mod parser;
 mod to_ts_rust;
 mod type_parser;
 mod transpile;
+mod settings;
 
 use std::env;
 use std::fs;

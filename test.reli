@@ -3,3 +3,4 @@ fn add(a: number, b: number) {
 }
 
 const total = add(1,2);
+console_log(total);
