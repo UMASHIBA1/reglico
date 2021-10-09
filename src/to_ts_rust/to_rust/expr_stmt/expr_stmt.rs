@@ -5,7 +5,7 @@ use crate::type_parser::typed_ast::{TypedCallExpr, TypedExpr, TypedBlock, TypedA
 impl ToRust {
     pub fn expr_to_rust(&self, typed_expr: TypedExpr) -> String {
         match typed_expr {
-            TypedExpr::NumExpr(_, num) => format!("{}", num.get_num()),
+            TypedExpr::NumExpr(_, num) => format!("{}", num.get_raw_num_string()),
             TypedExpr::BoolExpr(_, bool) => format!("{}", bool.get_bool()),
             TypedExpr::NumIdentExpr(_, ident) => {
                 let ident_value = self.var_env.get(&ident);

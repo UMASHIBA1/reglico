@@ -53,7 +53,7 @@ mod tests {
 
         let rust_code = ToRust::to_rust(typed_stmts, None);
 
-        let expected_rust_code = "if true {1;}";
+        let expected_rust_code = "if true {1.0;}";
 
         assert_eq!(rust_code, expected_rust_code);
 
@@ -77,7 +77,7 @@ mod tests {
 
         let rust_code = ToRust::to_rust(typed_stmts, None);
 
-        let expected_rust_code = "if true {1+2;}else {1;}";
+        let expected_rust_code = "if true {1.0+2.0;}else {1.0;}";
 
         assert_eq!(rust_code, expected_rust_code);
 
@@ -103,7 +103,7 @@ mod tests {
 
         let rust_code = ToRust::to_rust(typed_stmts, None);
 
-        let expected_rust_code = "if true {1+2;}else if true {1;}";
+        let expected_rust_code = "if true {1.0+2.0;}else if true {1.0;}";
 
         assert_eq!(rust_code, expected_rust_code);
 
