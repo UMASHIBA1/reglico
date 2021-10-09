@@ -19,9 +19,9 @@ fn console_log(value: f32) {
 ";
 
 const ts_func_def: &str = "
-const console_log(value: number) {
+const console_log = (value: number) => {
     console.log(value);
-}
+};
 ";
 
 pub const console_log: Lazy<BuiltInFunc> = Lazy::new(|| BuiltInFunc::new(

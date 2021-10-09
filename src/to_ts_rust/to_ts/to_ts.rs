@@ -1,6 +1,7 @@
 use crate::to_ts_rust::common_struct::CanAssignObj;
 use crate::type_parser::typed_ast::{TypedIdent, TypedReturnStmt, TypedStmt};
 use std::collections::HashMap;
+use crate::settings::builtin::builtin_funcs::BUILTIN_FUNCS;
 
 pub struct ToTs {
     pub var_env: HashMap<TypedIdent, Option<CanAssignObj>>,
@@ -14,6 +15,11 @@ impl ToTs {
         let mut js_code = "".to_string();
 
         let mut to_js = ToTs::new(var_env);
+
+        for func in BUILTIN_FUNCS {
+            to_js.var_env.insert(TypedIdent::new(func.get_name().to_string()), Some(func.get_can_assign_obj()));
+        }
+
         for typed_stmt in typed_stmts {
             js_code = format!("{}{}", js_code, to_js.stmt_to_ts(typed_stmt));
         }

@@ -4,3 +4,4 @@ mod func;
 pub mod to_ts;
 mod variable_declaration;
 mod if_stmt;
+mod builtin;
