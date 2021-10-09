@@ -18,7 +18,7 @@ impl ToRust {
                 arg.get_name(),
                 Some(CanAssignObj::TypedExpr(
                     // NOTE: expr_to_rust関数の変数参照を騙すために0を入れてます
-                    TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(0.0)),
+                    TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(0.0, "0.0".to_string())),
                 )),
             );
         }

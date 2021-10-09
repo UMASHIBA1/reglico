@@ -44,7 +44,7 @@ mod tests {
         let typed_stmts = vec![TypedStmt::if_stmt_new(
             TypedExpr::bool_expr_new(true),
             TypedBlockBox::new(
-                vec![TypedStmt::expr_new(TypedExpr::num_expr_new(1.0))],
+                vec![TypedStmt::expr_new(TypedExpr::num_expr_new(1.0, "1.0".to_string()))],
                 None
             ),
             None,
@@ -53,7 +53,7 @@ mod tests {
 
         let rust_code = ToRust::to_rust(typed_stmts, None);
 
-        let expected_rust_code = "if true {1;}";
+        let expected_rust_code = "if true {1.0;}";
 
         assert_eq!(rust_code, expected_rust_code);
 
@@ -64,11 +64,11 @@ mod tests {
         let typed_stmts = vec![TypedStmt::if_stmt_new(
             TypedExpr::bool_expr_new(true),
             TypedBlockBox::new(vec![TypedStmt::expr_new(TypedExpr::num_add_new(
-                TypedExpr::num_expr_new(1.0),
-                TypedExpr::num_expr_new(2.0)
+                TypedExpr::num_expr_new(1.0, "1.0".to_string()),
+                TypedExpr::num_expr_new(2.0, "2.0".to_string())
             ))], None),
             Some(TypedCanElseStmt::block_box_new(
-                vec![TypedStmt::expr_new(TypedExpr::num_expr_new(1.0))],
+                vec![TypedStmt::expr_new(TypedExpr::num_expr_new(1.0, "1.0".to_string()))],
                 None
             )),
             None
@@ -77,7 +77,7 @@ mod tests {
 
         let rust_code = ToRust::to_rust(typed_stmts, None);
 
-        let expected_rust_code = "if true {1+2;}else {1;}";
+        let expected_rust_code = "if true {1.0+2.0;}else {1.0;}";
 
         assert_eq!(rust_code, expected_rust_code);
 
@@ -88,12 +88,12 @@ mod tests {
         let typed_stmts = vec![TypedStmt::if_stmt_new(
             TypedExpr::bool_expr_new(true),
             TypedBlockBox::new(vec![TypedStmt::expr_new(TypedExpr::num_add_new(
-                TypedExpr::num_expr_new(1.0),
-                TypedExpr::num_expr_new(2.0)
+                TypedExpr::num_expr_new(1.0, "1.0".to_string()),
+                TypedExpr::num_expr_new(2.0, "2.0".to_string())
             ))], None),
             Some(TypedCanElseStmt::if_stmt_new(
                 TypedExpr::bool_expr_new(true),
-                TypedBlockBox::new(vec![TypedStmt::expr_new(TypedExpr::num_expr_new(1.0))], None),
+                TypedBlockBox::new(vec![TypedStmt::expr_new(TypedExpr::num_expr_new(1.0, "1.0".to_string()))], None),
                 None,
                 None
             )),
@@ -103,7 +103,7 @@ mod tests {
 
         let rust_code = ToRust::to_rust(typed_stmts, None);
 
-        let expected_rust_code = "if true {1+2;}else if true {1;}";
+        let expected_rust_code = "if true {1.0+2.0;}else if true {1.0;}";
 
         assert_eq!(rust_code, expected_rust_code);
 
