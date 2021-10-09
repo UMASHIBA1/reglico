@@ -1,3 +1,3 @@
 mod common_struct;
-mod to_rust;
-mod to_ts;
+pub mod to_rust;
+pub mod to_ts;

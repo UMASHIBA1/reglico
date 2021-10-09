@@ -1,0 +1,2 @@
+cd output
+npm start
