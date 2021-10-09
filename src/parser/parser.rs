@@ -674,7 +674,7 @@ mod test {
         let expr = parser("return 1;");
 
         let expected_expr = vec![Stmt::return_new(
-            Expr::num_new(1),
+            Expr::num_new(1.0, "1.0"),
         )];
 
         assert_eq!(expr, expected_expr);

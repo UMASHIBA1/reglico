@@ -1,6 +1,7 @@
 use crate::parser::ast::{ReturnStmt, Stmt};
 use crate::type_parser::typed_ast::{TypedAstType, TypedIdent, TypedReturnStmt, TypedStmt};
 use std::collections::HashMap;
+use crate::settings::builtin::builtin_funcs::BUILTIN_FUNCS;
 
 pub struct TypeCheckAndInference {
     pub type_env: HashMap<TypedIdent, TypedAstType>,
@@ -13,6 +14,12 @@ impl TypeCheckAndInference {
     ) -> Vec<TypedStmt> {
         let mut type_inference = TypeCheckAndInference::new(type_env);
         let mut typed_stmts = vec![];
+
+        // add builtin to type_env
+        for func in BUILTIN_FUNCS {
+            type_inference.type_env.insert(TypedIdent::new(func.get_name().to_string()), func.get_typed_ast_type());
+        }
+
         for stmt in stmts {
             typed_stmts.push(type_inference.check_and_inference_a_stmt(stmt));
         }

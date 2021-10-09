@@ -1,6 +1,7 @@
 use crate::settings::builtin::builtin_funcs::BuiltInFunc;
 use crate::type_parser::typed_ast::{TypedAstType, TypedIdent, TypedFuncArg, TypeFlag, TypedStmt, TypedFunc, TypedExpr};
 use crate::to_ts_rust::common_struct::CanAssignObj;
+use once_cell::sync::Lazy;
 
 const rust_func_def: &str = "
 #[wasm_bindgen]
@@ -23,13 +24,13 @@ const console_log(value: number) {
 }
 ";
 
-pub const console_log: BuiltInFunc = BuiltInFunc::new(
+pub const console_log: Lazy<BuiltInFunc> = Lazy::new(|| BuiltInFunc::new(
     "console_log",
     rust_func_def,
     ts_func_def,
-    TypedAstType::Void,
+    TypedAstType::Func(vec![TypedAstType::Number], Some(Box::new(TypedAstType::Void))),
     CanAssignObj::TypedFunc(TypedFunc::new(
-        TypedIdent::new("print".to_string()),
+        TypedIdent::new("console_log".to_string()),
         vec![TypedFuncArg::new(TypedIdent::new("value".to_string()), TypeFlag::NumberType)],
         vec![TypedStmt::expr_new(TypedExpr::call_expr_new(
             TypedAstType::Void,
@@ -37,4 +38,4 @@ pub const console_log: BuiltInFunc = BuiltInFunc::new(
             vec![TypedExpr::num_ident_new(TypedIdent::new("value".to_string()))]
         ))],
         None
-    )));
+    ))));
