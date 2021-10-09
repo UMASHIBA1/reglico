@@ -494,7 +494,7 @@ mod tests {
                 Expr::block_new(
                     vec![
                         Stmt::expr_new(Expr::num_new(1.0, "1.0")),
-                        Stmt::expr_new(Expr::num_new(2.0, "1.0")),
+                        Stmt::expr_new(Expr::num_new(2.0, "2.0")),
                         Stmt::return_new(Expr::bool_new(true))
                     ]
                 )
@@ -537,7 +537,7 @@ mod tests {
             ),
             Stmt::expr_new(Expr::call_new(
                 Ident::new("add".to_string()),
-                vec![Expr::num_new(1.0, "2.0"), Expr::num_new(2.0, "2.0")],
+                vec![Expr::num_new(1.0, "1.0"), Expr::num_new(2.0, "2.0")],
             )),
         ];
 
@@ -569,7 +569,7 @@ mod tests {
                     TypedIdent::new("add".to_string()),
                     vec![
                         TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(1.0, "1.0".to_string())),
-                        TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(2.0, "1.0".to_string())),
+                        TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(2.0, "2.0".to_string())),
                     ],
                 ),
             )),
