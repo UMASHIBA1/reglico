@@ -13,10 +13,14 @@ impl ToTs {
                 match ident_value {
                     Some(Some(can_assign_obj)) => {
                         match can_assign_obj {
-                            CanAssignObj::TypedExpr(TypedExpr::NumExpr(..)) => {
-                                ident.get_name()
+                            CanAssignObj::TypedExpr(typed_expr) => {
+                                if typed_expr.get_typed_ast_type() == TypedAstType::Number {
+                                    ident.get_name()
+                                } else {
+                                    panic!("specified ident `{}` is not number type. this type is {:?}", ident.get_name(), typed_expr.get_typed_ast_type())
+                                }
                             },
-                            _ => panic!("specified ident `{}` is not number type. this type is {:?}", ident.get_name(), can_assign_obj)
+                            _ => panic!("specified ident `{}` is not expr, this is func `{:?}`", ident.get_name(), can_assign_obj)
                         }
                     }
                     _ => {

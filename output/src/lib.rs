@@ -17,6 +17,6 @@ macro_rules! console_log {
 fn console_log(value: f32) {
     console_log!("{}", value);
 }
-fn add(a:f32,b:f32)->f32{a+b}console_log(add(1.0,2.0));
+fn add(a:f32,b:f32)->f32{a+b}let total=add(1.0,2.0);console_log(total);
     Ok(())
     }
