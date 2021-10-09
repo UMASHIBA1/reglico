@@ -5,7 +5,7 @@ use crate::type_parser::typed_ast::{TypedCallExpr, TypedExpr, TypedBlock, TypedA
 impl ToRust {
     pub fn expr_to_rust(&self, typed_expr: TypedExpr) -> String {
         match typed_expr {
-            TypedExpr::NumExpr(_, num) => format!("{}", num.get_num()),
+            TypedExpr::NumExpr(_, num) => format!("{}", num.get_raw_num_string()),
             TypedExpr::BoolExpr(_, bool) => format!("{}", bool.get_bool()),
             TypedExpr::NumIdentExpr(_, ident) => {
                 let ident_value = self.var_env.get(&ident);
@@ -152,12 +152,12 @@ mod tests {
     fn test_num_expr_stmt() {
         let typed_stmts = vec![TypedStmt::ExprStmt(TypedExpr::NumExpr(
             TypedAstType::Number,
-            TypedNumber::new(0.0),
+            TypedNumber::new(0.0, "0.0".to_string()),
         ))];
 
         let rust_code = ToRust::to_rust(typed_stmts, None);
 
-        let expected_rust_code = "0;";
+        let expected_rust_code = "0.0;";
 
         assert_eq!(rust_code, expected_rust_code);
     }
@@ -174,7 +174,7 @@ mod tests {
             TypedIdent::new("tmp1".to_string()),
             Some(CanAssignObj::TypedExpr(TypedExpr::NumExpr(
                 TypedAstType::Number,
-                TypedNumber::new(0.0),
+                TypedNumber::new(0.0, "0.0".to_string()),
             ))),
         );
 
@@ -221,7 +221,7 @@ mod tests {
             TypedIdent::new("tmp1".to_string()),
             Some(CanAssignObj::TypedExpr(TypedExpr::NumExpr(
                 TypedAstType::Number,
-                TypedNumber::new(10.0),
+                TypedNumber::new(10.0, "10.0".to_string()),
             ))),
         );
 
@@ -252,12 +252,12 @@ mod tests {
     #[test]
     fn test_num_block_expr_stmt() {
         let typed_stmts = vec![TypedStmt::expr_new(TypedExpr::num_block_new(
-            vec![TypedStmt::return_new(TypedExpr::num_expr_new(1.0))]
+            vec![TypedStmt::return_new(TypedExpr::num_expr_new(1.0, "1.0".to_string()))]
         ))];
 
         let ts_code = ToRust::to_rust(typed_stmts, None);
 
-        let expected_ts_code = "{1};";
+        let expected_ts_code = "{1.0};";
 
         assert_eq!(ts_code, expected_ts_code);
     }
@@ -278,12 +278,12 @@ mod tests {
     #[test]
     fn test_void_block_expr_stmt() {
         let typed_stmts = vec![TypedStmt::expr_new(TypedExpr::void_block_new(vec![
-            TypedStmt::expr_new(TypedExpr::num_expr_new(1.0))
+            TypedStmt::expr_new(TypedExpr::num_expr_new(1.0, "1.0".to_string()))
         ]))];
 
         let ts_code = ToRust::to_rust(typed_stmts, None);
 
-        let expected_ts_code = "{1;};";
+        let expected_ts_code = "{1.0;};";
 
         assert_eq!(ts_code, expected_ts_code);
     }
@@ -291,14 +291,14 @@ mod tests {
     #[test]
     fn test_multi_stmts_block_expr_stmt() {
         let typed_stmts = vec![TypedStmt::expr_new(TypedExpr::num_block_new(vec![
-            TypedStmt::expr_new(TypedExpr::num_expr_new(1.0)),
+            TypedStmt::expr_new(TypedExpr::num_expr_new(1.0, "1.0".to_string())),
             TypedStmt::expr_new(TypedExpr::bool_expr_new(true)),
-            TypedStmt::return_new(TypedExpr::num_expr_new(2.0))
+            TypedStmt::return_new(TypedExpr::num_expr_new(2.0, "2.0".to_string()))
         ]))];
 
         let ts_code = ToRust::to_rust(typed_stmts, None);
 
-        let expected_ts_code = "{1;true;2};";
+        let expected_ts_code = "{1.0;true;2.0};";
 
         assert_eq!(ts_code, expected_ts_code);
     }
@@ -309,17 +309,17 @@ mod tests {
             TypedAstType::Number,
             Box::new(TypedExpr::NumExpr(
                 TypedAstType::Number,
-                TypedNumber::new(1.0),
+                TypedNumber::new(1.0, "1.0".to_string()),
             )),
             Box::new(TypedExpr::NumExpr(
                 TypedAstType::Number,
-                TypedNumber::new(2.0),
+                TypedNumber::new(2.0, "2.0".to_string()),
             )),
         ))];
 
         let rust_code = ToRust::to_rust(typed_stmts, None);
 
-        let expected_rust_code = "1+2;";
+        let expected_rust_code = "1.0+2.0;";
 
         assert_eq!(rust_code, expected_rust_code);
     }
@@ -330,17 +330,17 @@ mod tests {
             TypedAstType::Number,
             Box::new(TypedExpr::NumExpr(
                 TypedAstType::Number,
-                TypedNumber::new(2.0),
+                TypedNumber::new(2.0, "2.0".to_string()),
             )),
             Box::new(TypedExpr::NumExpr(
                 TypedAstType::Number,
-                TypedNumber::new(1.0),
+                TypedNumber::new(1.0, "1.0".to_string()),
             )),
         ))];
 
         let rust_code = ToRust::to_rust(typed_stmts, None);
 
-        let expected_rust_code = "2-1;";
+        let expected_rust_code = "2.0-1.0;";
 
         assert_eq!(rust_code, expected_rust_code);
     }
@@ -351,17 +351,17 @@ mod tests {
             TypedAstType::Number,
             Box::new(TypedExpr::NumExpr(
                 TypedAstType::Number,
-                TypedNumber::new(2.0),
+                TypedNumber::new(2.0, "2.0".to_string()),
             )),
             Box::new(TypedExpr::NumExpr(
                 TypedAstType::Number,
-                TypedNumber::new(1.0),
+                TypedNumber::new(1.0, "1.0".to_string()),
             )),
         ))];
 
         let rust_code = ToRust::to_rust(typed_stmts, None);
 
-        let expected_rust_code = "2*1;";
+        let expected_rust_code = "2.0*1.0;";
 
         assert_eq!(rust_code, expected_rust_code);
     }
@@ -372,17 +372,17 @@ mod tests {
             TypedAstType::Number,
             Box::new(TypedExpr::NumExpr(
                 TypedAstType::Number,
-                TypedNumber::new(4.0),
+                TypedNumber::new(4.0, "4.0".to_string()),
             )),
             Box::new(TypedExpr::NumExpr(
                 TypedAstType::Number,
-                TypedNumber::new(2.0),
+                TypedNumber::new(2.0, "2.0".to_string()),
             )),
         ))];
 
         let rust_code = ToRust::to_rust(typed_stmts, None);
 
-        let expected_rust_code = "4/2;";
+        let expected_rust_code = "4.0/2.0;";
 
         assert_eq!(rust_code, expected_rust_code);
     }
@@ -393,17 +393,17 @@ mod tests {
             TypedAstType::Bool,
             Box::new(TypedExpr::NumExpr(
                 TypedAstType::Number,
-                TypedNumber::new(2.0),
+                TypedNumber::new(2.0, "2.0".to_string()),
             )),
             Box::new(TypedExpr::NumExpr(
                 TypedAstType::Number,
-                TypedNumber::new(3.0),
+                TypedNumber::new(3.0, "3.0".to_string()),
             ))
         ))];
 
         let rust_code = ToRust::to_rust(typed_stmts, None);
 
-        let expected_rust_code = "2<=3;";
+        let expected_rust_code = "2.0<=3.0;";
 
         assert_eq!(rust_code, expected_rust_code);
     }
@@ -416,22 +416,22 @@ mod tests {
                 TypedAstType::Number,
                 Box::new(TypedExpr::NumExpr(
                     TypedAstType::Number,
-                    TypedNumber::new(2.0),
+                    TypedNumber::new(2.0, "2.0".to_string()),
                 )),
                 Box::new(TypedExpr::NumExpr(
                     TypedAstType::Number,
-                    TypedNumber::new(3.0),
+                    TypedNumber::new(3.0, "3.0".to_string()),
                 )),
             )),
             Box::new(TypedExpr::NumExpr(
                 TypedAstType::Number,
-                TypedNumber::new(2.0),
+                TypedNumber::new(2.0, "2.0".to_string()),
             )),
         ))];
 
         let rust_code = ToRust::to_rust(typed_stmts, None);
 
-        let expected_rust_code = "2*3+2;";
+        let expected_rust_code = "2.0*3.0+2.0;";
 
         assert_eq!(rust_code, expected_rust_code);
     }
@@ -443,8 +443,8 @@ mod tests {
             TypedCallExpr::new(
                 TypedIdent::new("add".to_string()),
                 vec![
-                    TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(1.0)),
-                    TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(2.0)),
+                    TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(1.0, "1.0".to_string())),
+                    TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(2.0, "2.0".to_string())),
                 ],
             ),
         ))];
@@ -475,7 +475,7 @@ mod tests {
 
         let rust_code = ToRust::to_rust(typed_stmts, Some(var_env));
 
-        let expected_rust_code = "add(1,2);";
+        let expected_rust_code = "add(1.0,2.0);";
 
         assert_eq!(rust_code, expected_rust_code);
     }

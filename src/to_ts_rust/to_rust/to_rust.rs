@@ -56,12 +56,12 @@ mod tests {
     #[test]
     fn test_return_stmt() {
         let typed_stmts = vec![TypedStmt::ReturnStmt(TypedReturnStmt::new(
-            TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(0.0)),
+            TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(0.0, "0.0".to_string())),
         ))];
 
         let rust_code = ToRust::to_rust(typed_stmts, None);
 
-        let expected_rust_code = "0";
+        let expected_rust_code = "0.0";
 
         assert_eq!(rust_code, expected_rust_code);
     }
@@ -96,8 +96,8 @@ mod tests {
                     TypedCallExpr::new(
                         TypedIdent::new("add".to_string()),
                         vec![
-                            TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(1.0)),
-                            TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(2.0)),
+                            TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(1.0, "1.0".to_string())),
+                            TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(2.0, "2.0".to_string())),
                         ],
                     ),
                 )),
@@ -106,7 +106,7 @@ mod tests {
 
         let rust_code = ToRust::to_rust(typed_stmts, None);
 
-        let expected_rust_code = "fn add(a:f32,b:f32)->f32{a+b}let total=add(1,2);";
+        let expected_rust_code = "fn add(a:f32,b:f32)->f32{a+b}let total=add(1.0,2.0);";
 
         assert_eq!(rust_code, expected_rust_code)
     }

@@ -23,9 +23,9 @@ mod test {
         let expr = reglico::ProgramParser::new().parse("1 + 2;").unwrap();
 
         let expected_expr = vec![Stmt::expr_new(Expr::op_new(
-            Expr::num_new(1.0),
+            Expr::num_new(1.0, "1.0"),
             Opcode::Add,
-            Expr::num_new(2.0),
+            Expr::num_new(2.0, "2.0"),
         ))];
 
         assert_eq!(expr, expected_expr);
@@ -38,9 +38,9 @@ mod test {
         let expr = reglico::ProgramParser::new().parse("2 - 1;").unwrap();
 
         let expected_expr = vec![Stmt::expr_new(Expr::op_new(
-            Expr::num_new(2.0),
+            Expr::num_new(2.0, "2.0"),
             Opcode::Sub,
-            Expr::num_new(1.0),
+            Expr::num_new(1.0, "1.0"),
         ))];
 
         assert_eq!(expr, expected_expr);
@@ -53,9 +53,9 @@ mod test {
         let expr = reglico::ProgramParser::new().parse("2 * 2;").unwrap();
 
         let expected_expr = vec![Stmt::expr_new(Expr::op_new(
-            Expr::num_new(2.0),
+            Expr::num_new(2.0, "2.0"),
             Opcode::Mul,
-            Expr::num_new(2.0),
+            Expr::num_new(2.0, "2.0"),
         ))];
 
         assert_eq!(expr, expected_expr);
@@ -68,9 +68,9 @@ mod test {
         let expr = reglico::ProgramParser::new().parse("4 / 2;").unwrap();
 
         let expected_expr = vec![Stmt::expr_new(Expr::op_new(
-            Expr::num_new(4.0),
+            Expr::num_new(4.0, "4.0"),
             Opcode::Div,
-            Expr::num_new(2.0),
+            Expr::num_new(2.0, "2.0"),
         ))];
 
         assert_eq!(expr, expected_expr);
@@ -83,9 +83,9 @@ mod test {
         let expr = reglico::ProgramParser::new().parse("1 <= 2;").unwrap();
 
         let expected_expr = vec![Stmt::expr_new(Expr::op_new(
-            Expr::num_new(1.0),
+            Expr::num_new(1.0, "1.0"),
             Opcode::LessThanOrEqual,
-            Expr::num_new(2.0),
+            Expr::num_new(2.0, "2.0"),
         ))];
 
         assert_eq!(expr, expected_expr);
@@ -98,9 +98,9 @@ mod test {
         let expr = reglico::ProgramParser::new().parse("4 + 2 - 3;").unwrap();
 
         let expected_expr = vec![Stmt::expr_new(Expr::op_new(
-            Expr::op_new(Expr::num_new(4.0), Opcode::Add, Expr::num_new(2.0)),
+            Expr::op_new(Expr::num_new(4.0, "4.0"), Opcode::Add, Expr::num_new(2.0, "2.0")),
             Opcode::Sub,
-            Expr::num_new(3.0),
+            Expr::num_new(3.0, "3.0"),
         ))];
 
         assert_eq!(expr, expected_expr);
@@ -113,9 +113,9 @@ mod test {
         let expr = reglico::ProgramParser::new().parse("4 - 2 + 3;").unwrap();
 
         let expected_expr = vec![Stmt::expr_new(Expr::op_new(
-            Expr::op_new(Expr::num_new(4.0), Opcode::Sub, Expr::num_new(2.0)),
+            Expr::op_new(Expr::num_new(4.0, "4.0"), Opcode::Sub, Expr::num_new(2.0, "2.0")),
             Opcode::Add,
-            Expr::num_new(3.0),
+            Expr::num_new(3.0, "3.0"),
         ))];
 
         assert_eq!(expr, expected_expr);
@@ -128,9 +128,9 @@ mod test {
         let expr = reglico::ProgramParser::new().parse("4 + 2 + 3;").unwrap();
 
         let expected_expr = vec![Stmt::expr_new(Expr::op_new(
-            Expr::op_new(Expr::num_new(4.0), Opcode::Add, Expr::num_new(2.0)),
+            Expr::op_new(Expr::num_new(4.0, "4"), Opcode::Add, Expr::num_new(2.0, "2.0")),
             Opcode::Add,
-            Expr::num_new(3.0),
+            Expr::num_new(3.0, "3.0"),
         ))];
 
         assert_eq!(expr, expected_expr);
@@ -143,9 +143,9 @@ mod test {
         let expr = reglico::ProgramParser::new().parse("6 - 2 - 3;").unwrap();
 
         let expected_expr = vec![Stmt::expr_new(Expr::op_new(
-            Expr::op_new(Expr::num_new(6.0), Opcode::Sub, Expr::num_new(2.0)),
+            Expr::op_new(Expr::num_new(6.0, "6.0"), Opcode::Sub, Expr::num_new(2.0, "2.0")),
             Opcode::Sub,
-            Expr::num_new(3.0),
+            Expr::num_new(3.0, "3.0"),
         ))];
 
         assert_eq!(expr, expected_expr);
@@ -158,9 +158,9 @@ mod test {
         let expr = reglico::ProgramParser::new().parse("6 + 2 * 3;").unwrap();
 
         let expected_expr = vec![Stmt::expr_new(Expr::op_new(
-            Expr::num_new(6.0),
+            Expr::num_new(6.0, "6.0"),
             Opcode::Add,
-            Expr::op_new(Expr::num_new(2.0), Opcode::Mul, Expr::num_new(3.0)),
+            Expr::op_new(Expr::num_new(2.0, "2.0"), Opcode::Mul, Expr::num_new(3.0, "3.0")),
         ))];
 
         assert_eq!(expr, expected_expr);
@@ -173,9 +173,9 @@ mod test {
         let expr = reglico::ProgramParser::new().parse("6 * 2 + 3;").unwrap();
 
         let expected_expr = vec![Stmt::expr_new(Expr::op_new(
-            Expr::op_new(Expr::num_new(6.0), Opcode::Mul, Expr::num_new(2.0)),
+            Expr::op_new(Expr::num_new(6.0, "6.0"), Opcode::Mul, Expr::num_new(2.0, "2.0")),
             Opcode::Add,
-            Expr::num_new(3.0),
+            Expr::num_new(3.0, "3.0"),
         ))];
 
         assert_eq!(expr, expected_expr);
@@ -188,9 +188,9 @@ mod test {
         let expr = reglico::ProgramParser::new().parse("6 + 4 / 2;").unwrap();
 
         let expected_expr = vec![Stmt::expr_new(Expr::op_new(
-            Expr::num_new(6.0),
+            Expr::num_new(6.0, "6.0"),
             Opcode::Add,
-            Expr::op_new(Expr::num_new(4.0), Opcode::Div, Expr::num_new(2.0)),
+            Expr::op_new(Expr::num_new(4.0, "4.0"), Opcode::Div, Expr::num_new(2.0, "2.0")),
         ))];
 
         assert_eq!(expr, expected_expr);
@@ -203,9 +203,9 @@ mod test {
         let expr = reglico::ProgramParser::new().parse("6 / 2 + 3;").unwrap();
 
         let expected_expr = vec![Stmt::expr_new(Expr::op_new(
-            Expr::op_new(Expr::num_new(6.0), Opcode::Div, Expr::num_new(2.0)),
+            Expr::op_new(Expr::num_new(6.0, "6.0"), Opcode::Div, Expr::num_new(2.0, "2.0")),
             Opcode::Add,
-            Expr::num_new(3.0),
+            Expr::num_new(3.0, "3.0"),
         ))];
 
         assert_eq!(expr, expected_expr);
@@ -218,9 +218,9 @@ mod test {
         let expr = reglico::ProgramParser::new().parse("8 - 2 * 3;").unwrap();
 
         let expected_expr = vec![Stmt::expr_new(Expr::op_new(
-            Expr::num_new(8.0),
+            Expr::num_new(8.0, "8.0"),
             Opcode::Sub,
-            Expr::op_new(Expr::num_new(2.0), Opcode::Mul, Expr::num_new(3.0)),
+            Expr::op_new(Expr::num_new(2.0, "2.0"), Opcode::Mul, Expr::num_new(3.0, "3.0")),
         ))];
 
         assert_eq!(expr, expected_expr);
@@ -233,9 +233,9 @@ mod test {
         let expr = reglico::ProgramParser::new().parse("6 * 2 - 3;").unwrap();
 
         let expected_expr = vec![Stmt::expr_new(Expr::op_new(
-            Expr::op_new(Expr::num_new(6.0), Opcode::Mul, Expr::num_new(2.0)),
+            Expr::op_new(Expr::num_new(6.0, "6.0"), Opcode::Mul, Expr::num_new(2.0, "2.0")),
             Opcode::Sub,
-            Expr::num_new(3.0),
+            Expr::num_new(3.0, "3.0"),
         ))];
 
         assert_eq!(expr, expected_expr);
@@ -248,9 +248,9 @@ mod test {
         let expr = reglico::ProgramParser::new().parse("6 - 4 / 2;").unwrap();
 
         let expected_expr = vec![Stmt::expr_new(Expr::op_new(
-            Expr::num_new(6.0),
+            Expr::num_new(6.0, "6.0"),
             Opcode::Sub,
-            Expr::op_new(Expr::num_new(4.0), Opcode::Div, Expr::num_new(2.0)),
+            Expr::op_new(Expr::num_new(4.0, "4.0"), Opcode::Div, Expr::num_new(2.0, "2.0")),
         ))];
 
         assert_eq!(expr, expected_expr);
@@ -263,9 +263,9 @@ mod test {
         let expr = reglico::ProgramParser::new().parse("8 / 2 - 3;").unwrap();
 
         let expected_expr = vec![Stmt::expr_new(Expr::op_new(
-            Expr::op_new(Expr::num_new(8.0), Opcode::Div, Expr::num_new(2.0)),
+            Expr::op_new(Expr::num_new(8.0, "8.0"), Opcode::Div, Expr::num_new(2.0, "2.0")),
             Opcode::Sub,
-            Expr::num_new(3.0),
+            Expr::num_new(3.0, "3.0"),
         ))];
 
         assert_eq!(expr, expected_expr);
@@ -278,9 +278,9 @@ mod test {
         let expr = reglico::ProgramParser::new().parse("8 * 2 * 3;").unwrap();
 
         let expected_expr = vec![Stmt::expr_new(Expr::op_new(
-            Expr::op_new(Expr::num_new(8.0), Opcode::Mul, Expr::num_new(2.0)),
+            Expr::op_new(Expr::num_new(8.0, "8.0"), Opcode::Mul, Expr::num_new(2.0, "2.0")),
             Opcode::Mul,
-            Expr::num_new(3.0),
+            Expr::num_new(3.0, "3.0"),
         ))];
 
         assert_eq!(expr, expected_expr);
@@ -293,9 +293,9 @@ mod test {
         let expr = reglico::ProgramParser::new().parse("3 * 2 / 3;").unwrap();
 
         let expected_expr = vec![Stmt::expr_new(Expr::op_new(
-            Expr::op_new(Expr::num_new(3.0), Opcode::Mul, Expr::num_new(2.0)),
+            Expr::op_new(Expr::num_new(3.0, "3.0"), Opcode::Mul, Expr::num_new(2.0, "2.0")),
             Opcode::Div,
-            Expr::num_new(3.0),
+            Expr::num_new(3.0, "3.0"),
         ))];
 
         assert_eq!(expr, expected_expr);
@@ -308,9 +308,9 @@ mod test {
         let expr = reglico::ProgramParser::new().parse("6 / 2 * 3;").unwrap();
 
         let expected_expr = vec![Stmt::expr_new(Expr::op_new(
-            Expr::op_new(Expr::num_new(6.0), Opcode::Div, Expr::num_new(2.0)),
+            Expr::op_new(Expr::num_new(6.0, "6.0"), Opcode::Div, Expr::num_new(2.0, "2.0")),
             Opcode::Mul,
-            Expr::num_new(3.0),
+            Expr::num_new(3.0, "3.0"),
         ))];
 
         assert_eq!(expr, expected_expr);
@@ -323,9 +323,9 @@ mod test {
         let expr = reglico::ProgramParser::new().parse("8 / 2 / 4;").unwrap();
 
         let expected_expr = vec![Stmt::expr_new(Expr::op_new(
-            Expr::op_new(Expr::num_new(8.0), Opcode::Div, Expr::num_new(2.0)),
+            Expr::op_new(Expr::num_new(8.0, "8.0"), Opcode::Div, Expr::num_new(2.0, "2.0")),
             Opcode::Div,
-            Expr::num_new(4.0),
+            Expr::num_new(4.0, "4.0"),
         ))];
 
         assert_eq!(expr, expected_expr);
@@ -340,8 +340,8 @@ mod test {
         let expected_expr = vec![
             Stmt::if_stmt(
                 Expr::bool_new(true),
-                BlockBox::new(vec![Stmt::expr_new(Expr::num_new(1.0))]),
-                Some(CanElseStmt::block_box_new(vec![Stmt::expr_new(Expr::num_new(1.0))]))
+                BlockBox::new(vec![Stmt::expr_new(Expr::num_new(1.0, "1.0"))]),
+                Some(CanElseStmt::block_box_new(vec![Stmt::expr_new(Expr::num_new(1.0, "1.0"))]))
             )
         ];
 
@@ -357,10 +357,10 @@ mod test {
         let expected_expr = vec![
             Stmt::if_stmt(
                 Expr::bool_new(true),
-                BlockBox::new(vec![Stmt::expr_new(Expr::num_new(1.0))]),
+                BlockBox::new(vec![Stmt::expr_new(Expr::num_new(1.0, "1.0"))]),
                 Some(CanElseStmt::if_stmt_new(
                     Expr::bool_new(true),
-                    BlockBox::new(vec![Stmt::expr_new(Expr::num_new(1.0))]),
+                    BlockBox::new(vec![Stmt::expr_new(Expr::num_new(1.0, "1.0"))]),
                     None
                 ))
             )
@@ -378,7 +378,7 @@ mod test {
         let expected_expr = vec![
             Stmt::if_stmt(
                 Expr::bool_new(true),
-                BlockBox::new(vec![Stmt::expr_new(Expr::num_new(1.0))]),
+                BlockBox::new(vec![Stmt::expr_new(Expr::num_new(1.0, "1.0"))]),
                 None
             )
         ];
@@ -395,11 +395,11 @@ mod test {
         let expected_expr = vec![
             Stmt::if_stmt(
                 Expr::bool_new(true),
-                BlockBox::new(vec![Stmt::expr_new(Expr::num_new(1.0))]),
+                BlockBox::new(vec![Stmt::expr_new(Expr::num_new(1.0, "1.0"))]),
                 Some(CanElseStmt::if_stmt_new(
                     Expr::bool_new(true),
-                    BlockBox::new(vec![Stmt::expr_new(Expr::num_new(1.0))]),
-                    Some(CanElseStmt::block_box_new(vec![Stmt::expr_new(Expr::num_new(1.0))]))
+                    BlockBox::new(vec![Stmt::expr_new(Expr::num_new(1.0, "1.0"))]),
+                    Some(CanElseStmt::block_box_new(vec![Stmt::expr_new(Expr::num_new(1.0, "1.0"))]))
                 ))
             )
         ];
@@ -414,9 +414,9 @@ mod test {
         let expr = reglico::ProgramParser::new().parse("1 + 2 <= 2 * 2;").unwrap();
 
         let expected_expr = vec![Stmt::expr_new(Expr::op_new(
-            Expr::op_new(Expr::num_new(1.0), Opcode::Add, Expr::num_new(2.0)),
+            Expr::op_new(Expr::num_new(1.0, "1.0"), Opcode::Add, Expr::num_new(2.0, "2.0")),
             Opcode::LessThanOrEqual,
-            Expr::op_new(Expr::num_new(2.0), Opcode::Mul, Expr::num_new(2.0)),
+            Expr::op_new(Expr::num_new(2.0, "2.0"), Opcode::Mul, Expr::num_new(2.0, "2.0")),
         ))];
 
         assert_eq!(expr, expected_expr);
@@ -429,9 +429,9 @@ mod test {
         let expr = reglico::ProgramParser::new().parse("2 <= 2 * 2;").unwrap();
 
         let expected_expr = vec![Stmt::expr_new(Expr::op_new(
-            Expr::num_new(2.0),
+            Expr::num_new(2.0, "2.0"),
             Opcode::LessThanOrEqual,
-            Expr::op_new(Expr::num_new(2.0), Opcode::Mul, Expr::num_new(2.0)),
+            Expr::op_new(Expr::num_new(2.0, "2.0"), Opcode::Mul, Expr::num_new(2.0, "2.0")),
         ))];
 
         assert_eq!(expr, expected_expr);
@@ -446,8 +446,8 @@ mod test {
         let add_call_expr= Expr::call_new(
             Ident::new("add".to_string()),
             vec![
-                Expr::num_new(1.0),
-                Expr::num_new(2.0)
+                Expr::num_new(1.0, "1.0"),
+                Expr::num_new(2.0, "2.0")
             ]
         );
 
@@ -455,7 +455,7 @@ mod test {
         let expected_expr = vec![Stmt::expr_new(Expr::op_new(
             add_call_expr,
             Opcode::Add,
-            Expr::num_new(3.0)
+            Expr::num_new(3.0, "3.0")
         ))];
 
         assert_eq!(expr, expected_expr);
@@ -470,8 +470,8 @@ mod test {
         let add_call_expr= Expr::call_new(
             Ident::new("add".to_string()),
             vec![
-                Expr::num_new(1.0),
-                Expr::num_new(2.0)
+                Expr::num_new(1.0, "1.0"),
+                Expr::num_new(2.0, "2.0")
             ]
         );
 
@@ -479,7 +479,7 @@ mod test {
         let expected_expr = vec![Stmt::expr_new(Expr::op_new(
             add_call_expr,
             Opcode::LessThanOrEqual,
-            Expr::num_new(4.0)
+            Expr::num_new(4.0, "4.0")
         ))];
 
         assert_eq!(expr, expected_expr);
@@ -493,7 +493,7 @@ mod test {
 
         let expected_expr = vec![Stmt::expr_new(Expr::call_new(
             Ident::new("add".to_string()),
-            vec![Expr::num_new(1.0), Expr::num_new(2.0)],
+            vec![Expr::num_new(1.0, "1.0"), Expr::num_new(2.0, "2.0")],
         ))];
 
         assert_eq!(expr, expected_expr);
@@ -507,7 +507,7 @@ mod test {
 
 
         let expected_expr = vec![Stmt::expr_new(Expr::block_new(vec![
-            Stmt::expr_new(Expr::num_new(1.0))
+            Stmt::expr_new(Expr::num_new(1.0, "1.0"))
         ]))];
 
         assert_eq!(expr, expected_expr);
@@ -521,8 +521,8 @@ mod test {
 
 
         let expected_expr = vec![Stmt::expr_new(Expr::block_new(vec![
-            Stmt::expr_new(Expr::num_new(1.0)),
-            Stmt::return_new(Expr::num_new(2.0)),
+            Stmt::expr_new(Expr::num_new(1.0, "1.0")),
+            Stmt::return_new(Expr::num_new(2.0, "2.0")),
         ]))];
 
         assert_eq!(expr, expected_expr);
@@ -534,7 +534,7 @@ mod test {
 
         let expr = reglico::ProgramParser::new().parse("1;").unwrap();
 
-        let expected_expr = vec![Stmt::expr_new(Expr::num_new(1.0))];
+        let expected_expr = vec![Stmt::expr_new(Expr::num_new(1.0, "1.0"))];
 
         assert_eq!(expr, expected_expr);
     }
@@ -617,7 +617,7 @@ mod test {
         let expected_expr = vec![Stmt::var_new(
             Ident::new("tmp1".to_string()),
             Some(Types::NumberType),
-            Some(Expr::num_new(10.0)),
+            Some(Expr::num_new(10.0, "10.0")),
         )];
 
         assert_eq!(expr, expected_expr);
@@ -634,7 +634,7 @@ mod test {
         let expected_expr = vec![Stmt::var_new(
             Ident::new("tmp1".to_string()),
             None,
-            Some(Expr::num_new(10.0)),
+            Some(Expr::num_new(10.0, "10.0")),
         )];
 
         assert_eq!(expr, expected_expr);
@@ -715,7 +715,7 @@ mod test {
                 None,
                 Some(Expr::call_new(
                     Ident::new("add".to_string()),
-                    vec![Expr::num_new(1.0), Expr::num_new(2.0)],
+                    vec![Expr::num_new(1.0, "1.0"), Expr::num_new(2.0, "2.0")],
                 )),
             ),
         ];
@@ -775,7 +775,7 @@ mod test {
                 None,
                 Some(Expr::call_new(
                     Ident::new("add".to_string()),
-                    vec![Expr::num_new(1.0), Expr::num_new(2.0)],
+                    vec![Expr::num_new(1.0, "1.0"), Expr::num_new(2.0, "2.0")],
                 )),
             ),
         ];
