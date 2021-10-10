@@ -7,6 +7,7 @@ impl ToRust {
         let name = typed_func.get_name();
         let args = typed_func.get_args();
         let stmts = typed_func.get_stmts();
+        let return_ast_type = typed_func.get_return_ast_type();
 
         self.var_env
             .insert(name.clone(), Some(CanAssignObj::TypedFunc(typed_func)));
@@ -52,9 +53,16 @@ impl ToRust {
             args_str
         };
 
+        let return_type_str = self.typed_ast_type_to_rust(return_ast_type);
+
         let stmts_str = ToRust::to_rust(stmts, Some(func_var_env.clone()));
 
-        format!("fn {}({})->(){{{}}}", name.get_name(), args_str, stmts_str)
+        format!(
+            "fn {}({})->{}{{{}}}",
+            name.get_name(),
+            args_str,
+            return_type_str,
+            stmts_str)
 
     }
 }
