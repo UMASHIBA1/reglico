@@ -28,6 +28,7 @@ pub enum TypedAstType {
     Bool,
     Func(Vec<TypedAstType>, Box<TypedAstType>), // Vec<TypedAstType> -> func args, second TypedAstType -> return type,
     Void,
+    LazyEval,
 }
 
 #[derive(Debug, PartialEq, Clone)]

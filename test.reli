@@ -1,6 +1,8 @@
-fn add(a: number, b: number) {
-    return a + b;
+fn fib(n: number) {
+  if n <= 1 {
+    return n;
+  }
+  return fib(n - 1) + fib(n - 2);
 }
 
-const total = add(1,2);
-console_log(total);
+console_log(fib(40));

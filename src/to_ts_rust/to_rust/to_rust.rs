@@ -47,7 +47,8 @@ impl ToRust {
 
     fn return_stmt_to_rust(&self, return_stmt: &TypedReturnStmt) -> String {
         let expr = return_stmt.get_expr();
-        self.expr_to_rust(expr)
+        let rust_expr_code = self.expr_to_rust(expr);
+        format!("return {};", rust_expr_code)
     }
 }
 
@@ -67,7 +68,7 @@ mod tests {
 
         let rust_code = ToRust::to_rust(typed_stmts, None);
 
-        let expected_rust_code = "0.0";
+        let expected_rust_code = "return 0.0;";
 
         assert_eq!(rust_code, expected_rust_code);
     }
@@ -114,7 +115,7 @@ mod tests {
 
         let rust_code = ToRust::to_rust(typed_stmts, None);
 
-        let expected_rust_code = "fn add(a:f32,b:f32)->f32{a+b}let total=add(1.0,2.0);";
+        let expected_rust_code = "fn add(a:f32,b:f32)->f32{return a+b;}let total=add(1.0,2.0);";
 
         assert_eq!(rust_code, expected_rust_code)
     }
