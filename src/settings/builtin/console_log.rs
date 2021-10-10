@@ -37,5 +37,5 @@ pub const console_log: Lazy<BuiltInFunc> = Lazy::new(|| BuiltInFunc::new(
             TypedIdent::new("console_log".to_string()),
             vec![TypedExpr::num_ident_new(TypedIdent::new("value".to_string()))]
         ))],
-        None
+        TypedAstType::Void
     ))));

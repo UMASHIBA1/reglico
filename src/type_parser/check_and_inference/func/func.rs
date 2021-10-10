@@ -36,44 +36,24 @@ impl TypeCheckAndInference {
 
         let mut func_stmts =
             TypeCheckAndInference::check_and_inference(stmts, Some(&func_type_env));
-        let mut typed_return_stmt: Option<TypedReturnStmt> = None;
-        let mut return_stmt_index: Option<usize> = None;
-        for (i, stmt) in func_stmts.iter().enumerate() {
+
+        let mut return_typed_ast_type = TypedAstType::Void;
+        for (_, stmt) in func_stmts.iter().enumerate() {
             match stmt {
-                TypedStmt::ReturnStmt(_) => {
-                    return_stmt_index = Some(i);
+                TypedStmt::ReturnStmt(return_stmt) => {
+                    return_typed_ast_type = return_stmt.get_return_type();
                 }
+                // TODO: if_stmtの場合も追加
                 _ => {}
             }
         }
-        match return_stmt_index {
-            Some(i) => {
-                let will_typed_return_stmt = func_stmts.remove(i);
-                match will_typed_return_stmt {
-                    TypedStmt::ReturnStmt(return_stmt) => {
-                        typed_return_stmt = Some(return_stmt);
-                    }
-                    _ => {}
-                };
-            }
-            _ => {}
-        }
-
-        let return_typed_ast_type = {
-            match &typed_return_stmt {
-                Some(typed_return_stmt) => {
-                    Some(Box::new(typed_return_stmt.get_expr().get_typed_ast_type()))
-                }
-                None => Some(Box::new(TypedAstType::Void)),
-            }
-        };
 
         self.type_env.insert(
             name.clone(),
-            TypedAstType::Func(arg_typed_ast_type, return_typed_ast_type),
+            TypedAstType::Func(arg_typed_ast_type, Some(Box::new(return_typed_ast_type.clone()))),
         );
 
-        TypedFunc::new(name, typed_args, func_stmts, typed_return_stmt)
+        TypedFunc::new(name, typed_args, func_stmts, return_typed_ast_type)
     }
 }
 
@@ -109,8 +89,7 @@ mod tests {
                 TypedFuncArg::new(TypedIdent::new("a".to_string()), TypeFlag::NumberType),
                 TypedFuncArg::new(TypedIdent::new("b".to_string()), TypeFlag::NumberType),
             ],
-            vec![],
-            Some(TypedReturnStmt::new(TypedExpr::NumAddExpr(
+            vec![TypedStmt::return_new(TypedExpr::NumAddExpr(
                 TypedAstType::Number,
                 Box::new(TypedExpr::NumIdentExpr(
                     TypedAstType::Number,
@@ -120,7 +99,8 @@ mod tests {
                     TypedAstType::Number,
                     TypedIdent::new("b".to_string()),
                 )),
-            ))),
+            ))],
+            TypedAstType::Number
         ))];
 
         assert_eq!(typed_stmts, expected_typed_stmts)
