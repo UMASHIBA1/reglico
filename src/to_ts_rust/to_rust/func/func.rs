@@ -7,7 +7,7 @@ impl ToRust {
         let name = typed_func.get_name();
         let args = typed_func.get_args();
         let stmts = typed_func.get_stmts();
-        let return_stmt = typed_func.get_return_stmt();
+
         self.var_env
             .insert(name.clone(), Some(CanAssignObj::TypedFunc(typed_func)));
 
@@ -54,36 +54,8 @@ impl ToRust {
 
         let stmts_str = ToRust::to_rust(stmts, Some(func_var_env.clone()));
 
-        let (return_type, return_stmt_str) = {
-            match &return_stmt {
-                Some(typed_return_stmt) => {
-                    let return_type =
-                        self.typed_ast_type_to_rust(typed_return_stmt.get_return_type());
-                    let return_stmt_str = ToRust::to_rust(
-                        vec![TypedStmt::ReturnStmt(typed_return_stmt.clone())],
-                        Some(func_var_env),
-                    );
-                    (return_type, Some(return_stmt_str))
-                }
-                None => ("()".to_string(), None),
-            }
-        };
+        format!("fn {}({})->(){{{}}}", name.get_name(), args_str, stmts_str)
 
-        match return_stmt_str {
-            Some(return_stmt_str) => {
-                format!(
-                    "fn {}({})->{}{{{}{}}}",
-                    name.get_name(),
-                    args_str,
-                    return_type,
-                    stmts_str,
-                    return_stmt_str
-                )
-            }
-            None => {
-                format!("fn {}({})->(){{{}}}", name.get_name(), args_str, stmts_str)
-            }
-        }
     }
 }
 
@@ -103,18 +75,20 @@ mod tests {
                 TypedFuncArg::new(TypedIdent::new("a".to_string()), TypeFlag::NumberType),
                 TypedFuncArg::new(TypedIdent::new("b".to_string()), TypeFlag::NumberType),
             ],
-            vec![],
-            Some(TypedReturnStmt::new(TypedExpr::NumAddExpr(
-                TypedAstType::Number,
-                Box::new(TypedExpr::NumIdentExpr(
+            vec![TypedStmt::return_new(
+                TypedExpr::NumAddExpr(
                     TypedAstType::Number,
-                    TypedIdent::new("a".to_string()),
-                )),
-                Box::new(TypedExpr::NumIdentExpr(
-                    TypedAstType::Number,
-                    TypedIdent::new("b".to_string()),
-                )),
-            ))),
+                    Box::new(TypedExpr::NumIdentExpr(
+                        TypedAstType::Number,
+                        TypedIdent::new("a".to_string()),
+                    )),
+                    Box::new(TypedExpr::NumIdentExpr(
+                        TypedAstType::Number,
+                        TypedIdent::new("b".to_string()),
+                    )),
+                )
+            )],
+            TypedAstType::Number
         ))];
 
         let rust_code = ToRust::to_rust(typed_stmts, None);

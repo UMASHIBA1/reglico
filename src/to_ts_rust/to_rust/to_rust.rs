@@ -81,18 +81,20 @@ mod tests {
                     TypedFuncArg::new(TypedIdent::new("a".to_string()), TypeFlag::NumberType),
                     TypedFuncArg::new(TypedIdent::new("b".to_string()), TypeFlag::NumberType),
                 ],
-                vec![],
-                Some(TypedReturnStmt::new(TypedExpr::NumAddExpr(
-                    TypedAstType::Number,
-                    Box::new(TypedExpr::NumIdentExpr(
+                vec![TypedStmt::return_new(
+                    TypedExpr::NumAddExpr(
                         TypedAstType::Number,
-                        TypedIdent::new("a".to_string()),
-                    )),
-                    Box::new(TypedExpr::NumIdentExpr(
-                        TypedAstType::Number,
-                        TypedIdent::new("b".to_string()),
-                    )),
-                ))),
+                        Box::new(TypedExpr::NumIdentExpr(
+                            TypedAstType::Number,
+                            TypedIdent::new("a".to_string()),
+                        )),
+                        Box::new(TypedExpr::NumIdentExpr(
+                            TypedAstType::Number,
+                            TypedIdent::new("b".to_string()),
+                        )),
+                    )
+                )],
+                TypedAstType::Number
             )),
             TypedStmt::VariableDeclaration(TypedVariableDeclaration::new(
                 TypedIdent::new("total".to_string()),
