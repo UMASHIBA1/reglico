@@ -28,7 +28,7 @@ pub const console_log: Lazy<BuiltInFunc> = Lazy::new(|| BuiltInFunc::new(
     "console_log",
     rust_func_def,
     ts_func_def,
-    TypedAstType::Func(vec![TypedAstType::Number], Some(Box::new(TypedAstType::Void))),
+    TypedAstType::Func(vec![TypedAstType::Number], Box::new(TypedAstType::Void)),
     CanAssignObj::TypedFunc(TypedFunc::new(
         TypedIdent::new("console_log".to_string()),
         vec![TypedFuncArg::new(TypedIdent::new("value".to_string()), TypeFlag::NumberType)],

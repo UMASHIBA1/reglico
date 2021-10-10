@@ -20,8 +20,6 @@ impl ToRust {
             None => {None}
         };
 
-        // TODO: return考える
-
         match else_stmt_str {
             Some(else_stmt_str) => {
                 format!("if {} {}else {}", condition_expr_str, then_stmt_str, else_stmt_str)
@@ -36,7 +34,7 @@ impl ToRust {
 
 #[cfg(test)]
 mod tests {
-    use crate::type_parser::typed_ast::{TypedStmt, TypedExpr, TypedBlockBox, TypedCanElseStmt};
+    use crate::type_parser::typed_ast::{TypedStmt, TypedExpr, TypedBlockBox, TypedCanElseStmt, TypedAstType};
     use crate::to_ts_rust::to_rust::to_rust::ToRust;
 
     #[test]
@@ -45,10 +43,10 @@ mod tests {
             TypedExpr::bool_expr_new(true),
             TypedBlockBox::new(
                 vec![TypedStmt::expr_new(TypedExpr::num_expr_new(1.0, "1.0".to_string()))],
-                None
+                TypedAstType::Void
             ),
             None,
-            None
+            TypedAstType::Void
         )];
 
         let rust_code = ToRust::to_rust(typed_stmts, None);
@@ -66,12 +64,12 @@ mod tests {
             TypedBlockBox::new(vec![TypedStmt::expr_new(TypedExpr::num_add_new(
                 TypedExpr::num_expr_new(1.0, "1.0".to_string()),
                 TypedExpr::num_expr_new(2.0, "2.0".to_string())
-            ))], None),
+            ))], TypedAstType::Void),
             Some(TypedCanElseStmt::block_box_new(
                 vec![TypedStmt::expr_new(TypedExpr::num_expr_new(1.0, "1.0".to_string()))],
-                None
+                TypedAstType::Void
             )),
-            None
+            TypedAstType::Void
         )];
 
 
@@ -90,14 +88,14 @@ mod tests {
             TypedBlockBox::new(vec![TypedStmt::expr_new(TypedExpr::num_add_new(
                 TypedExpr::num_expr_new(1.0, "1.0".to_string()),
                 TypedExpr::num_expr_new(2.0, "2.0".to_string())
-            ))], None),
+            ))], TypedAstType::Number),
             Some(TypedCanElseStmt::if_stmt_new(
                 TypedExpr::bool_expr_new(true),
-                TypedBlockBox::new(vec![TypedStmt::expr_new(TypedExpr::num_expr_new(1.0, "1.0".to_string()))], None),
+                TypedBlockBox::new(vec![TypedStmt::expr_new(TypedExpr::num_expr_new(1.0, "1.0".to_string()))], TypedAstType::Void),
                 None,
-                None
+                TypedAstType::Void
             )),
-            None
+            TypedAstType::Void
         )];
 
 

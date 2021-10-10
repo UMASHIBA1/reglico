@@ -31,12 +31,6 @@ impl ToRust {
     pub fn block_box_to_rust(&self, block_box: TypedBlockBox) -> String {
         let block_box_var_env = self.var_env.clone();
         let mut stmts = block_box.get_stmts();
-        match block_box.get_return_stmt() {
-            Some(return_stmt) => {
-                stmts.push(TypedStmt::ReturnStmt(return_stmt))
-            },
-            None => {}
-        }
 
         let str_stmts = ToRust::to_rust(stmts, Some(block_box_var_env));
 

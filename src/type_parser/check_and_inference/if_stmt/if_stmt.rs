@@ -21,13 +21,10 @@ impl TypeCheckAndInference {
             None => None
         };
 
+        // TODO: union型ができたらelse_stmtの型もとる
+        let return_typed_ast = then_stmt.get_return_ast_type();
 
-        let return_stmt = {
-            then_stmt.get_return_stmt()
-            // TODO: elseの方も取得する
-        };
-
-        TypedIfStmt::new(condition_expr, then_stmt, else_stmt, return_stmt)
+        TypedIfStmt::new(condition_expr, then_stmt, else_stmt, return_typed_ast)
     }
 }
 
@@ -35,7 +32,7 @@ impl TypeCheckAndInference {
 mod tests {
     use crate::parser::ast::{Stmt, Expr, BlockBox, Number, Opcode, CanElseStmt};
     use crate::type_parser::type_parser::type_parser;
-    use crate::type_parser::typed_ast::{TypedStmt, TypedExpr, TypedBlockBox, TypedCanElseStmt};
+    use crate::type_parser::typed_ast::{TypedStmt, TypedExpr, TypedBlockBox, TypedCanElseStmt, TypedAstType};
 
     #[test]
     fn test_inference_if_else_block_stmt() {
@@ -53,12 +50,12 @@ mod tests {
             TypedBlockBox::new(vec![TypedStmt::expr_new(TypedExpr::num_add_new(
                 TypedExpr::num_expr_new(1.0, "1.0".to_string()),
                 TypedExpr::num_expr_new(2.0, "2.0".to_string())
-            ))], None),
+            ))], TypedAstType::Void),
             Some(TypedCanElseStmt::block_box_new(
                 vec![TypedStmt::expr_new(TypedExpr::num_expr_new(1.0, "1.0".to_string()))],
-                None
+                TypedAstType::Void
             )),
-            None
+            TypedAstType::Void
         )];
 
         assert_eq!(typed_stmts, expected_typed_stmts);
@@ -84,14 +81,14 @@ mod tests {
             TypedBlockBox::new(vec![TypedStmt::expr_new(TypedExpr::num_add_new(
                 TypedExpr::num_expr_new(1.0, "1.0".to_string()),
                 TypedExpr::num_expr_new(2.0, "2.0".to_string())
-            ))], None),
+            ))], TypedAstType::Void),
             Some(TypedCanElseStmt::if_stmt_new(
                 TypedExpr::bool_expr_new(true),
-                TypedBlockBox::new(vec![TypedStmt::expr_new(TypedExpr::num_expr_new(1.0, "1.0".to_string()))], None),
+                TypedBlockBox::new(vec![TypedStmt::expr_new(TypedExpr::num_expr_new(1.0, "1.0".to_string()))], TypedAstType::Void),
                 None,
-                None
+                TypedAstType::Void
             )),
-            None
+            TypedAstType::Void
         )];
 
         assert_eq!(typed_stmts, expected_typed_stmts);
@@ -99,6 +96,7 @@ mod tests {
 
     #[test]
     fn test_inference_if_stmt() {
+        // if(true){1 + 2;}
         let stmts = vec![Stmt::if_stmt(
             Expr::bool_new(true),
             BlockBox::new(vec![Stmt::expr_new(Expr::op_new(Expr::num_new(1.0, "1.0"), Opcode::Add, Expr::num_new(2.0, "2.0")))]),
@@ -112,12 +110,44 @@ mod tests {
             TypedBlockBox::new(vec![TypedStmt::expr_new(TypedExpr::num_add_new(
                 TypedExpr::num_expr_new(1.0, "1.0".to_string()),
                 TypedExpr::num_expr_new(2.0, "2.0".to_string())
-            ))], None),
+            ))], TypedAstType::Void),
             None,
-            None
+            TypedAstType::Void
         )];
 
         assert_eq!(typed_stmts, expected_typed_stmts);
 
     }
+
+    #[test]
+    fn test_inference_if_stmt_with_return_stmt() {
+        // if(true){return 1 + 2;}
+        let stmts = vec![Stmt::if_stmt(
+            Expr::bool_new(true),
+            BlockBox::new(
+                vec![Stmt::return_new(
+                    Expr::op_new(Expr::num_new(1.0, "1.0"), Opcode::Add, Expr::num_new(2.0, "2.0"))
+                )]
+            ),
+            None
+        )];
+
+        let typed_stmts = type_parser(stmts);
+
+        let expected_typed_stmts = vec![TypedStmt::if_stmt_new(
+            TypedExpr::bool_expr_new(true),
+            TypedBlockBox::new(vec![TypedStmt::return_new(
+                TypedExpr::num_add_new(
+                    TypedExpr::num_expr_new(1.0, "1.0".to_string()),
+                    TypedExpr::num_expr_new(2.0, "2.0".to_string())
+                )
+            )], TypedAstType::Number),
+            None,
+            TypedAstType::Number
+        )];
+
+        assert_eq!(typed_stmts, expected_typed_stmts);
+
+    }
+
 }

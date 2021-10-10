@@ -26,7 +26,7 @@ pub enum TypeFlag {
 pub enum TypedAstType {
     Number,
     Bool,
-    Func(Vec<TypedAstType>, Option<Box<TypedAstType>>), // Vec<TypedAstType> -> func args, second TypedAstType -> return type,
+    Func(Vec<TypedAstType>, Box<TypedAstType>), // Vec<TypedAstType> -> func args, second TypedAstType -> return type,
     Void,
 }
 
@@ -65,14 +65,14 @@ impl TypedBool {
 #[derive(Debug, PartialEq, Clone)]
 pub struct TypedBlockBox {
     stmts: Vec<TypedStmt>,
-    return_stmt: Option<TypedReturnStmt>,
+    return_ast_type: TypedAstType,
 }
 
 impl TypedBlockBox {
-    pub fn new(stmts: Vec<TypedStmt>, return_stmt: Option<TypedReturnStmt>) -> TypedBlockBox {
+    pub fn new(stmts: Vec<TypedStmt>, return_ast_type: TypedAstType) -> TypedBlockBox {
         TypedBlockBox {
             stmts,
-            return_stmt,
+            return_ast_type,
         }
     }
 
@@ -80,9 +80,10 @@ impl TypedBlockBox {
         self.stmts.to_vec()
     }
 
-    pub fn get_return_stmt(&self) -> Option<TypedReturnStmt> {
-        self.return_stmt.clone()
+    pub fn get_return_ast_type(&self) -> TypedAstType {
+        self.return_ast_type.clone()
     }
+
 
 }
 
@@ -327,12 +328,12 @@ pub enum TypedCanElseStmt {
 }
 
 impl TypedCanElseStmt {
-    pub fn block_box_new(stmts: Vec<TypedStmt>, return_stmt: Option<TypedReturnStmt>) -> TypedCanElseStmt {
-        TypedCanElseStmt::BlockBox(TypedBlockBox::new(stmts, return_stmt))
+    pub fn block_box_new(stmts: Vec<TypedStmt>, return_ast_type: TypedAstType) -> TypedCanElseStmt {
+        TypedCanElseStmt::BlockBox(TypedBlockBox::new(stmts, return_ast_type))
     }
 
-    pub fn if_stmt_new(condition_expr: TypedExpr, then_stmt: TypedBlockBox, else_stmt: Option<TypedCanElseStmt>, return_stmt: Option<TypedReturnStmt>) -> TypedCanElseStmt {
-        TypedCanElseStmt::IfStmt(TypedIfStmt::new(condition_expr, then_stmt, else_stmt, return_stmt))
+    pub fn if_stmt_new(condition_expr: TypedExpr, then_stmt: TypedBlockBox, else_stmt: Option<TypedCanElseStmt>, return_ast_type: TypedAstType) -> TypedCanElseStmt {
+        TypedCanElseStmt::IfStmt(TypedIfStmt::new(condition_expr, then_stmt, else_stmt, return_ast_type))
     }
 
 }
@@ -342,11 +343,11 @@ pub struct TypedIfStmt {
     condition_expr: TypedExpr,
     then_stmt: TypedBlockBox,
     else_stmt: Option<Box<TypedCanElseStmt>>,
-    return_stmt: Option<TypedReturnStmt>,
+    return_ast_type: TypedAstType,
 }
 
 impl TypedIfStmt {
-    pub fn new(condition_expr: TypedExpr, then_stmt: TypedBlockBox, else_stmt: Option<TypedCanElseStmt>, return_stmt: Option<TypedReturnStmt>) -> TypedIfStmt {
+    pub fn new(condition_expr: TypedExpr, then_stmt: TypedBlockBox, else_stmt: Option<TypedCanElseStmt>, return_ast_type: TypedAstType) -> TypedIfStmt {
         let else_stmt = match else_stmt {
             Some(can_else_stmt) => Some(Box::new(can_else_stmt)),
             None => None,
@@ -356,7 +357,7 @@ impl TypedIfStmt {
             condition_expr,
             then_stmt,
             else_stmt,
-            return_stmt
+            return_ast_type
         }
 
     }
@@ -376,9 +377,10 @@ impl TypedIfStmt {
         }
     }
 
-    pub fn get_return_stmt(&self) -> Option<TypedReturnStmt> {
-        self.return_stmt.clone()
+    pub fn get_return_ast_type(&self) -> TypedAstType {
+        self.return_ast_type.clone()
     }
+
 
 }
 
@@ -423,8 +425,8 @@ impl TypedStmt {
         TypedStmt::ReturnStmt(TypedReturnStmt::new(expr))
     }
 
-    pub fn if_stmt_new(condition_expr: TypedExpr, then_stmt: TypedBlockBox, else_stmt: Option<TypedCanElseStmt>, return_stmt: Option<TypedReturnStmt>) -> TypedStmt {
-        TypedStmt::IfStmt(TypedIfStmt::new(condition_expr, then_stmt, else_stmt, return_stmt))
+    pub fn if_stmt_new(condition_expr: TypedExpr, then_stmt: TypedBlockBox, else_stmt: Option<TypedCanElseStmt>, return_ast_type: TypedAstType) -> TypedStmt {
+        TypedStmt::IfStmt(TypedIfStmt::new(condition_expr, then_stmt, else_stmt, return_ast_type))
     }
 
 }

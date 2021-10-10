@@ -50,7 +50,7 @@ impl TypeCheckAndInference {
 
         self.type_env.insert(
             name.clone(),
-            TypedAstType::Func(arg_typed_ast_type, Some(Box::new(return_typed_ast_type.clone()))),
+            TypedAstType::Func(arg_typed_ast_type, Box::new(return_typed_ast_type.clone())),
         );
 
         TypedFunc::new(name, typed_args, func_stmts, return_typed_ast_type)

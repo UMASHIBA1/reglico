@@ -20,7 +20,7 @@ impl TypeCheckAndInference {
             Types::BoolType => TypedAstType::Bool,
             _ => TypedAstType::Func(
                 vec![TypedAstType::Number],
-                Some(Box::new(TypedAstType::Number)),
+                Box::new(TypedAstType::Number),
             ), // TODO: 適当に書いた、後で直す
         }
     }
@@ -30,30 +30,18 @@ impl TypeCheckAndInference {
 
         let mut typed_stmts = TypeCheckAndInference::check_and_inference(stmts, None);
 
-        let mut return_stmt: Option<TypedReturnStmt> = None;
-        let mut return_stmt_index: Option<usize> = None;
-        for (i, typed_stmt) in typed_stmts.iter().enumerate() {
+        let mut return_ast_type = TypedAstType::Void;
+        for typed_stmt in &typed_stmts {
             match typed_stmt {
-                TypedStmt::ReturnStmt(_) => {
-                    return_stmt_index = Some(i);
+                TypedStmt::ReturnStmt(return_stmt) => {
+                    return_ast_type = return_stmt.get_return_type();
                 }
                 _ => {}
             };
         };
 
-        match return_stmt_index {
-            Some(i) => {
-                match typed_stmts.remove(i) {
-                    TypedStmt::ReturnStmt(_return_stmt) => {
-                        return_stmt = Some(_return_stmt);
-                    },
-                    _ => {}
-                }
-            },
-            _ => {}
-        }
 
-        TypedBlockBox::new(typed_stmts, return_stmt)
+        TypedBlockBox::new(typed_stmts, return_ast_type)
 
     }
 }
