@@ -286,7 +286,7 @@ pub struct TypedFunc {
     name: TypedIdent,
     args: Vec<TypedFuncArg>,
     stmts: Vec<TypedStmt>,
-    return_stmt: Option<TypedReturnStmt>,
+    return_ast_type: TypedAstType,
 }
 
 impl TypedFunc {
@@ -294,13 +294,13 @@ impl TypedFunc {
         name: TypedIdent,
         args: Vec<TypedFuncArg>,
         stmts: Vec<TypedStmt>,
-        return_stmt: Option<TypedReturnStmt>,
+        return_ast_type: TypedAstType,
     ) -> TypedFunc {
         TypedFunc {
             name,
             args,
             stmts,
-            return_stmt,
+            return_ast_type,
         }
     }
 
@@ -316,9 +316,8 @@ impl TypedFunc {
         self.stmts.to_vec()
     }
 
-    pub fn get_return_stmt(&self) -> Option<TypedReturnStmt> {
-        self.return_stmt.clone()
-    }
+    pub fn get_return_ast_type(&self) -> TypedAstType {self.return_ast_type.clone()}
+
 }
 
 #[derive(Debug, PartialEq, Clone)]
@@ -413,10 +412,10 @@ impl TypedStmt {
         name: TypedIdent,
         args: Vec<TypedFuncArg>,
         stmts: Vec<TypedStmt>,
-        return_stmt: Option<TypedReturnStmt>,
+        return_ast_type: TypedAstType,
     ) -> TypedStmt {
         TypedStmt::Func(
-            TypedFunc::new(name, args, stmts, return_stmt)
+            TypedFunc::new(name, args, stmts, return_ast_type)
         )
     }
 
