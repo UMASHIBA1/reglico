@@ -32,7 +32,7 @@ impl TypeCheckAndInference {
 mod tests {
     use crate::parser::ast::{Stmt, Expr, BlockBox, Number, Opcode, CanElseStmt};
     use crate::type_parser::type_parser::type_parser;
-    use crate::type_parser::typed_ast::{TypedStmt, TypedExpr, TypedBlockBox, TypedCanElseStmt, TypedAstType};
+    use crate::type_parser::typed_ast::{TypedStmt, TypedExpr, TypedBlockBox, TypedCanElseStmt, TypedAstType, TypedIfStmt};
 
     #[test]
     fn test_inference_if_else_block_stmt() {
@@ -142,6 +142,59 @@ mod tests {
                     TypedExpr::num_expr_new(2.0, "2.0".to_string())
                 )
             )], TypedAstType::Number),
+            None,
+            TypedAstType::Number
+        )];
+
+        assert_eq!(typed_stmts, expected_typed_stmts);
+
+    }
+
+
+    #[test]
+    fn test_inference_if_stmt_with_return_stmt_in_if_stmt() {
+        // if(true){if(true){return 1 + 2;}}
+        let stmts = vec![Stmt::if_stmt(
+            Expr::bool_new(true),
+            BlockBox::new(
+                vec![
+                    Stmt::if_stmt(
+                        Expr::bool_new(true),
+                        BlockBox::new(vec![
+                            Stmt::return_new(
+                                Expr::op_new(Expr::num_new(1.0, "1.0"), Opcode::Add, Expr::num_new(2.0, "2.0"))
+                            ),
+                        ]),
+                        None),
+                ]
+            ),
+            None
+        )];
+
+        let typed_stmts = type_parser(stmts);
+
+        let expected_typed_stmts = vec![TypedStmt::if_stmt_new(
+            TypedExpr::bool_expr_new(true),
+            TypedBlockBox::new(
+                vec![
+                    TypedStmt::if_stmt_new(
+                        TypedExpr::bool_expr_new(true),
+                        TypedBlockBox::new(
+                            vec![
+                                TypedStmt::return_new(
+                                    TypedExpr::num_add_new(
+                                    TypedExpr::num_expr_new(1.0, "1.0".to_string()),
+                                    TypedExpr::num_expr_new(2.0, "2.0".to_string()),
+                                    )
+                                )
+                            ],
+                            TypedAstType::Number
+                        ),
+                        None,
+                        TypedAstType::Number
+                    ),
+                ],
+                TypedAstType::Number),
             None,
             TypedAstType::Number
         )];
