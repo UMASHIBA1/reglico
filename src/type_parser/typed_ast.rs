@@ -332,8 +332,8 @@ impl TypedCanElseStmt {
         TypedCanElseStmt::BlockBox(TypedBlockBox::new(stmts, return_ast_type))
     }
 
-    pub fn if_stmt_new(condition_expr: TypedExpr, then_stmt: TypedBlockBox, else_stmt: Option<TypedCanElseStmt>, return_stmt: Option<TypedReturnStmt>) -> TypedCanElseStmt {
-        TypedCanElseStmt::IfStmt(TypedIfStmt::new(condition_expr, then_stmt, else_stmt, return_stmt))
+    pub fn if_stmt_new(condition_expr: TypedExpr, then_stmt: TypedBlockBox, else_stmt: Option<TypedCanElseStmt>, return_ast_type: TypedAstType) -> TypedCanElseStmt {
+        TypedCanElseStmt::IfStmt(TypedIfStmt::new(condition_expr, then_stmt, else_stmt, return_ast_type))
     }
 
 }
@@ -343,11 +343,11 @@ pub struct TypedIfStmt {
     condition_expr: TypedExpr,
     then_stmt: TypedBlockBox,
     else_stmt: Option<Box<TypedCanElseStmt>>,
-    return_stmt: Option<TypedReturnStmt>,
+    return_ast_type: TypedAstType,
 }
 
 impl TypedIfStmt {
-    pub fn new(condition_expr: TypedExpr, then_stmt: TypedBlockBox, else_stmt: Option<TypedCanElseStmt>, return_stmt: Option<TypedReturnStmt>) -> TypedIfStmt {
+    pub fn new(condition_expr: TypedExpr, then_stmt: TypedBlockBox, else_stmt: Option<TypedCanElseStmt>, return_ast_type: TypedAstType) -> TypedIfStmt {
         let else_stmt = match else_stmt {
             Some(can_else_stmt) => Some(Box::new(can_else_stmt)),
             None => None,
@@ -357,7 +357,7 @@ impl TypedIfStmt {
             condition_expr,
             then_stmt,
             else_stmt,
-            return_stmt
+            return_ast_type
         }
 
     }
@@ -377,9 +377,10 @@ impl TypedIfStmt {
         }
     }
 
-    pub fn get_return_stmt(&self) -> Option<TypedReturnStmt> {
-        self.return_stmt.clone()
+    pub fn get_return_ast_type(&self) -> TypedAstType {
+        self.return_ast_type.clone()
     }
+
 
 }
 
@@ -424,8 +425,8 @@ impl TypedStmt {
         TypedStmt::ReturnStmt(TypedReturnStmt::new(expr))
     }
 
-    pub fn if_stmt_new(condition_expr: TypedExpr, then_stmt: TypedBlockBox, else_stmt: Option<TypedCanElseStmt>, return_stmt: Option<TypedReturnStmt>) -> TypedStmt {
-        TypedStmt::IfStmt(TypedIfStmt::new(condition_expr, then_stmt, else_stmt, return_stmt))
+    pub fn if_stmt_new(condition_expr: TypedExpr, then_stmt: TypedBlockBox, else_stmt: Option<TypedCanElseStmt>, return_ast_type: TypedAstType) -> TypedStmt {
+        TypedStmt::IfStmt(TypedIfStmt::new(condition_expr, then_stmt, else_stmt, return_ast_type))
     }
 
 }
