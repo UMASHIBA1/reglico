@@ -65,14 +65,14 @@ impl TypedBool {
 #[derive(Debug, PartialEq, Clone)]
 pub struct TypedBlockBox {
     stmts: Vec<TypedStmt>,
-    return_stmt: Option<TypedReturnStmt>,
+    return_ast_type: TypedAstType,
 }
 
 impl TypedBlockBox {
-    pub fn new(stmts: Vec<TypedStmt>, return_stmt: Option<TypedReturnStmt>) -> TypedBlockBox {
+    pub fn new(stmts: Vec<TypedStmt>, return_ast_type: TypedAstType) -> TypedBlockBox {
         TypedBlockBox {
             stmts,
-            return_stmt,
+            return_ast_type,
         }
     }
 
@@ -80,9 +80,10 @@ impl TypedBlockBox {
         self.stmts.to_vec()
     }
 
-    pub fn get_return_stmt(&self) -> Option<TypedReturnStmt> {
-        self.return_stmt.clone()
+    pub fn get_return_ast_type(&self) -> TypedAstType {
+        self.return_ast_type.clone()
     }
+
 
 }
 
@@ -327,8 +328,8 @@ pub enum TypedCanElseStmt {
 }
 
 impl TypedCanElseStmt {
-    pub fn block_box_new(stmts: Vec<TypedStmt>, return_stmt: Option<TypedReturnStmt>) -> TypedCanElseStmt {
-        TypedCanElseStmt::BlockBox(TypedBlockBox::new(stmts, return_stmt))
+    pub fn block_box_new(stmts: Vec<TypedStmt>, return_ast_type: TypedAstType) -> TypedCanElseStmt {
+        TypedCanElseStmt::BlockBox(TypedBlockBox::new(stmts, return_ast_type))
     }
 
     pub fn if_stmt_new(condition_expr: TypedExpr, then_stmt: TypedBlockBox, else_stmt: Option<TypedCanElseStmt>, return_stmt: Option<TypedReturnStmt>) -> TypedCanElseStmt {
