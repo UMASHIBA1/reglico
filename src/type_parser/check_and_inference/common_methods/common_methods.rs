@@ -36,6 +36,9 @@ impl TypeCheckAndInference {
                 TypedStmt::ReturnStmt(return_stmt) => {
                     return_ast_type = return_stmt.get_return_type();
                 }
+                TypedStmt::IfStmt(if_stmt) => {
+                    return_ast_type = if_stmt.get_return_ast_type();
+                },
                 _ => {}
             };
         };
