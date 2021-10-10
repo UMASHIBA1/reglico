@@ -1,4 +1,4 @@
-use crate::parser::ast::Func;
+use crate::parser::ast::{Func, Stmt};
 use crate::type_parser::check_and_inference::type_check_and_inference_struct::TypeCheckAndInference;
 use crate::type_parser::typed_ast::{
     TypedAstType, TypedFunc, TypedFuncArg, TypedReturnStmt, TypedStmt,
@@ -26,34 +26,74 @@ impl TypeCheckAndInference {
         }
 
         let mut func_type_env = self.type_env.clone();
+        let mut arg_ast_types = vec![];
         // NOTE: add arg type to type_env
         for (i, typed_arg) in typed_args.iter().enumerate() {
+            let arg_type = arg_typed_ast_type.get(i).unwrap().clone();
+            arg_ast_types.push(arg_type.clone());
             func_type_env.insert(
                 typed_arg.get_name(),
-                arg_typed_ast_type.get(i).unwrap().clone(),
+                arg_type,
             );
         }
 
-        let mut func_stmts =
-            TypeCheckAndInference::check_and_inference(stmts, Some(&func_type_env));
+        func_type_env.insert(
+            name.clone(),
+            TypedAstType::Func(
+                arg_ast_types,
+                Box::new(TypedAstType::LazyEval),
+            )
+        );
 
-        let mut return_typed_ast_type = TypedAstType::Void;
-        for stmt in &func_stmts {
-            match stmt {
-                TypedStmt::ReturnStmt(return_stmt) => {
-                    return_typed_ast_type = return_stmt.get_return_type();
-                },
-                TypedStmt::IfStmt(if_stmt) => {
-                    return_typed_ast_type = if_stmt.get_return_ast_type();
-                },
-                _ => {}
+        // NOTE: get return_type_ast_type before inference for recursive func.
+        let return_typed_ast_type = {
+            let mut can_have_return_type_stmts = vec![];
+            for stmt in &stmts {
+                match stmt {
+                    Stmt::IfStmt(_) | Stmt::ReturnStmt(_) => {
+                        can_have_return_type_stmts.push(stmt.clone());
+                    },
+                    _ => {}
+                }
             }
-        }
+
+            let can_have_return_type_typed_stmts = TypeCheckAndInference::check_and_inference(can_have_return_type_stmts, Some(&func_type_env));
+
+            let mut this_func_return_type = TypedAstType::Void;
+            for stmt in can_have_return_type_typed_stmts {
+                match stmt {
+                    TypedStmt::IfStmt(if_stmt) => {
+                        let return_type = if_stmt.get_return_ast_type();
+                        if (return_type != TypedAstType::Void) | (return_type != TypedAstType::LazyEval) {
+                            this_func_return_type = return_type;
+                        }
+                    },
+                    TypedStmt::ReturnStmt(return_stmt) => {
+                        let return_type = return_stmt.get_return_type();
+                        if (return_type != TypedAstType::Void) | (return_type != TypedAstType::LazyEval) {
+                            this_func_return_type = return_type;
+                        }
+                    }
+                    _ => {}
+                }
+            }
+
+            this_func_return_type
+
+        };
+
+        func_type_env.insert(
+            name.clone(),
+            TypedAstType::Func(arg_typed_ast_type.clone(), Box::new(return_typed_ast_type.clone())),
+        );
 
         self.type_env.insert(
             name.clone(),
             TypedAstType::Func(arg_typed_ast_type, Box::new(return_typed_ast_type.clone())),
         );
+
+        let mut func_stmts =
+            TypeCheckAndInference::check_and_inference(stmts, Some(&func_type_env));
 
         TypedFunc::new(name, typed_args, func_stmts, return_typed_ast_type)
     }
@@ -61,7 +101,7 @@ impl TypeCheckAndInference {
 
 #[cfg(test)]
 mod tests {
-    use crate::parser::ast::{Expr, FuncArg, Ident, Opcode, ReturnStmt, Stmt, Types, BlockBox};
+    use crate::parser::ast::{Expr, FuncArg, Ident, Opcode, ReturnStmt, Stmt, Types, BlockBox, ExprStmt};
     use crate::type_parser::type_parser::type_parser;
     use crate::type_parser::typed_ast::{TypeFlag, TypedAstType, TypedExpr, TypedFunc, TypedFuncArg, TypedIdent, TypedReturnStmt, TypedStmt, TypedBlockBox};
 
@@ -139,5 +179,57 @@ mod tests {
 
         assert_eq!(typed_stmts, expected_typed_stmts)
     }
+
+    #[test]
+    fn test_inference_recursive_func() {
+        // fn tmp(a: number) {tmp(a - 1);}
+        let stmts = vec![Stmt::func_new(
+            Ident::new("tmp".to_string()),
+            vec![
+                FuncArg::new(Ident::new("a".to_string()), Types::NumberType),
+            ],
+            vec![
+                Stmt::ExprStmt(ExprStmt::new(
+                    Expr::call_new(
+                        Ident::new("tmp".to_string()),
+                        vec![
+                            Expr::op_new(
+                                Expr::ident_new(Ident::new("a".to_string())),
+                                Opcode::Sub,
+                                Expr::num_new(1.0, "1.0")
+                            )
+                        ]
+                    )
+                ))
+            ],
+        )];
+
+        let typed_stmts = type_parser(stmts);
+
+        let expected_typed_stmts = vec![TypedStmt::Func(TypedFunc::new(
+            TypedIdent::new("tmp".to_string()),
+            vec![
+                TypedFuncArg::new(TypedIdent::new("a".to_string()), TypeFlag::NumberType)
+            ],
+            vec![
+                TypedStmt::expr_new(
+                    TypedExpr::call_expr_new(
+                        TypedAstType::Void,
+                        TypedIdent::new("tmp".to_string()),
+                        vec![
+                            TypedExpr::num_sub_new(
+                                TypedExpr::num_ident_new(TypedIdent::new("a".to_string())),
+                                TypedExpr::num_expr_new(1.0, "1.0".to_string()),
+                            ),
+                        ]
+                    )
+                )
+            ],
+            TypedAstType::Void
+        ))];
+
+        assert_eq!(typed_stmts, expected_typed_stmts)
+    }
+
 
 }
