@@ -28,7 +28,7 @@ impl TypeCheckAndInference {
     pub fn check_and_inference_block_box(&self, block_box: BlockBox) -> TypedBlockBox {
         let stmts = block_box.get_stmts();
 
-        let mut typed_stmts = TypeCheckAndInference::check_and_inference(stmts, None);
+        let mut typed_stmts = TypeCheckAndInference::check_and_inference(stmts, Some(&self.type_env));
 
         let mut return_ast_type = TypedAstType::Void;
         for typed_stmt in &typed_stmts {

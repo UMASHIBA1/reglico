@@ -44,7 +44,7 @@ impl TypeCheckAndInference {
                 Box::new(TypedAstType::LazyEval),
             )
         );
-
+        
         // NOTE: get return_type_ast_type before inference for recursive func.
         let return_typed_ast_type = {
             let mut can_have_return_type_stmts = vec![];
