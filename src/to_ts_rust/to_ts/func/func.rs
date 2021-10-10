@@ -7,7 +7,6 @@ impl ToTs {
         let name = typed_func.get_name();
         let args = typed_func.get_args();
         let stmts = typed_func.get_stmts();
-        let return_stmt = typed_func.get_return_stmt();
 
         self.var_env
             .insert(name.clone(), Some(CanAssignObj::TypedFunc(typed_func)));
@@ -54,41 +53,12 @@ impl ToTs {
 
         let stmts_str = ToTs::to_ts(stmts, Some(func_var_env.clone()));
 
-        let (return_type, return_stmt_str) = {
-            match &return_stmt {
-                Some(typed_return_stmt) => {
-                    let return_type =
-                        self.typed_ast_type_to_ts(typed_return_stmt.get_return_type());
-                    let return_stmt_str = ToTs::to_ts(
-                        vec![TypedStmt::ReturnStmt(typed_return_stmt.clone())],
-                        Some(func_var_env),
-                    );
-                    (return_type, Some(return_stmt_str))
-                }
-                None => ("void".to_string(), None),
-            }
-        };
-
-        match return_stmt_str {
-            Some(return_stmt_str) => {
-                format!(
-                    "const {}=({}):{}=>{{{}{}}};",
-                    name.get_name(),
-                    args_str,
-                    return_type,
-                    stmts_str,
-                    return_stmt_str
-                )
-            }
-            None => {
-                format!(
-                    "const {}=({}):void=>{{{}}};",
-                    name.get_name(),
-                    args_str,
-                    stmts_str
-                )
-            }
-        }
+        format!(
+            "const {}=({}):void=>{{{}}};",
+            name.get_name(),
+            args_str,
+            stmts_str
+        )
     }
 }
 #[cfg(test)]
@@ -107,18 +77,20 @@ mod tests {
                 TypedFuncArg::new(TypedIdent::new("a".to_string()), TypeFlag::NumberType),
                 TypedFuncArg::new(TypedIdent::new("b".to_string()), TypeFlag::NumberType),
             ],
-            vec![],
-            Some(TypedReturnStmt::new(TypedExpr::NumAddExpr(
-                TypedAstType::Number,
-                Box::new(TypedExpr::NumIdentExpr(
+            vec![TypedStmt::return_new(
+                TypedExpr::NumAddExpr(
                     TypedAstType::Number,
-                    TypedIdent::new("a".to_string()),
-                )),
-                Box::new(TypedExpr::NumIdentExpr(
-                    TypedAstType::Number,
-                    TypedIdent::new("b".to_string()),
-                )),
-            ))),
+                    Box::new(TypedExpr::NumIdentExpr(
+                        TypedAstType::Number,
+                        TypedIdent::new("a".to_string()),
+                    )),
+                    Box::new(TypedExpr::NumIdentExpr(
+                        TypedAstType::Number,
+                        TypedIdent::new("b".to_string()),
+                    )),
+                )
+            )],
+            TypedAstType::Number
         ))];
 
         let ts_code = ToTs::to_ts(typed_stmts, None);
@@ -137,7 +109,7 @@ mod tests {
                 TypedFuncArg::new(TypedIdent::new("b".to_string()), TypeFlag::NumberType),
             ],
             vec![TypedStmt::ExprStmt(TypedExpr::num_expr_new(1.0, "1.0".to_string()))],
-            None
+            TypedAstType::Void
         ))];
 
         let ts_code = ToTs::to_ts(typed_stmts, None);
@@ -153,7 +125,7 @@ mod tests {
             TypedIdent::new("add".to_string()),
             vec![],
             vec![TypedStmt::ExprStmt(TypedExpr::num_expr_new(1.0, "1.0".to_string()))],
-            None
+            TypedAstType::Void
         ))];
 
         let ts_code = ToTs::to_ts(typed_stmts, None);
