@@ -7,6 +7,7 @@ impl ToTs {
         let name = typed_func.get_name();
         let args = typed_func.get_args();
         let stmts = typed_func.get_stmts();
+        let return_ast_type = typed_func.get_return_ast_type();
 
         self.var_env
             .insert(name.clone(), Some(CanAssignObj::TypedFunc(typed_func)));
@@ -51,12 +52,15 @@ impl ToTs {
             args_str
         };
 
+        let return_type_str = self.typed_ast_type_to_ts(return_ast_type);
+
         let stmts_str = ToTs::to_ts(stmts, Some(func_var_env.clone()));
 
         format!(
-            "const {}=({}):void=>{{{}}};",
+            "const {}=({}):{}=>{{{}}};",
             name.get_name(),
             args_str,
+            return_type_str,
             stmts_str
         )
     }
