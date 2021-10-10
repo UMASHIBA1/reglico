@@ -44,10 +44,10 @@ mod tests {
             TypedExpr::bool_expr_new(true),
             TypedBlockBox::new(
                 vec![TypedStmt::expr_new(TypedExpr::num_expr_new(1.0, "1.0".to_string()))],
-                TypedAstType::Number
+                TypedAstType::Void
             ),
             None,
-            TypedAstType::Number
+            TypedAstType::Void
         )];
 
         let ts_code = ToTs::to_ts(typed_stmts, None);
@@ -65,12 +65,12 @@ mod tests {
             TypedBlockBox::new(vec![TypedStmt::expr_new(TypedExpr::num_add_new(
                 TypedExpr::num_expr_new(1.0, "1.0".to_string()),
                 TypedExpr::num_expr_new(2.0, "2.0".to_string())
-            ))], TypedAstType::Number),
+            ))], TypedAstType::Void),
             Some(TypedCanElseStmt::block_box_new(
                 vec![TypedStmt::expr_new(TypedExpr::num_expr_new(1.0, "1.0".to_string()))],
-                TypedAstType::Number
+                TypedAstType::Void
             )),
-            TypedAstType::Number
+            TypedAstType::Void
         )];
 
 
@@ -89,14 +89,14 @@ mod tests {
             TypedBlockBox::new(vec![TypedStmt::expr_new(TypedExpr::num_add_new(
                 TypedExpr::num_expr_new(1.0, "1.0".to_string()),
                 TypedExpr::num_expr_new(2.0, "2.0".to_string())
-            ))], TypedAstType::Number),
+            ))], TypedAstType::Void),
             Some(TypedCanElseStmt::if_stmt_new(
                 TypedExpr::bool_expr_new(true),
-                TypedBlockBox::new(vec![TypedStmt::expr_new(TypedExpr::num_expr_new(1.0, "1.0".to_string()))], TypedAstType::Number),
+                TypedBlockBox::new(vec![TypedStmt::expr_new(TypedExpr::num_expr_new(1.0, "1.0".to_string()))], TypedAstType::Void),
                 None,
-                TypedAstType::Number
+                TypedAstType::Void
             )),
-            TypedAstType::Number
+            TypedAstType::Void
         )];
 
 
