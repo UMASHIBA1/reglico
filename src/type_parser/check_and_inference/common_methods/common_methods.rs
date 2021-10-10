@@ -31,7 +31,7 @@ impl TypeCheckAndInference {
         let mut typed_stmts = TypeCheckAndInference::check_and_inference(stmts, None);
 
         let mut return_ast_type = TypedAstType::Void;
-        for typed_stmt in typed_stmts {
+        for typed_stmt in &typed_stmts {
             match typed_stmt {
                 TypedStmt::ReturnStmt(return_stmt) => {
                     return_ast_type = return_stmt.get_return_type();
