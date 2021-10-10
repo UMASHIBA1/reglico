@@ -26,7 +26,7 @@ pub enum TypeFlag {
 pub enum TypedAstType {
     Number,
     Bool,
-    Func(Vec<TypedAstType>, Option<Box<TypedAstType>>), // Vec<TypedAstType> -> func args, second TypedAstType -> return type,
+    Func(Vec<TypedAstType>, Box<TypedAstType>), // Vec<TypedAstType> -> func args, second TypedAstType -> return type,
     Void,
 }
 

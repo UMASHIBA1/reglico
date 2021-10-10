@@ -109,10 +109,7 @@ impl TypeCheckAndInference {
 
         let func_return_ast_type = match typed_ast_type {
             Some(typed_ast_type) => match typed_ast_type {
-                TypedAstType::Func(_, return_type) => match return_type {
-                    Some(return_type) => return_type,
-                    None => panic!("in type_parsing call, the calling func is not valid"),
-                },
+                TypedAstType::Func(_, return_type) => return_type,
                 _ => panic!("parsing call does not call func: {:?}", typed_ast_type),
             },
             None => panic!("parsing call does not defined value{:?}", &typed_func_name),

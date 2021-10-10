@@ -20,7 +20,7 @@ impl TypeCheckAndInference {
             Types::BoolType => TypedAstType::Bool,
             _ => TypedAstType::Func(
                 vec![TypedAstType::Number],
-                Some(Box::new(TypedAstType::Number)),
+                Box::new(TypedAstType::Number),
             ), // TODO: 適当に書いた、後で直す
         }
     }
