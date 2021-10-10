@@ -266,7 +266,7 @@ mod tests {
 
         let ts_code = ToRust::to_rust(typed_stmts, None);
 
-        let expected_ts_code = "{1.0};";
+        let expected_ts_code = "{return 1.0;};";
 
         assert_eq!(ts_code, expected_ts_code);
     }
@@ -279,7 +279,7 @@ mod tests {
 
         let ts_code = ToRust::to_rust(typed_stmts, None);
 
-        let expected_ts_code = "{true};";
+        let expected_ts_code = "{return true;};";
 
         assert_eq!(ts_code, expected_ts_code);
     }
@@ -307,7 +307,7 @@ mod tests {
 
         let ts_code = ToRust::to_rust(typed_stmts, None);
 
-        let expected_ts_code = "{1.0;true;2.0};";
+        let expected_ts_code = "{1.0;true;return 2.0;};";
 
         assert_eq!(ts_code, expected_ts_code);
     }
