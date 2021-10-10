@@ -38,12 +38,14 @@ impl TypeCheckAndInference {
             TypeCheckAndInference::check_and_inference(stmts, Some(&func_type_env));
 
         let mut return_typed_ast_type = TypedAstType::Void;
-        for (_, stmt) in func_stmts.iter().enumerate() {
+        for stmt in func_stmts {
             match stmt {
                 TypedStmt::ReturnStmt(return_stmt) => {
                     return_typed_ast_type = return_stmt.get_return_type();
-                }
-                // TODO: if_stmtの場合も追加
+                },
+                TypedStmt::IfStmt(if_stmt) => {
+                    return_typed_ast_type = if_stmt.get_return_ast_type();
+                },
                 _ => {}
             }
         }
@@ -59,12 +61,9 @@ impl TypeCheckAndInference {
 
 #[cfg(test)]
 mod tests {
-    use crate::parser::ast::{Expr, FuncArg, Ident, Opcode, ReturnStmt, Stmt, Types};
+    use crate::parser::ast::{Expr, FuncArg, Ident, Opcode, ReturnStmt, Stmt, Types, BlockBox};
     use crate::type_parser::type_parser::type_parser;
-    use crate::type_parser::typed_ast::{
-        TypeFlag, TypedAstType, TypedExpr, TypedFunc, TypedFuncArg, TypedIdent, TypedReturnStmt,
-        TypedStmt,
-    };
+    use crate::type_parser::typed_ast::{TypeFlag, TypedAstType, TypedExpr, TypedFunc, TypedFuncArg, TypedIdent, TypedReturnStmt, TypedStmt, TypedBlockBox};
 
     #[test]
     fn test_inference_func() {
@@ -105,4 +104,40 @@ mod tests {
 
         assert_eq!(typed_stmts, expected_typed_stmts)
     }
+
+    #[test]
+    fn test_inference_func_with_return_stmt_included_in_if_stmt() {
+        // fn tmp() {if(true){return 1;}}
+        let stmts = vec![Stmt::func_new(
+            Ident::new("tmp".to_string()),
+            vec![],
+            vec![
+                Stmt::if_stmt(
+                    Expr::bool_new(true),
+                    BlockBox::new(vec![Stmt::return_new(Expr::num_new(1.0, "1.0"))]),
+                    None
+                )
+            ],
+        )];
+
+        let typed_stmts = type_parser(stmts);
+
+        let expected_typed_stmts = vec![TypedStmt::Func(TypedFunc::new(
+            TypedIdent::new("tmp".to_string()),
+            vec![],
+            vec![TypedStmt::if_stmt_new(
+                TypedExpr::bool_expr_new(true),
+                TypedBlockBox::new(
+                    vec![TypedStmt::return_new(TypedExpr::num_expr_new(1.0, "1.0".to_string()))],
+                    TypedAstType::Number
+                ),
+                None,
+                TypedAstType::Number
+            )],
+            TypedAstType::Number
+        ))];
+
+        assert_eq!(typed_stmts, expected_typed_stmts)
+    }
+
 }
