@@ -38,7 +38,7 @@ mod tests {
         let stmts = vec![Stmt::var_new(
             Ident::new("tmp1".to_string()),
             Some(Types::NumberType),
-            Some(Expr::num_new(10.0, "10.0")),
+            Some(Expr::num_new(10, "10")),
         )];
 
         let typed_stmts = type_parser(stmts);
@@ -49,7 +49,7 @@ mod tests {
                 Some(TypeFlag::NumberType),
                 Some(TypedExpr::NumExpr(
                     TypedAstType::Number,
-                    TypedNumber::new(10.0, "10.0".to_string()),
+                    TypedNumber::new(10, "10".to_string()),
                 )),
             ),
         )];

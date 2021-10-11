@@ -4,14 +4,14 @@ use crate::type_parser::typed_ast::{TypedAstType, TypedFunc, TypedIdent, TypedSt
 use crate::to_ts_rust::common_struct::CanAssignObj;
 
 const rust_func_def: &str = "
-fn performance_now() -> f32 {
+fn performance_now() -> i64 {
     let window = web_sys::window().expect(\"should have a window in this context\");
     let performance = window
         .performance()
         .expect(\"performance should be available\");
 
-    let now_f32 = performance.now() as f32;
-    now_f32
+    let now_i64 = performance.now() as i64;
+    now_i64
 }
 ";
 

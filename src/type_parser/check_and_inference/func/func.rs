@@ -154,7 +154,7 @@ mod tests {
             vec![
                 Stmt::if_stmt(
                     Expr::bool_new(true),
-                    BlockBox::new(vec![Stmt::return_new(Expr::num_new(1.0, "1.0"))]),
+                    BlockBox::new(vec![Stmt::return_new(Expr::num_new(1, "1"))]),
                     None
                 )
             ],
@@ -168,7 +168,7 @@ mod tests {
             vec![TypedStmt::if_stmt_new(
                 TypedExpr::bool_expr_new(true),
                 TypedBlockBox::new(
-                    vec![TypedStmt::return_new(TypedExpr::num_expr_new(1.0, "1.0".to_string()))],
+                    vec![TypedStmt::return_new(TypedExpr::num_expr_new(1, "1".to_string()))],
                     TypedAstType::Number
                 ),
                 None,
@@ -196,7 +196,7 @@ mod tests {
                             Expr::op_new(
                                 Expr::ident_new(Ident::new("a".to_string())),
                                 Opcode::Sub,
-                                Expr::num_new(1.0, "1.0")
+                                Expr::num_new(1, "1")
                             )
                         ]
                     )
@@ -219,7 +219,7 @@ mod tests {
                         vec![
                             TypedExpr::num_sub_new(
                                 TypedExpr::num_ident_new(TypedIdent::new("a".to_string())),
-                                TypedExpr::num_expr_new(1.0, "1.0".to_string()),
+                                TypedExpr::num_expr_new(1, "1".to_string()),
                             ),
                         ]
                     )

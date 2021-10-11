@@ -70,7 +70,7 @@ Term: Expr = {
 }
 
 Num: Expr = {
-   r"[0-9]+\.?[0-9]*" => Expr::num_new(<>.parse::<f32>().unwrap(), <>),
+   r"[0-9]+" => Expr::num_new(<>.parse::<i64>().unwrap(), <>),
 }
 
 Bool: bool = {

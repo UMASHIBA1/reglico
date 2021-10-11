@@ -45,14 +45,14 @@ mod tests {
                 None,
                 Some(TypedExpr::NumExpr(
                     TypedAstType::Number,
-                    TypedNumber::new(0.0, "0.0".to_string()),
+                    TypedNumber::new(0, "0".to_string()),
                 )),
             ),
         )];
 
         let rust_code = ToRust::to_rust(typed_stmts, None);
 
-        let expected_rust_code = "let tmp1=0.0;";
+        let expected_rust_code = "let tmp1=0;";
 
         assert_eq!(rust_code, expected_rust_code)
     }
@@ -65,14 +65,14 @@ mod tests {
                 Some(TypeFlag::NumberType),
                 Some(TypedExpr::NumExpr(
                     TypedAstType::Number,
-                    TypedNumber::new(0.0, "0.0".to_string()),
+                    TypedNumber::new(0, "0".to_string()),
                 )),
             ),
         )];
 
         let rust_code = ToRust::to_rust(typed_stmts, None);
 
-        let expected_rust_code = "let tmp1:f32=0.0;";
+        let expected_rust_code = "let tmp1:i64=0;";
 
         assert_eq!(rust_code, expected_rust_code);
     }

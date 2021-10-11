@@ -18,7 +18,7 @@ impl ToTs {
                 arg.get_name(),
                 Some(CanAssignObj::TypedExpr(TypedExpr::NumExpr(
                     TypedAstType::Number,
-                    TypedNumber::new(0.0, "0.0".to_string()),
+                    TypedNumber::new(0, "0".to_string()),
                 ))),
             );
         }
@@ -112,7 +112,7 @@ mod tests {
                 TypedFuncArg::new(TypedIdent::new("a".to_string()), TypeFlag::NumberType),
                 TypedFuncArg::new(TypedIdent::new("b".to_string()), TypeFlag::NumberType),
             ],
-            vec![TypedStmt::ExprStmt(TypedExpr::num_expr_new(1.0, "1.0".to_string()))],
+            vec![TypedStmt::ExprStmt(TypedExpr::num_expr_new(1, "1".to_string()))],
             TypedAstType::Void
         ))];
 
@@ -128,7 +128,7 @@ mod tests {
         let typed_stmts = vec![TypedStmt::Func(TypedFunc::new(
             TypedIdent::new("add".to_string()),
             vec![],
-            vec![TypedStmt::ExprStmt(TypedExpr::num_expr_new(1.0, "1.0".to_string()))],
+            vec![TypedStmt::ExprStmt(TypedExpr::num_expr_new(1, "1".to_string()))],
             TypedAstType::Void
         ))];
 

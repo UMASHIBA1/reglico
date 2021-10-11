@@ -8,12 +8,12 @@ mod tests {
         let typed_stmts = vec![TypedStmt::expr_new(TypedExpr::call_expr_new(
             TypedAstType::Void,
             TypedIdent::new("console_log".to_string()),
-            vec![TypedExpr::num_expr_new(1.0, "1.0".to_string())]
+            vec![TypedExpr::num_expr_new(1, "1".to_string())]
         ))];
 
         let rust_code = ToRust::to_rust(typed_stmts, None);
 
-        let expected_rust_code = "console_log(1.0);";
+        let expected_rust_code = "console_log(1);";
 
         assert_eq!(rust_code, expected_rust_code);
 

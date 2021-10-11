@@ -9,7 +9,7 @@ mod tests {
         let stmts = vec![
             Stmt::expr_new(Expr::call_new(
                 Ident::new("console_log".to_string()),
-                vec![Expr::num_new(1.0, "1.0")],
+                vec![Expr::num_new(1, "1")],
             )),
         ];
 
@@ -21,7 +21,7 @@ mod tests {
                 TypedCallExpr::new(
                     TypedIdent::new("console_log".to_string()),
                     vec![
-                        TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(1.0, "1.0".to_string()))
+                        TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(1, "1".to_string()))
                     ],
                 ),
             )),
