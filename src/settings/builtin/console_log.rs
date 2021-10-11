@@ -13,7 +13,7 @@ macro_rules! console_log {
     ($($t:tt)*) => (log(&format_args!($($t)*).to_string()))
 }
 
-fn console_log(value: f32) {
+fn console_log(value: i64) {
     console_log!(\"{}\", value);
 }
 ";

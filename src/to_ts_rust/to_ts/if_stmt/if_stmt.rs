@@ -43,7 +43,7 @@ mod tests {
         let typed_stmts = vec![TypedStmt::if_stmt_new(
             TypedExpr::bool_expr_new(true),
             TypedBlockBox::new(
-                vec![TypedStmt::expr_new(TypedExpr::num_expr_new(1.0, "1.0".to_string()))],
+                vec![TypedStmt::expr_new(TypedExpr::num_expr_new(1, "1".to_string()))],
                 TypedAstType::Void
             ),
             None,
@@ -63,11 +63,11 @@ mod tests {
         let typed_stmts = vec![TypedStmt::if_stmt_new(
             TypedExpr::bool_expr_new(true),
             TypedBlockBox::new(vec![TypedStmt::expr_new(TypedExpr::num_add_new(
-                TypedExpr::num_expr_new(1.0, "1.0".to_string()),
-                TypedExpr::num_expr_new(2.0, "2.0".to_string())
+                TypedExpr::num_expr_new(1, "1".to_string()),
+                TypedExpr::num_expr_new(2, "2".to_string())
             ))], TypedAstType::Void),
             Some(TypedCanElseStmt::block_box_new(
-                vec![TypedStmt::expr_new(TypedExpr::num_expr_new(1.0, "1.0".to_string()))],
+                vec![TypedStmt::expr_new(TypedExpr::num_expr_new(1, "1".to_string()))],
                 TypedAstType::Void
             )),
             TypedAstType::Void
@@ -87,12 +87,12 @@ mod tests {
         let typed_stmts = vec![TypedStmt::if_stmt_new(
             TypedExpr::bool_expr_new(true),
             TypedBlockBox::new(vec![TypedStmt::expr_new(TypedExpr::num_add_new(
-                TypedExpr::num_expr_new(1.0, "1.0".to_string()),
-                TypedExpr::num_expr_new(2.0, "2.0".to_string())
+                TypedExpr::num_expr_new(1, "1".to_string()),
+                TypedExpr::num_expr_new(2, "2".to_string())
             ))], TypedAstType::Void),
             Some(TypedCanElseStmt::if_stmt_new(
                 TypedExpr::bool_expr_new(true),
-                TypedBlockBox::new(vec![TypedStmt::expr_new(TypedExpr::num_expr_new(1.0, "1.0".to_string()))], TypedAstType::Void),
+                TypedBlockBox::new(vec![TypedStmt::expr_new(TypedExpr::num_expr_new(1, "1".to_string()))], TypedAstType::Void),
                 None,
                 TypedAstType::Void
             )),

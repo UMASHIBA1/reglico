@@ -19,7 +19,7 @@ impl ToRust {
                 arg.get_name(),
                 Some(CanAssignObj::TypedExpr(
                     // NOTE: expr_to_rust関数の変数参照を騙すために0を入れてます
-                    TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(0.0, "0.0".to_string())),
+                    TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(0, "0".to_string())),
                 )),
             );
         }
@@ -101,7 +101,7 @@ mod tests {
 
         let rust_code = ToRust::to_rust(typed_stmts, None);
 
-        let expected_rust_code = "fn add(a:f32,b:f32)->f32{return a+b;}";
+        let expected_rust_code = "fn add(a:i64,b:i64)->i64{return a+b;}";
 
         assert_eq!(rust_code, expected_rust_code);
     }

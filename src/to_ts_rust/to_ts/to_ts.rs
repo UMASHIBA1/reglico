@@ -63,7 +63,7 @@ mod tests {
     #[test]
     fn test_return_stmt() {
         let typed_stmts = vec![TypedStmt::ReturnStmt(TypedReturnStmt::new(
-            TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(0.0, "0.0".to_string())),
+            TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(0, "0".to_string())),
         ))];
 
         let ts_code = ToTs::to_ts(typed_stmts, None);
@@ -105,8 +105,8 @@ mod tests {
                     TypedCallExpr::new(
                         TypedIdent::new("add".to_string()),
                         vec![
-                            TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(1.0, "1.0".to_string())),
-                            TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(2.0, "2.0".to_string())),
+                            TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(1, "1".to_string())),
+                            TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(2, "2".to_string())),
                         ],
                     ),
                 )),

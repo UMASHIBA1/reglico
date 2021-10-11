@@ -8,7 +8,7 @@ mod tests {
         let typed_stmts = vec![TypedStmt::expr_new(TypedExpr::call_expr_new(
             TypedAstType::Void,
             TypedIdent::new("console_log".to_string()),
-            vec![TypedExpr::num_expr_new(1.0, "1.0".to_string())]
+            vec![TypedExpr::num_expr_new(1, "1".to_string())]
         ))];
 
         let ts_code = ToTs::to_ts(typed_stmts, None);
