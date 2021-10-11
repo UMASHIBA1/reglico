@@ -1,1 +1,1 @@
-(()=>{"use strict";const o=s=>s<=1?s:o(s-1)+o(s-2);var s;s=o(40),console.log(s)})();
+(()=>{"use strict";const o=o=>{console.log(o)},c=()=>performance.now(),e=o=>o<=1?o:e(o-1)+e(o-2);o(c()),o(e(40)),o(c())})();

@@ -30,4 +30,29 @@ mod tests {
         assert_eq!(typed_stmts, expected_typed_stmts)
     }
 
+
+    #[test]
+    fn test_inference_performance_now_call() {
+        let stmts = vec![
+            Stmt::expr_new(Expr::call_new(
+                Ident::new("performance_now".to_string()),
+                vec![],
+            )),
+        ];
+
+        let typed_stmts = type_parser(stmts);
+
+        let expected_typed_stmts = vec![
+            TypedStmt::ExprStmt(TypedExpr::CallExpr(
+                TypedAstType::Number,
+                TypedCallExpr::new(
+                    TypedIdent::new("performance_now".to_string()),
+                    vec![],
+                ),
+            )),
+        ];
+
+        assert_eq!(typed_stmts, expected_typed_stmts)
+    }
+
 }
