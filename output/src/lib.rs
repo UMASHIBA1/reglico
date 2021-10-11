@@ -17,6 +17,16 @@ macro_rules! console_log {
 fn console_log(value: f32) {
     console_log!("{}", value);
 }
-fn fib(n:f32)->f32{if n<=1.0 {return n;}return fib(n-1.0)+fib(n-2.0);}console_log(fib(40.0));
+
+fn performance_now() -> f32 {
+    let window = web_sys::window().expect("should have a window in this context");
+    let performance = window
+        .performance()
+        .expect("performance should be available");
+
+    let now_f32 = performance.now() as f32;
+    now_f32
+}
+fn fib(n:f32)->f32{if n<=1.0 {return n;}return fib(n-1.0)+fib(n-2.0);}console_log(performance_now());console_log(fib(40.0));console_log(performance_now());
     Ok(())
     }

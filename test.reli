@@ -5,4 +5,6 @@ fn fib(n: number) {
   return fib(n - 1) + fib(n - 2);
 }
 
+console_log(performance_now());
 console_log(fib(40));
+console_log(performance_now());

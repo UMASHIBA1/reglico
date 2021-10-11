@@ -15,6 +15,7 @@ crate-type = ["cdylib"]
 # This makes the compiled code faster and smaller, but it makes compiling slower,
 # so it's only enabled in release mode.
 lto = true
+opt-level="s"
 
 [features]
 # If you uncomment this line, it will enable `wee_alloc`:
@@ -34,7 +35,12 @@ wee_alloc = { version = "0.4.2", optional = true }
 # like the DOM.
 [dependencies.web-sys]
 version = "0.3.22"
-features = ["console"]
+features = [
+    "console",
+    "Window",
+    "Performance",
+    "PerformanceTiming"
+]
 
 # The `console_error_panic_hook` crate provides better debugging of panics by
 # logging them with `console.error`. This is great for development, but requires
@@ -49,3 +55,4 @@ wasm-bindgen-test = "0.2.45"
 futures = "0.1.27"
 js-sys = "0.3.22"
 wasm-bindgen-futures = "0.3.22"
+
