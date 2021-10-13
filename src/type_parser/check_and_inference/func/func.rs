@@ -92,7 +92,7 @@ impl TypeCheckAndInference {
             TypedAstType::Func(arg_typed_ast_type, Box::new(return_typed_ast_type.clone())),
         );
 
-        let mut func_stmts =
+        let func_stmts =
             TypeCheckAndInference::check_and_inference(stmts, Some(&func_type_env));
 
         TypedFunc::new(name, typed_args, func_stmts, return_typed_ast_type)
