@@ -61,9 +61,6 @@ impl ToRust {
             TypedExpr::NumMulExpr(_, l, r) => {
                 format!("{}*{}", self.expr_to_rust(*l), self.expr_to_rust(*r))
             }
-            TypedExpr::NumDivExpr(_, l, r) => {
-                format!("{}/{}", self.expr_to_rust(*l), self.expr_to_rust(*r))
-            },
             TypedExpr::NumLessThanOrEqualExpr(_, l ,r) => {
                 format!("{}<={}", self.expr_to_rust(*l), self.expr_to_rust(*r))
             }
@@ -371,27 +368,6 @@ mod tests {
         let rust_code = ToRust::to_rust(typed_stmts, None);
 
         let expected_rust_code = "2*1;";
-
-        assert_eq!(rust_code, expected_rust_code);
-    }
-
-    #[test]
-    fn test_num_div_expr_stmt() {
-        let typed_stmts = vec![TypedStmt::ExprStmt(TypedExpr::NumDivExpr(
-            TypedAstType::Number,
-            Box::new(TypedExpr::NumExpr(
-                TypedAstType::Number,
-                TypedNumber::new(4, "4".to_string()),
-            )),
-            Box::new(TypedExpr::NumExpr(
-                TypedAstType::Number,
-                TypedNumber::new(2, "2".to_string()),
-            )),
-        ))];
-
-        let rust_code = ToRust::to_rust(typed_stmts, None);
-
-        let expected_rust_code = "4/2;";
 
         assert_eq!(rust_code, expected_rust_code);
     }
