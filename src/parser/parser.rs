@@ -228,7 +228,7 @@ mod test {
 
         assert_eq!(expr, expected_expr);
     }
-    
+
     #[test]
     fn test_if_else_block_stmt() {
         lalrpop_mod!(pub reglico);

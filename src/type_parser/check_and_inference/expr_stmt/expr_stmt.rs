@@ -81,11 +81,6 @@ impl TypeCheckAndInference {
                 Box::new(self.check_and_inference_expr(l)),
                 Box::new(self.check_and_inference_expr(r)),
             ),
-            (l, Opcode::Div, r) => TypedExpr::NumDivExpr(
-                TypedAstType::Number,
-                Box::new(self.check_and_inference_expr(l)),
-                Box::new(self.check_and_inference_expr(r)),
-            ),
             (l, Opcode::LessThanOrEqual, r) => TypedExpr::NumLessThanOrEqualExpr(
                 TypedAstType::Bool,
                 Box::new(self.check_and_inference_expr(l)),
@@ -238,31 +233,6 @@ mod tests {
         let typed_stmts = type_parser(stmts);
 
         let expected_typed_stmts = vec![TypedStmt::ExprStmt(TypedExpr::NumMulExpr(
-            TypedAstType::Number,
-            Box::new(TypedExpr::NumExpr(
-                TypedAstType::Number,
-                TypedNumber::new(1, "1".to_string()),
-            )),
-            Box::new(TypedExpr::NumExpr(
-                TypedAstType::Number,
-                TypedNumber::new(2, "2".to_string()),
-            )),
-        ))];
-
-        assert_eq!(typed_stmts, expected_typed_stmts)
-    }
-
-    #[test]
-    fn test_inference_num_div_expr_stmt() {
-        let stmts = vec![Stmt::expr_new(Expr::op_new(
-            Expr::num_new(1, "1"),
-            Opcode::Div,
-            Expr::num_new(2, "2"),
-        ))];
-
-        let typed_stmts = type_parser(stmts);
-
-        let expected_typed_stmts = vec![TypedStmt::ExprStmt(TypedExpr::NumDivExpr(
             TypedAstType::Number,
             Box::new(TypedExpr::NumExpr(
                 TypedAstType::Number,
