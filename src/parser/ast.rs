@@ -154,7 +154,7 @@ pub struct Number {
 
 impl Number {
     pub fn new(num: i64, raw_num_str: &str) -> Number {
-        let mut raw_num_string = raw_num_str.to_string();
+        let raw_num_string = raw_num_str.to_string();
         Number { num,  raw_num_string}
     }
 
