@@ -78,20 +78,6 @@ mod test {
         assert_eq!(expr, expected_expr);
     }
 
-    #[test]
-    fn test_op_div() {
-        lalrpop_mod!(pub reglico);
-
-        let expr = parser("4 / 2;");
-
-        let expected_expr = vec![Stmt::expr_new(Expr::op_new(
-            Expr::num_new(4, "4"),
-            Opcode::Div,
-            Expr::num_new(2, "2"),
-        ))];
-
-        assert_eq!(expr, expected_expr);
-    }
 
     #[test]
     fn test_op_less_than_or_equal() {
@@ -199,36 +185,6 @@ mod test {
     }
 
     #[test]
-    fn test_op_add_and_div() {
-        lalrpop_mod!(pub reglico);
-
-        let expr = parser("6 + 4 / 2;");
-
-        let expected_expr = vec![Stmt::expr_new(Expr::op_new(
-            Expr::num_new(6, "6"),
-            Opcode::Add,
-            Expr::op_new(Expr::num_new(4, "4"), Opcode::Div, Expr::num_new(2, "2")),
-        ))];
-
-        assert_eq!(expr, expected_expr);
-    }
-
-    #[test]
-    fn test_op_div_and_add() {
-        lalrpop_mod!(pub reglico);
-
-        let expr = parser("6 / 2 + 3;");
-
-        let expected_expr = vec![Stmt::expr_new(Expr::op_new(
-            Expr::op_new(Expr::num_new(6, "6"), Opcode::Div, Expr::num_new(2, "2")),
-            Opcode::Add,
-            Expr::num_new(3, "3"),
-        ))];
-
-        assert_eq!(expr, expected_expr);
-    }
-
-    #[test]
     fn test_op_sub_and_mul() {
         lalrpop_mod!(pub reglico);
 
@@ -259,36 +215,6 @@ mod test {
     }
 
     #[test]
-    fn test_op_sub_and_div() {
-        lalrpop_mod!(pub reglico);
-
-        let expr = parser("6 - 4 / 2;");
-
-        let expected_expr = vec![Stmt::expr_new(Expr::op_new(
-            Expr::num_new(6, "6"),
-            Opcode::Sub,
-            Expr::op_new(Expr::num_new(4, "4"), Opcode::Div, Expr::num_new(2, "2")),
-        ))];
-
-        assert_eq!(expr, expected_expr);
-    }
-
-    #[test]
-    fn test_op_div_and_sub() {
-        lalrpop_mod!(pub reglico);
-
-        let expr = parser("8 / 2 - 3;");
-
-        let expected_expr = vec![Stmt::expr_new(Expr::op_new(
-            Expr::op_new(Expr::num_new(8, "8"), Opcode::Div, Expr::num_new(2, "2")),
-            Opcode::Sub,
-            Expr::num_new(3, "3"),
-        ))];
-
-        assert_eq!(expr, expected_expr);
-    }
-
-    #[test]
     fn test_op_mul_and_mul() {
         lalrpop_mod!(pub reglico);
 
@@ -298,51 +224,6 @@ mod test {
             Expr::op_new(Expr::num_new(8, "8"), Opcode::Mul, Expr::num_new(2, "2")),
             Opcode::Mul,
             Expr::num_new(3, "3"),
-        ))];
-
-        assert_eq!(expr, expected_expr);
-    }
-
-    #[test]
-    fn test_op_mul_and_div() {
-        lalrpop_mod!(pub reglico);
-
-        let expr = parser("3 * 2 / 3;");
-
-        let expected_expr = vec![Stmt::expr_new(Expr::op_new(
-            Expr::op_new(Expr::num_new(3, "3"), Opcode::Mul, Expr::num_new(2, "2")),
-            Opcode::Div,
-            Expr::num_new(3, "3"),
-        ))];
-
-        assert_eq!(expr, expected_expr);
-    }
-
-    #[test]
-    fn test_op_div_and_mul() {
-        lalrpop_mod!(pub reglico);
-
-        let expr = parser("6 / 2 * 3;");
-
-        let expected_expr = vec![Stmt::expr_new(Expr::op_new(
-            Expr::op_new(Expr::num_new(6, "6"), Opcode::Div, Expr::num_new(2, "2")),
-            Opcode::Mul,
-            Expr::num_new(3, "3"),
-        ))];
-
-        assert_eq!(expr, expected_expr);
-    }
-
-    #[test]
-    fn test_op_div_and_div() {
-        lalrpop_mod!(pub reglico);
-
-        let expr = parser("8 / 2 / 4;");
-
-        let expected_expr = vec![Stmt::expr_new(Expr::op_new(
-            Expr::op_new(Expr::num_new(8, "8"), Opcode::Div, Expr::num_new(2, "2")),
-            Opcode::Div,
-            Expr::num_new(4, "4"),
         ))];
 
         assert_eq!(expr, expected_expr);

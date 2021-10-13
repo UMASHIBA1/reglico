@@ -137,7 +137,6 @@ pub enum TypedExpr {
     NumAddExpr(TypedAstType, Box<TypedExpr>, Box<TypedExpr>), // 1 + 2
     NumSubExpr(TypedAstType, Box<TypedExpr>, Box<TypedExpr>), // 2 - 1
     NumMulExpr(TypedAstType, Box<TypedExpr>, Box<TypedExpr>), // 2 * 2
-    NumDivExpr(TypedAstType, Box<TypedExpr>, Box<TypedExpr>), // 4 / 2
     NumLessThanOrEqualExpr(TypedAstType, Box<TypedExpr>, Box<TypedExpr>), // 1 <= 2
 }
 
@@ -156,7 +155,6 @@ impl TypedExpr {
             TypedExpr::NumAddExpr(typed_ast_type, ..)
             | TypedExpr::NumSubExpr(typed_ast_type, ..)
             | TypedExpr::NumMulExpr(typed_ast_type, ..)
-            | TypedExpr::NumDivExpr(typed_ast_type, ..)
             | TypedExpr::NumLessThanOrEqualExpr(typed_ast_type, ..) => typed_ast_type.clone(),
         }
     }
@@ -179,10 +177,6 @@ impl TypedExpr {
 
     pub fn num_mul_new(left: TypedExpr, right: TypedExpr) -> TypedExpr {
         TypedExpr::NumMulExpr(TypedAstType::Number, Box::new(left), Box::new(right))
-    }
-
-    pub fn num_div_new(left: TypedExpr, right: TypedExpr) -> TypedExpr {
-        TypedExpr::NumDivExpr(TypedAstType::Number, Box::new(left), Box::new(right))
     }
 
     pub fn num_block_new(stmts: Vec<TypedStmt>) -> TypedExpr {

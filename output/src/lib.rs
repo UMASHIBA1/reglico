@@ -14,19 +14,19 @@ macro_rules! console_log {
     ($($t:tt)*) => (log(&format_args!($($t)*).to_string()))
 }
 
-fn console_log(value: f32) {
+fn console_log(value: i64) {
     console_log!("{}", value);
 }
 
-fn performance_now() -> f32 {
+fn performance_now() -> i64 {
     let window = web_sys::window().expect("should have a window in this context");
     let performance = window
         .performance()
         .expect("performance should be available");
 
-    let now_f32 = performance.now() as f32;
-    now_f32
+    let now_i64 = performance.now() as i64;
+    now_i64
 }
-fn fib(n:f32)->f32{if n<=1.0 {return n;}return fib(n-1.0)+fib(n-2.0);}console_log(performance_now());console_log(fib(40.0));console_log(performance_now());
+fn fib(n:i64)->i64{if n<=1 {return n;}return fib(n-1)+fib(n-2);}console_log(performance_now());console_log(fib(40));console_log(performance_now());
     Ok(())
     }
