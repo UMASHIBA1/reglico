@@ -39,7 +39,7 @@ fn main() {
     let mut ts_file = fs::File::create("output/ts_output/output.ts").expect("can't create output/output.ts");
     let mut rust_file = fs::File::create("output/src/lib.rs").expect("can't create output/output.rs");
 
-    ts_file.write_all(ts_code.as_bytes());
-    rust_file.write_all(rust_code.as_bytes());
+    ts_file.write_all(ts_code.as_bytes()).expect("can't write ts code");
+    rust_file.write_all(rust_code.as_bytes()).expect("can't write rust code");
 
 }
