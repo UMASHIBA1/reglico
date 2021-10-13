@@ -174,6 +174,7 @@ impl TypedExpr {
         TypedExpr::NumSubExpr(TypedAstType::Number, Box::new(left), Box::new(right))
     }
 
+    #[allow(dead_code)]
     pub fn num_mul_new(left: TypedExpr, right: TypedExpr) -> TypedExpr {
         TypedExpr::NumMulExpr(TypedAstType::Number, Box::new(left), Box::new(right))
     }
@@ -198,6 +199,7 @@ impl TypedExpr {
         TypedExpr::NumIdentExpr(TypedAstType::Number, ident)
     }
 
+    #[allow(dead_code)]
     pub fn bool_ident_new(ident: TypedIdent) -> TypedExpr {
         TypedExpr::BoolIdentExpr(TypedAstType::Bool, ident)
     }
@@ -388,6 +390,8 @@ pub enum TypedStmt {
 }
 
 impl TypedStmt {
+
+    #[allow(dead_code)]
     pub fn var_new(
         name: TypedIdent,
         type_name: Option<TypeFlag>,
@@ -404,6 +408,7 @@ impl TypedStmt {
         )
     }
 
+    #[allow(dead_code)]
     pub fn func_new(
         name: TypedIdent,
         args: Vec<TypedFuncArg>,
