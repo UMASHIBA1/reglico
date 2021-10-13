@@ -464,7 +464,7 @@ mod test {
     fn test_number_type_is_not_stmt() {
         lalrpop_mod!(pub reglico);
 
-        let result = parser("number;");
+        parser("number;");
 
     }
 
@@ -473,7 +473,7 @@ mod test {
     fn test_ident_with_no_semicolon() {
         lalrpop_mod!(pub reglico);
 
-        let result = parser("tmp1");
+        parser("tmp1");
 
     }
 
@@ -482,7 +482,7 @@ mod test {
     fn test_call_with_no_semicolon() {
         lalrpop_mod!(pub reglico);
 
-        let result = parser("add(1,2)");
+        parser("add(1,2)");
 
     }
 
@@ -491,7 +491,7 @@ mod test {
     fn test_op_with_no_semicolon() {
         lalrpop_mod!(pub reglico);
 
-        let result = parser("1 + 2");
+        parser("1 + 2");
 
     }
 
@@ -500,7 +500,7 @@ mod test {
     fn test_num_with_no_semicolon() {
         lalrpop_mod!(pub reglico);
 
-        let result = parser("1");
+        parser("1");
 
     }
 
@@ -678,7 +678,7 @@ mod test {
     fn test_add_func_with_semicolon() {
         lalrpop_mod!(pub reglico);
 
-        let result = parser(
+        parser(
                 "
             fn add(a: number, b: number) {
                 return a + b;
