@@ -1,5 +1,4 @@
 use std::hash::Hash;
-use crate::type_parser::typed_ast::TypedCanElseStmt::BlockBox;
 
 #[derive(Debug, Eq, Hash, PartialEq, Clone)]
 pub struct TypedIdent {

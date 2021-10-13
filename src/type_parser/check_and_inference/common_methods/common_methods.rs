@@ -1,6 +1,6 @@
 use crate::parser::ast::{Ident, Types, BlockBox};
 use crate::type_parser::check_and_inference::type_check_and_inference_struct::TypeCheckAndInference;
-use crate::type_parser::typed_ast::{TypeFlag, TypedAstType, TypedIdent, TypedBlockBox, TypedStmt, TypedReturnStmt};
+use crate::type_parser::typed_ast::{TypeFlag, TypedAstType, TypedIdent, TypedBlockBox, TypedStmt};
 
 impl TypeCheckAndInference {
     pub fn convert_ident_to_typed_ident(&self, ident: Ident) -> TypedIdent {
@@ -18,10 +18,6 @@ impl TypeCheckAndInference {
         match type_flag {
             Types::NumberType => TypedAstType::Number,
             Types::BoolType => TypedAstType::Bool,
-            _ => TypedAstType::Func(
-                vec![TypedAstType::Number],
-                Box::new(TypedAstType::Number),
-            ), // TODO: 適当に書いた、後で直す
         }
     }
 

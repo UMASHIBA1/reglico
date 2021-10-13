@@ -2,7 +2,7 @@
 mod tests {
     use crate::parser::ast::{Stmt, Expr, Ident};
     use crate::type_parser::type_parser::type_parser;
-    use crate::type_parser::typed_ast::{TypedStmt, TypedFunc, TypedIdent, TypedFuncArg, TypedReturnStmt, TypedExpr, TypeFlag, TypedAstType, TypedCallExpr, TypedNumber};
+    use crate::type_parser::typed_ast::{TypedStmt, TypedIdent, TypedExpr, TypedAstType, TypedCallExpr, TypedNumber};
 
     #[test]
     fn test_inference_console_log_call() {

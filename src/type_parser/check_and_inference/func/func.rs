@@ -1,7 +1,7 @@
 use crate::parser::ast::{Func, Stmt};
 use crate::type_parser::check_and_inference::type_check_and_inference_struct::TypeCheckAndInference;
 use crate::type_parser::typed_ast::{
-    TypedAstType, TypedFunc, TypedFuncArg, TypedReturnStmt, TypedStmt,
+    TypedAstType, TypedFunc, TypedFuncArg, TypedStmt,
 };
 
 impl TypeCheckAndInference {
@@ -103,7 +103,7 @@ impl TypeCheckAndInference {
 mod tests {
     use crate::parser::ast::{Expr, FuncArg, Ident, Opcode, ReturnStmt, Stmt, Types, BlockBox, ExprStmt};
     use crate::type_parser::type_parser::type_parser;
-    use crate::type_parser::typed_ast::{TypeFlag, TypedAstType, TypedExpr, TypedFunc, TypedFuncArg, TypedIdent, TypedReturnStmt, TypedStmt, TypedBlockBox};
+    use crate::type_parser::typed_ast::{TypeFlag, TypedAstType, TypedExpr, TypedFunc, TypedFuncArg, TypedIdent, TypedStmt, TypedBlockBox};
 
     #[test]
     fn test_inference_func() {

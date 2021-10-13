@@ -30,9 +30,9 @@ impl TypeCheckAndInference {
 
 #[cfg(test)]
 mod tests {
-    use crate::parser::ast::{Stmt, Expr, BlockBox, Number, Opcode, CanElseStmt};
+    use crate::parser::ast::{Stmt, Expr, BlockBox, Opcode, CanElseStmt};
     use crate::type_parser::type_parser::type_parser;
-    use crate::type_parser::typed_ast::{TypedStmt, TypedExpr, TypedBlockBox, TypedCanElseStmt, TypedAstType, TypedIfStmt};
+    use crate::type_parser::typed_ast::{TypedStmt, TypedExpr, TypedBlockBox, TypedCanElseStmt, TypedAstType};
 
     #[test]
     fn test_inference_if_else_block_stmt() {

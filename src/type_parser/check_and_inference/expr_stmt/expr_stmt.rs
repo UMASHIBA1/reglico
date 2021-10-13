@@ -1,4 +1,4 @@
-use crate::parser::ast::{CallExpr, Expr, Ident, Opcode, Operation, BlockExpr, Stmt};
+use crate::parser::ast::{CallExpr, Expr, Ident, Opcode, Operation, BlockExpr};
 use crate::type_parser::check_and_inference::type_check_and_inference_struct::TypeCheckAndInference;
 use crate::type_parser::typed_ast::{TypedAstType, TypedCallExpr, TypedExpr, TypedNumber, TypedBool, TypedStmt, TypedBlock};
 
@@ -140,9 +140,9 @@ impl TypeCheckAndInference {
 
 #[cfg(test)]
 mod tests {
-    use crate::parser::ast::{Expr, FuncArg, Ident, Opcode, ReturnStmt, Stmt, Types, BlockExpr};
+    use crate::parser::ast::{Expr, FuncArg, Ident, Opcode, ReturnStmt, Stmt, Types};
     use crate::type_parser::type_parser::type_parser;
-    use crate::type_parser::typed_ast::{TypeFlag, TypedAstType, TypedCallExpr, TypedExpr, TypedFunc, TypedFuncArg, TypedIdent, TypedNumber, TypedReturnStmt, TypedStmt, TypedVariableDeclaration, TypedBool};
+    use crate::type_parser::typed_ast::{TypeFlag, TypedAstType, TypedCallExpr, TypedExpr, TypedFunc, TypedFuncArg, TypedIdent, TypedNumber, TypedStmt, TypedVariableDeclaration, TypedBool};
 
     #[test]
     fn test_inference_num_expr_stmt() {

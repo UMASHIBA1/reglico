@@ -69,7 +69,7 @@ impl ToTs {
 mod tests {
     use crate::to_ts_rust::to_ts::to_ts::ToTs;
     use crate::type_parser::typed_ast::{
-        TypeFlag, TypedAstType, TypedExpr, TypedFunc, TypedFuncArg, TypedIdent, 
+        TypeFlag, TypedAstType, TypedExpr, TypedFunc, TypedFuncArg, TypedIdent,
         TypedStmt,
     };
 
