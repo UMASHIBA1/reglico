@@ -3,7 +3,7 @@ use crate::type_parser::typed_ast::{TypedAstType, TypedIdent, TypedFuncArg, Type
 use crate::to_ts_rust::common_struct::CanAssignObj;
 use once_cell::sync::Lazy;
 
-const rust_func_def: &str = "
+const RUST_FUNC_DEF: &str = "
 #[wasm_bindgen]
 extern \"C\" {
     #[wasm_bindgen(js_namespace = console)]
@@ -18,16 +18,16 @@ fn console_log(value: i64) {
 }
 ";
 
-const ts_func_def: &str = "
+const TS_FUNC_DEF: &str = "
 const console_log = (value: number) => {
     console.log(value);
 };
 ";
 
-pub const console_log: Lazy<BuiltInFunc> = Lazy::new(|| BuiltInFunc::new(
+pub const CONSOLE_LOG: Lazy<BuiltInFunc> = Lazy::new(|| BuiltInFunc::new(
     "console_log",
-    rust_func_def,
-    ts_func_def,
+    RUST_FUNC_DEF,
+    TS_FUNC_DEF,
     TypedAstType::Func(vec![TypedAstType::Number], Box::new(TypedAstType::Void)),
     CanAssignObj::TypedFunc(TypedFunc::new(
         TypedIdent::new("console_log".to_string()),

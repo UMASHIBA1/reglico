@@ -1,8 +1,8 @@
-use crate::type_parser::typed_ast::{TypedAstType, TypedFunc, TypedIdent, TypedFuncArg, TypeFlag, TypedStmt};
+use crate::type_parser::typed_ast::{TypedAstType};
 use crate::to_ts_rust::common_struct::CanAssignObj;
-use crate::settings::builtin::console_log::console_log;
+use crate::settings::builtin::console_log::CONSOLE_LOG;
 use once_cell::sync::Lazy;
-use crate::settings::builtin::performance_now::performance_now;
+use crate::settings::builtin::performance_now::PERFORMANCE_NOW;
 
 pub struct BuiltInFunc<'a> {
     name: &'a str,
@@ -47,6 +47,6 @@ impl BuiltInFunc<'_> {
 
 // TODO: union型ができたらprint関数でnumber以外も受け取れるようにする
 pub const BUILTIN_FUNCS: [Lazy<BuiltInFunc>; 2] = [
-    console_log,
-    performance_now,
+    CONSOLE_LOG,
+    PERFORMANCE_NOW,
 ];
