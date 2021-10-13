@@ -1,5 +1,5 @@
 use crate::to_ts_rust::to_ts::to_ts::ToTs;
-use crate::type_parser::typed_ast::{TypeFlag, TypedAstType, TypedIdent, TypedBlockBox, TypedStmt};
+use crate::type_parser::typed_ast::{TypeFlag, TypedAstType, TypedIdent, TypedBlockBox};
 
 impl ToTs {
     pub fn type_flag_to_ts(&self, type_flag: TypeFlag) -> String {
