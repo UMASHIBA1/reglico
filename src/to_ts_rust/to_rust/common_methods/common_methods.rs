@@ -1,5 +1,5 @@
 use crate::to_ts_rust::to_rust::to_rust::ToRust;
-use crate::type_parser::typed_ast::{TypeFlag, TypedAstType, TypedIdent, TypedBlockBox, TypedStmt};
+use crate::type_parser::typed_ast::{TypeFlag, TypedAstType, TypedIdent, TypedBlockBox};
 
 impl ToRust {
     pub fn type_flag_to_rust(&self, type_flag: TypeFlag) -> String {

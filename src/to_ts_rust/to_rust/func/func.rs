@@ -1,6 +1,6 @@
 use crate::to_ts_rust::common_struct::CanAssignObj;
 use crate::to_ts_rust::to_rust::to_rust::ToRust;
-use crate::type_parser::typed_ast::{TypedAstType, TypedExpr, TypedFunc, TypedNumber, TypedStmt};
+use crate::type_parser::typed_ast::{TypedAstType, TypedExpr, TypedFunc, TypedNumber};
 
 impl ToRust {
     pub fn func_to_rust(&mut self, typed_func: TypedFunc) -> String {
@@ -71,7 +71,7 @@ impl ToRust {
 mod tests {
     use crate::to_ts_rust::to_rust::to_rust::ToRust;
     use crate::type_parser::typed_ast::{
-        TypeFlag, TypedAstType, TypedExpr, TypedFunc, TypedFuncArg, TypedIdent, TypedReturnStmt,
+        TypeFlag, TypedAstType, TypedExpr, TypedFunc, TypedFuncArg, TypedIdent,
         TypedStmt,
     };
 
