@@ -61,9 +61,6 @@ impl ToTs {
             TypedExpr::NumMulExpr(_, l, r) => {
                 format!("{}*{}", self.expr_to_ts(*l), self.expr_to_ts(*r))
             }
-            TypedExpr::NumDivExpr(_, l, r) => {
-                format!("{}/{}", self.expr_to_ts(*l), self.expr_to_ts(*r))
-            },
             TypedExpr::NumLessThanOrEqualExpr(_, l, r) => {
                 format!("{}<={}", self.expr_to_ts(*l), self.expr_to_ts(*r))
             },
@@ -359,27 +356,6 @@ mod tests {
         let ts_code = ToTs::to_ts(typed_stmts, None);
 
         let expected_ts_code = "2*1;";
-
-        assert_eq!(ts_code, expected_ts_code);
-    }
-
-    #[test]
-    fn test_num_div_expr_stmt() {
-        let typed_stmts = vec![TypedStmt::ExprStmt(TypedExpr::NumDivExpr(
-            TypedAstType::Number,
-            Box::new(TypedExpr::NumExpr(
-                TypedAstType::Number,
-                TypedNumber::new(4, "4".to_string()),
-            )),
-            Box::new(TypedExpr::NumExpr(
-                TypedAstType::Number,
-                TypedNumber::new(2, "2".to_string()),
-            )),
-        ))];
-
-        let ts_code = ToTs::to_ts(typed_stmts, None);
-
-        let expected_ts_code = "4/2;";
 
         assert_eq!(ts_code, expected_ts_code);
     }
