@@ -57,7 +57,6 @@ ArithmeticOpcode: Opcode = {
 
 FactorOpcode: Opcode = {
     "*" => Opcode::Mul,
-    "/" => Opcode::Div,
 }
 
 Term: Expr = {
