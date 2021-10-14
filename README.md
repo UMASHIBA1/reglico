@@ -1,5 +1,5 @@
 # reglico
-reglico is AltJsAndWasm language. It generate rust(wasm) and typescript code from one code.
+[WIP]reglico is AltJsAndWasm language. It generate rust(wasm) and typescript code from one code.
 
 ## env
 rust env  
