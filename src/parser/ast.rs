@@ -247,10 +247,12 @@ impl Expr {
         Expr::Num(Number::new(num, raw_num_str))
     }
 
+    #[allow(dead_code)]
     pub fn call_new(func_name: Ident, args: Vec<Expr>) -> Expr {
         Expr::Call(CallExpr::new(func_name, args))
     }
 
+    #[allow(dead_code)]
     pub fn block_new(stmts: Vec<Stmt>) -> Expr {
         Expr::Block(BlockExpr::new(stmts))
     }
@@ -290,10 +292,13 @@ pub enum CanElseStmt {
 }
 
 impl CanElseStmt {
+
+    #[allow(dead_code)]
     pub fn block_box_new(stmts: Vec<Stmt>) -> CanElseStmt {
         CanElseStmt::BlockBox(BlockBox::new(stmts))
     }
 
+    #[allow(dead_code)]
     pub fn if_stmt_new(condition_expr: Expr, then_stmt: BlockBox, else_stmt: Option<CanElseStmt>) -> CanElseStmt {
         CanElseStmt::IfStmt(IfStmt::new(condition_expr, then_stmt, else_stmt))
     }
@@ -352,22 +357,27 @@ pub enum Stmt {
 }
 
 impl Stmt {
+    #[allow(dead_code)]
     pub fn var_new(name: Ident, type_name: Option<Types>, value: Option<Expr>) -> Stmt {
         Stmt::VariableDeclaration(VariableDeclaration::new(name, type_name, value))
     }
 
+    #[allow(dead_code)]
     pub fn expr_new(expr: Expr) -> Stmt {
         Stmt::ExprStmt(ExprStmt::new(expr))
     }
 
+    #[allow(dead_code)]
     pub fn func_new(name: Ident, args: Vec<FuncArg>, stmts: Vec<Stmt>) -> Stmt {
         Stmt::Func(Func::new(name, args, stmts))
     }
 
+    #[allow(dead_code)]
     pub fn return_new(expr: Expr) -> Stmt {
         Stmt::ReturnStmt(ReturnStmt::new(expr))
     }
 
+    #[allow(dead_code)]
     pub fn if_stmt(condition_expr: Expr, then_stmt: BlockBox, else_stmt: Option<CanElseStmt>) -> Stmt {
         Stmt::IfStmt(IfStmt::new(condition_expr, then_stmt, else_stmt))
     }
