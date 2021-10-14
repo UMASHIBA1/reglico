@@ -15,14 +15,17 @@ pub fn parser(reglico_code: &str) -> Vec<Stmt> {
 }
 
 mod test {
+    #[allow(unused_imports)]
     use super::super::ast;
+    #[allow(unused_imports)]
     use crate::parser::ast::{Expr, FuncArg, Ident, Opcode, ReturnStmt, Stmt, Types, BlockBox, CanElseStmt};
+    #[allow(unused_imports)]
     use lalrpop_util::lalrpop_mod;
+    #[allow(unused_imports)]
     use crate::parser::parser::parser;
 
     #[test]
     fn test_ident() {
-        lalrpop_mod!(pub reglico);
 
         let expr = parser("tmp1;");
 
@@ -35,7 +38,6 @@ mod test {
 
     #[test]
     fn test_op_add() {
-        lalrpop_mod!(pub reglico);
 
         let expr = parser("1 + 2;");
 
@@ -50,7 +52,6 @@ mod test {
 
     #[test]
     fn test_op_sub() {
-        lalrpop_mod!(pub reglico);
 
         let expr = parser("2 - 1;");
 
@@ -65,7 +66,6 @@ mod test {
 
     #[test]
     fn test_op_mul() {
-        lalrpop_mod!(pub reglico);
 
         let expr = parser("2 * 2;");
 
@@ -81,7 +81,6 @@ mod test {
 
     #[test]
     fn test_op_less_than_or_equal() {
-        lalrpop_mod!(pub reglico);
 
         let expr = parser("1 <= 2;");
 
@@ -96,7 +95,6 @@ mod test {
 
     #[test]
     fn test_op_add_and_sub() {
-        lalrpop_mod!(pub reglico);
 
         let expr = parser("4 + 2 - 3;");
 
@@ -111,7 +109,6 @@ mod test {
 
     #[test]
     fn test_op_sub_and_add() {
-        lalrpop_mod!(pub reglico);
 
         let expr = parser("4 - 2 + 3;");
 
@@ -126,7 +123,6 @@ mod test {
 
     #[test]
     fn test_op_add_and_add() {
-        lalrpop_mod!(pub reglico);
 
         let expr = parser("4 + 2 + 3;");
 
@@ -141,7 +137,6 @@ mod test {
 
     #[test]
     fn test_op_sub_and_sub() {
-        lalrpop_mod!(pub reglico);
 
         let expr = parser("6 - 2 - 3;");
 
@@ -156,7 +151,6 @@ mod test {
 
     #[test]
     fn test_op_add_and_mul() {
-        lalrpop_mod!(pub reglico);
 
         let expr = parser("6 + 2 * 3;");
 
@@ -171,7 +165,6 @@ mod test {
 
     #[test]
     fn test_op_mul_and_add() {
-        lalrpop_mod!(pub reglico);
 
         let expr = parser("6 * 2 + 3;");
 
@@ -186,7 +179,6 @@ mod test {
 
     #[test]
     fn test_op_sub_and_mul() {
-        lalrpop_mod!(pub reglico);
 
         let expr = parser("8 - 2 * 3;");
 
@@ -201,7 +193,6 @@ mod test {
 
     #[test]
     fn test_op_mul_and_sub() {
-        lalrpop_mod!(pub reglico);
 
         let expr = parser("6 * 2 - 3;");
 
@@ -216,7 +207,6 @@ mod test {
 
     #[test]
     fn test_op_mul_and_mul() {
-        lalrpop_mod!(pub reglico);
 
         let expr = parser("8 * 2 * 3;");
 
@@ -231,7 +221,6 @@ mod test {
 
     #[test]
     fn test_if_else_block_stmt() {
-        lalrpop_mod!(pub reglico);
 
         let expr = parser("if(true){1;}else{1;}");
 
@@ -248,7 +237,6 @@ mod test {
 
     #[test]
     fn test_if_elseif_stmt() {
-        lalrpop_mod!(pub reglico);
 
         let expr = parser("if(true){1;}else if(true){1;}");
 
@@ -269,7 +257,6 @@ mod test {
 
     #[test]
     fn test_if_stmt() {
-        lalrpop_mod!(pub reglico);
 
         let expr = parser("if(true){1;}");
 
@@ -286,7 +273,6 @@ mod test {
 
     #[test]
     fn test_if_elseif_else_stmt() {
-        lalrpop_mod!(pub reglico);
 
         let expr = parser("if(true){1;}else if(true){1;}else{1;}");
 
@@ -307,7 +293,6 @@ mod test {
 
     #[test]
     fn test_op_less_than_or_equal_and_arithmetic() {
-        lalrpop_mod!(pub reglico);
 
         let expr = parser("1 + 2 <= 2 * 2;");
 
@@ -322,7 +307,6 @@ mod test {
 
     #[test]
     fn test_op_less_than_or_equal_with_num_and_arithmetic() {
-        lalrpop_mod!(pub reglico);
 
         let expr = parser("2 <= 2 * 2;");
 
@@ -337,7 +321,6 @@ mod test {
 
     #[test]
     fn test_op_arithmetic_with_call() {
-        lalrpop_mod!(pub reglico);
 
         let expr = parser("add(1,2) + 3;");
 
@@ -361,7 +344,6 @@ mod test {
 
     #[test]
     fn test_op_less_than_or_equal_with_call() {
-        lalrpop_mod!(pub reglico);
 
         let expr = parser("add(1,2) <= 4;");
 
@@ -385,7 +367,6 @@ mod test {
 
     #[test]
     fn test_call() {
-        lalrpop_mod!(pub reglico);
 
         let expr = parser("add(1,2);");
 
@@ -399,7 +380,6 @@ mod test {
 
     #[test]
     fn test_block() {
-        lalrpop_mod!(pub reglico);
 
         let expr = parser("{1;};");
 
@@ -413,7 +393,6 @@ mod test {
 
     #[test]
     fn test_block_with_multi_stmts() {
-        lalrpop_mod!(pub reglico);
 
         let expr = parser("{1;return 2;};");
 
@@ -428,7 +407,6 @@ mod test {
 
     #[test]
     fn test_num() {
-        lalrpop_mod!(pub reglico);
 
         let expr = parser("1;");
 
@@ -439,7 +417,6 @@ mod test {
 
     #[test]
     fn test_bool_true() {
-        lalrpop_mod!(pub reglico);
 
         let expr = parser("true;");
 
@@ -450,7 +427,6 @@ mod test {
 
     #[test]
     fn test_bool_false() {
-        lalrpop_mod!(pub reglico);
 
         let expr = parser("false;");
 
@@ -462,7 +438,6 @@ mod test {
     #[test]
     #[should_panic]
     fn test_number_type_is_not_stmt() {
-        lalrpop_mod!(pub reglico);
 
         parser("number;");
 
@@ -471,7 +446,6 @@ mod test {
     #[test]
     #[should_panic]
     fn test_ident_with_no_semicolon() {
-        lalrpop_mod!(pub reglico);
 
         parser("tmp1");
 
@@ -480,7 +454,6 @@ mod test {
     #[test]
     #[should_panic]
     fn test_call_with_no_semicolon() {
-        lalrpop_mod!(pub reglico);
 
         parser("add(1,2)");
 
@@ -489,7 +462,6 @@ mod test {
     #[test]
     #[should_panic]
     fn test_op_with_no_semicolon() {
-        lalrpop_mod!(pub reglico);
 
         parser("1 + 2");
 
@@ -498,7 +470,6 @@ mod test {
     #[test]
     #[should_panic]
     fn test_num_with_no_semicolon() {
-        lalrpop_mod!(pub reglico);
 
         parser("1");
 
@@ -506,7 +477,6 @@ mod test {
 
     #[test]
     fn test_const_assignment_with_type() {
-        lalrpop_mod!(pub reglico);
 
         let expr = parser("const tmp1: number = 10;");
 
@@ -521,7 +491,6 @@ mod test {
 
     #[test]
     fn test_const_assignment_no_type() {
-        lalrpop_mod!(pub reglico);
 
         let expr = parser("const tmp1 = 10;");
 
@@ -536,7 +505,6 @@ mod test {
 
     #[test]
     fn test_bool_type_declaration() {
-        lalrpop_mod!(pub reglico);
 
         let expr = parser("const tmp1: bool = true;");
 
@@ -551,7 +519,6 @@ mod test {
 
     #[test]
     fn test_return_stmt() {
-        lalrpop_mod!(pub reglico);
         let expr = parser("return 1;");
 
         let expected_expr = vec![Stmt::return_new(
@@ -563,7 +530,6 @@ mod test {
 
     #[test]
     fn test_assign_ident_to_ident() {
-        lalrpop_mod!(pub reglico);
 
         let expr = parser("const tmp1 = tmp2;");
 
@@ -578,7 +544,6 @@ mod test {
 
     #[test]
     fn test_add_func() {
-        lalrpop_mod!(pub reglico);
 
         let expr = parser(
                 "
@@ -617,7 +582,6 @@ mod test {
 
     #[test]
     fn test_func_in_func() {
-        lalrpop_mod!(pub reglico);
 
         let expr = parser(
                 "
@@ -676,7 +640,6 @@ mod test {
     #[test]
     #[should_panic]
     fn test_add_func_with_semicolon() {
-        lalrpop_mod!(pub reglico);
 
         parser(
                 "
