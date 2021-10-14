@@ -1,5 +1,5 @@
 # reglico
-reglico is AltJsAndWasm language. This generate rust(wasm) and typescript code from one code.
+reglico is AltJsAndWasm language. It generate rust(wasm) and typescript code from one code.
 
 ## env
 rust env  
@@ -13,6 +13,7 @@ sh run.sh
 ```
 
 ## example
+transpile `fibonacci number calculation` to typescript(output/ts_output/output.ts) and rust(output/src/lib.rs) from a reglico code(test.reli). 
 
 https://user-images.githubusercontent.com/49422601/137324566-45acbbc2-3c6a-425c-a0da-88af0dc3c0c8.mov
 
