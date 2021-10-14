@@ -1,5 +1,5 @@
 use crate::to_ts_rust::to_rust::to_rust::ToRust;
-use crate::type_parser::typed_ast::{TypeFlag, TypedAstType, TypedIdent, TypedBlockBox, TypedStmt};
+use crate::type_parser::typed_ast::{TypeFlag, TypedAstType, TypedIdent, TypedBlockBox};
 
 impl ToRust {
     pub fn type_flag_to_rust(&self, type_flag: TypeFlag) -> String {
@@ -30,7 +30,7 @@ impl ToRust {
 
     pub fn block_box_to_rust(&self, block_box: TypedBlockBox) -> String {
         let block_box_var_env = self.var_env.clone();
-        let mut stmts = block_box.get_stmts();
+        let stmts = block_box.get_stmts();
 
         let str_stmts = ToRust::to_rust(stmts, Some(block_box_var_env));
 

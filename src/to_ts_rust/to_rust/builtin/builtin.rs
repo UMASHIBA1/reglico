@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod tests {
-    use crate::type_parser::typed_ast::{TypedStmt, TypedExpr, TypedAstType, TypedCallExpr, TypedIdent};
+    use crate::type_parser::typed_ast::{TypedStmt, TypedExpr, TypedAstType, TypedIdent};
     use crate::to_ts_rust::to_rust::to_rust::ToRust;
 
     #[test]
