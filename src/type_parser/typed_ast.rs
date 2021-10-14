@@ -158,18 +158,22 @@ impl TypedExpr {
         }
     }
 
+    #[allow(dead_code)]
     pub fn num_expr_new(num: i64, raw_num_string: String) -> TypedExpr {
         TypedExpr::NumExpr(TypedAstType::Number, TypedNumber::new(num, raw_num_string))
     }
 
+    #[allow(dead_code)]
     pub fn bool_expr_new(bool: bool) -> TypedExpr {
         TypedExpr::BoolExpr(TypedAstType::Bool, TypedBool::new(bool))
     }
 
+    #[allow(dead_code)]
     pub fn num_add_new(left: TypedExpr, right: TypedExpr) -> TypedExpr {
         TypedExpr::NumAddExpr(TypedAstType::Number, Box::new(left), Box::new(right))
     }
 
+    #[allow(dead_code)]
     pub fn num_sub_new(left: TypedExpr, right: TypedExpr) -> TypedExpr {
         TypedExpr::NumSubExpr(TypedAstType::Number, Box::new(left), Box::new(right))
     }
@@ -179,22 +183,27 @@ impl TypedExpr {
         TypedExpr::NumMulExpr(TypedAstType::Number, Box::new(left), Box::new(right))
     }
 
+    #[allow(dead_code)]
     pub fn num_block_new(stmts: Vec<TypedStmt>) -> TypedExpr {
         TypedExpr::NumBlockExpr(TypedAstType::Number, TypedBlock::new(stmts))
     }
 
+    #[allow(dead_code)]
     pub fn bool_block_new(stmts: Vec<TypedStmt>) -> TypedExpr {
         TypedExpr::BoolBlockExpr(TypedAstType::Bool, TypedBlock::new(stmts))
     }
 
+    #[allow(dead_code)]
     pub fn void_block_new(stmts: Vec<TypedStmt>) -> TypedExpr {
         TypedExpr::VoidBlockExpr(TypedAstType::Void, TypedBlock::new(stmts))
     }
 
+    #[allow(dead_code)]
     pub fn call_expr_new(typed_ast_type: TypedAstType, func_name: TypedIdent, args: Vec<TypedExpr>) -> TypedExpr {
         TypedExpr::CallExpr(typed_ast_type, TypedCallExpr::new(func_name, args))
     }
 
+    #[allow(dead_code)]
     pub fn num_ident_new(ident: TypedIdent) -> TypedExpr {
         TypedExpr::NumIdentExpr(TypedAstType::Number, ident)
     }
@@ -324,10 +333,13 @@ pub enum TypedCanElseStmt {
 }
 
 impl TypedCanElseStmt {
+
+    #[allow(dead_code)]
     pub fn block_box_new(stmts: Vec<TypedStmt>, return_ast_type: TypedAstType) -> TypedCanElseStmt {
         TypedCanElseStmt::BlockBox(TypedBlockBox::new(stmts, return_ast_type))
     }
 
+    #[allow(dead_code)]
     pub fn if_stmt_new(condition_expr: TypedExpr, then_stmt: TypedBlockBox, else_stmt: Option<TypedCanElseStmt>, return_ast_type: TypedAstType) -> TypedCanElseStmt {
         TypedCanElseStmt::IfStmt(TypedIfStmt::new(condition_expr, then_stmt, else_stmt, return_ast_type))
     }
@@ -402,6 +414,7 @@ impl TypedStmt {
         )
     }
 
+    #[allow(dead_code)]
     pub fn expr_new(expr: TypedExpr) -> TypedStmt {
         TypedStmt::ExprStmt(
             expr
@@ -420,10 +433,12 @@ impl TypedStmt {
         )
     }
 
+    #[allow(dead_code)]
     pub fn return_new(expr: TypedExpr) -> TypedStmt {
         TypedStmt::ReturnStmt(TypedReturnStmt::new(expr))
     }
 
+    #[allow(dead_code)]
     pub fn if_stmt_new(condition_expr: TypedExpr, then_stmt: TypedBlockBox, else_stmt: Option<TypedCanElseStmt>, return_ast_type: TypedAstType) -> TypedStmt {
         TypedStmt::IfStmt(TypedIfStmt::new(condition_expr, then_stmt, else_stmt, return_ast_type))
     }
