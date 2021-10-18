@@ -6,8 +6,14 @@ rust env
 node env
 
 ## how to use
-```sh
+
+run only first time.
+```
 sh setup.sh
+```
+
+run this every time you change reglico code.
+```sh
 sh build.sh
 sh run.sh
 ```
