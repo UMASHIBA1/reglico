@@ -102,9 +102,24 @@ impl TypeCheckAndInference {
             typed_args.push(self.check_and_inference_expr(arg));
         }
 
-        let func_return_ast_type = match typed_ast_type {
+        let func_return_ast_type; 
+        match typed_ast_type {
             Some(typed_ast_type) => match typed_ast_type {
-                TypedAstType::Func(_, return_type) => return_type,
+                TypedAstType::Func(expected_arg_types, return_type) => {
+                    
+                    // NOTE: check func arg type
+                    for (i, expected_arg_type) in expected_arg_types.iter().enumerate() {
+                        let passed_typed_arg = match typed_args.get(i) {
+                            Some(typed_arg) => typed_arg.get_typed_ast_type(),
+                            None => panic!("expected argument {:?} does not passed.", &expected_arg_type)
+                        };
+                        if &passed_typed_arg != expected_arg_type {
+                            panic!("{:?} argument can not assign {:?}, info: func_name={:?}", passed_typed_arg, &expected_arg_type, typed_func_name.get_name());
+                        }
+                    };
+
+                    func_return_ast_type = return_type;
+                },
                 _ => panic!("parsing call does not call func: {:?}", typed_ast_type),
             },
             None => panic!("parsing call does not defined value{:?}", &typed_func_name),
@@ -143,6 +158,31 @@ mod tests {
     use crate::parser::ast::{Expr, FuncArg, Ident, Opcode, ReturnStmt, Stmt, Types};
     use crate::type_parser::type_parser::type_parser;
     use crate::type_parser::typed_ast::{TypeFlag, TypedAstType, TypedCallExpr, TypedExpr, TypedFunc, TypedFuncArg, TypedIdent, TypedNumber, TypedStmt, TypedVariableDeclaration, TypedBool};
+
+    #[test]
+    #[should_panic]
+    fn test_check_passed_arg_type_does_not_match_expected_type() {
+        let stmts = vec![
+            Stmt::func_new(
+                Ident::new("add".to_string()),
+                vec![
+                    FuncArg::new(Ident::new("a".to_string()), Types::NumberType),
+                    FuncArg::new(Ident::new("b".to_string()), Types::NumberType),
+                ],
+                vec![Stmt::ReturnStmt(ReturnStmt::new(Expr::op_new(
+                    Expr::ident_new(Ident::new("a".to_string())),
+                    Opcode::Add,
+                    Expr::ident_new(Ident::new("b".to_string())),
+                )))],
+            ),
+            Stmt::expr_new(Expr::call_new(
+                Ident::new("add".to_string()),
+                vec![Expr::bool_new(true), Expr::num_new(2, "2")],
+            )),
+        ];
+
+        type_parser(stmts);
+    }
 
     #[test]
     fn test_inference_num_expr_stmt() {
