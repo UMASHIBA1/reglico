@@ -8,22 +8,43 @@ impl TypeCheckAndInference {
         var_decl: VariableDeclaration,
     ) -> TypedVariableDeclaration {
         let name = self.convert_ident_to_typed_ident(var_decl.get_var_name());
-        let type_name = match var_decl.get_type_name() {
-            Some(type_flag) => Some(self.convert_type_to_typed_type(type_flag)),
-            None => None,
-        };
-        let value = match var_decl.get_value() {
-            Some(expr) => {
-                let expr_value = self.check_and_inference_expr(expr);
-                &self
-                    .type_env
-                    .insert(name.clone(), expr_value.get_typed_ast_type());
-                Some(expr_value)
-            }
+
+        let type_name = var_decl.get_type_name();
+
+        let typed_type_name = match &type_name {
+            Some(type_flag) => Some(self.convert_type_to_typed_type(type_flag.clone())),
             None => None,
         };
 
-        TypedVariableDeclaration::new(name, type_name, value)
+        let value;
+        match var_decl.get_value() {
+            Some(expr) => {
+                let expr_value = self.check_and_inference_expr(expr);
+
+                let expr_typed_ast_type = expr_value.get_typed_ast_type();
+
+                match type_name {
+                    Some(types) => {
+                        // type check for var_decl
+                        let expected_typed_ast_type = self.convert_type_to_typed_ast_type(types);
+
+                        if expr_typed_ast_type != expected_typed_ast_type {
+                            panic!("{:?}'s variable declaration: {:?} can not assign to {:?}", name.get_name(), expr_typed_ast_type, expected_typed_ast_type);
+                        }
+                    },
+                    _ => {}
+                };
+
+
+                self
+                    .type_env
+                    .insert(name.clone(), expr_typed_ast_type);
+                value = Some(expr_value);
+            }
+            None => {value = None},
+        };
+
+        TypedVariableDeclaration::new(name, typed_type_name, value)
     }
 }
 
@@ -32,6 +53,18 @@ mod tests {
     use crate::parser::ast::{Expr, Ident, Stmt, Types};
     use crate::type_parser::type_parser::type_parser;
     use crate::type_parser::typed_ast::{TypeFlag, TypedAstType, TypedExpr, TypedIdent, TypedNumber, TypedStmt, TypedVariableDeclaration, TypedBool};
+
+    #[test]
+    #[should_panic]
+    fn test_check_num_var_declaration_assigned_bool() {
+        let stmts = vec![Stmt::var_new(
+            Ident::new("tmp1".to_string()),
+            Some(Types::NumberType),
+            Some(Expr::bool_new(true)),
+        )];
+
+        type_parser(stmts);
+    }
 
     #[test]
     fn test_inference_var_declaration_number_type() {
