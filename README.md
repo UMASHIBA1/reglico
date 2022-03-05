@@ -12,7 +12,7 @@ run only first time.
 sh setup.sh
 ```
 
-run this every time you change reglico code.
+run this every time you change reglico code(e.g. test.reli).
 ```sh
 sh build.sh
 sh run.sh
